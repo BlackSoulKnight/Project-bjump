@@ -35,6 +35,7 @@
 resources/*
 .vs
 packages
+vcpkg_installed
 
 # Compile Folder
 code/x64

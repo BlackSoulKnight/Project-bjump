@@ -1,7 +1,8 @@
 #include <SDL.h>
+#include "example/mini.hpp"
 
 extern "C"
-int main( int argc, char * args [] )
+int mainsa( int argc, char * args [] )
 {
     SDL_Window * window;
     SDL_Renderer * renderer;
@@ -16,4 +17,13 @@ int main( int argc, char * args [] )
         SDL_Delay( 16 );
     }
     return 1;
+}
+
+extern "C"
+int main(int argc, char* argv[])
+{
+    std::ios_base::sync_with_stdio(false);
+
+    NotJanSordid::SDL_MiniExample::MiniGame game;
+    return game.Run();
 }
