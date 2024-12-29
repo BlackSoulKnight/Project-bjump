@@ -35,5 +35,5 @@ struct Sprite {
 	string spiteSheetLocation;
 	int x, y;
 	int animationSize; // Minimum 0; Maximum X
-	bool flipped;
+	bool flipH, flipV;
 };
