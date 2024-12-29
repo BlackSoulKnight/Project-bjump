@@ -5,6 +5,7 @@
 #include <vector>
 #include <map>
 #include <string>
+#include "rendering/SpriteController.h"
 
 using namespace std;
 
@@ -23,6 +24,7 @@ private:
 public:
 
 	static World* Instance;
+	map<string, SpriteController> spriteControllers;
 
 	World(int _windowSizeX, int _windowSizeY);
 
@@ -30,6 +32,7 @@ public:
 	bool createGameObject(GameObject* obj);
 	bool destroyGameObject(GameObject* obj);
 	bool destroyGameObject(int pos);
+	SDL_Renderer* getRenderer();
 
 };
 

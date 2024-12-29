@@ -33,3 +33,7 @@ bool World::destroyGameObject(GameObject* obj) {
     }
     return false;
 }
+
+SDL_Renderer* World::getRenderer() {
+    return renderer;
+}
