@@ -15,5 +15,8 @@ struct Vector2
 
 
 struct Sprite {
-	//HAHAH LUSTIG
+	string spiteSheetLocation;
+	int x, y;
+	int animationSize; // Minimum 0; Maximum X
+	bool flipped;
 };
