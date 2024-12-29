@@ -25,10 +25,10 @@
 int main(int, char**)
 {
     World* newWorld = new World(640,320);
+
     while (newWorld->run()) {
 
     }
-
 
     // Setup SDL
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER) != 0)

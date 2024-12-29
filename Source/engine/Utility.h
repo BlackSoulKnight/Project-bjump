@@ -6,3 +6,15 @@ struct Vector3f {
 		this->x = x; this->y = y; this->z = z;
 	}
 };
+
+struct Vector2
+{
+	int x, y, width, height;
+	string file;
+
+};
+
+
+struct Sprite {
+
+};
