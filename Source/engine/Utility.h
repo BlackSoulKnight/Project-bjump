@@ -9,12 +9,11 @@ struct Vector3f {
 
 struct Vector2
 {
-	int x, y, width, height;
-	string file;
+	int x, y;
 
 };
 
 
 struct Sprite {
-
+	//HAHAH LUSTIG
 };
