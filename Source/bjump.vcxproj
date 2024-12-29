@@ -145,6 +145,7 @@
     <ClCompile Include="external-lib\imgui\imgui_tables.cpp" />
     <ClCompile Include="external-lib\imgui\imgui_widgets.cpp" />
     <ClCompile Include="external-lib\imgui\misc\cpp\imgui_stdlib.cpp" />
+    <ClCompile Include="engine\InputManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="engine\World.cpp" />
     <ClCompile Include="Player\player.cpp" />
@@ -168,6 +169,7 @@
     <ClInclude Include="external-lib\imgui\imstb_truetype.h" />
     <ClInclude Include="external-lib\imgui\misc\cpp\imgui_stdlib.h" />
     <ClInclude Include="external-lib\imgui\misc\single_file\imgui_single_file.h" />
+    <ClInclude Include="engine\InputManager.h" />
     <ClInclude Include="Player\player.h" />
   </ItemGroup>
   <ItemGroup>

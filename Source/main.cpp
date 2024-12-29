@@ -25,8 +25,13 @@
 int main(int, char**)
 {
     World* newWorld = new World(640,320);
-
-
+    newWorld->createGameObject(new Player());
+    GameObject* obj = new GameObject();
+    obj->position.w = 50;
+    obj->position.h = 50;
+    obj->position.x = 150;
+    obj->name = "LUL";
+    newWorld->createGameObject(obj);
     while (newWorld->run()) {
 
     }

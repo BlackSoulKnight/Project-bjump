@@ -5,6 +5,8 @@
 #include <vector>
 #include <map>
 #include <string>
+#include <iostream>
+#include "InputManager.h"
 
 using namespace std;
 
@@ -18,7 +20,7 @@ private:
 	int windowSizeX, windowSizeY;
 	int deltaT;
 	vector<GameObject*> gameObjects;
-	map<string, int> keybinds;
+	int targetFrameRate;
 
 public:
 
@@ -30,6 +32,7 @@ public:
 	bool createGameObject(GameObject* obj);
 	bool destroyGameObject(GameObject* obj);
 	bool destroyGameObject(int pos);
+	vector<GameObject*> getCollisions(GameObject *origin);
 
 };
 
