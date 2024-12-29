@@ -20,7 +20,6 @@ void Player::update(int deltaT) {
 		position.x += speed*deltaT;
 	if(inputs.contains("Left") && inputs["Left"])
 		position.x -= speed*deltaT;
-	
 }
 
 Player::Player() {

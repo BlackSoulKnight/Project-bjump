@@ -13,6 +13,8 @@ public:
 	Sprite sprite;
 	string name = "";
 	bool isActive;
+	int layer;
+	bool flipH, flipV;
 	vector<GameObject*> collisions;
 	GameObject();
 	virtual void update(int deltaT);
