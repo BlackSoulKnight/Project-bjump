@@ -12,7 +12,7 @@ private:
 	
 public:
 	virtual void update(float deltaT);
-	Vector3f getPosition() { return position };
-	Sprite getSprite() { return sprite };
+	Vector3f getPosition() { return position; };
+	Sprite getSprite() { return sprite; };
 };
 

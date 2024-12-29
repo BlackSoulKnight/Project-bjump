@@ -1,4 +1,6 @@
 #pragma once
+#include <string>
+using namespace std;
 
 struct Vector3f {
 	float x, y, z;

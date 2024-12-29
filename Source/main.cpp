@@ -26,9 +26,17 @@ int main(int, char**)
 {
     World* newWorld = new World(640,320);
 
+
     while (newWorld->run()) {
 
     }
+
+    return 0;
+}
+
+
+/*
+    IMGUI EXAMPLE
 
     // Setup SDL
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER) != 0)
@@ -180,5 +188,4 @@ int main(int, char**)
     SDL_DestroyWindow(window);
     SDL_Quit();
 
-    return 0;
-}
+*/

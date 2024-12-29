@@ -147,6 +147,7 @@
     <ClCompile Include="external-lib\imgui\misc\cpp\imgui_stdlib.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="engine\World.cpp" />
+    <ClCompile Include="Player\player.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="external-lib\imgui\misc\debuggers\imgui.gdb" />
@@ -167,6 +168,7 @@
     <ClInclude Include="external-lib\imgui\imstb_truetype.h" />
     <ClInclude Include="external-lib\imgui\misc\cpp\imgui_stdlib.h" />
     <ClInclude Include="external-lib\imgui\misc\single_file\imgui_single_file.h" />
+    <ClInclude Include="Player\player.h" />
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="external-lib\imgui\misc\debuggers\imgui.natvis" />
