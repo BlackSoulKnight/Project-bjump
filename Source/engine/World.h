@@ -5,6 +5,9 @@
 #include <vector>
 #include <map>
 #include <string>
+#include <iostream>
+#include "InputManager.h"
+#include "rendering/SpriteController.h"
 
 using namespace std;
 
@@ -18,11 +21,12 @@ private:
 	int windowSizeX, windowSizeY;
 	int deltaT;
 	vector<GameObject*> gameObjects;
-	map<string, int> keybinds;
+	int targetFrameRate;
 
 public:
 
 	static World* Instance;
+	map<string, SpriteController> spriteControllers;
 
 	World(int _windowSizeX, int _windowSizeY);
 
@@ -30,6 +34,8 @@ public:
 	bool createGameObject(GameObject* obj);
 	bool destroyGameObject(GameObject* obj);
 	bool destroyGameObject(int pos);
+	SDL_Renderer* getRenderer();
+	vector<GameObject*> getCollisions(GameObject *origin);
 
 };
 
