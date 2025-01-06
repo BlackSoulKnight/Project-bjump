@@ -68,6 +68,7 @@ int main(int, char**)
         // Eingaben und Spiellogik
         player.handleInput();
         player.update();
+        player.printState();
 
         // Bildschirm löschen (Schwarzer Hintergrund)
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); // Schwarz
@@ -82,7 +83,7 @@ int main(int, char**)
         // Kurze Verzögerung für eine bessere Bildrate
         SDL_Delay(16); // Etwa 60 FPS
     }
-
+    
     // Ressourcen freigeben
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
