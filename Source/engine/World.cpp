@@ -1,6 +1,8 @@
 #include "World.h"
 #include <chrono>
 
+World* World::Instance = nullptr;
+
 World::World(int _windowSizeX, int _windowSizeY) {
     windowSizeX = _windowSizeX;
     windowSizeY = _windowSizeY;
