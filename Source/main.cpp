@@ -16,10 +16,28 @@
 #include <stdio.h>
 #include <SDL.h>
 #include "engine/World.h"
+#include "gameLoop/rendering.h"
+#include "engine/rendering/SpriteController.h"
 
 #if !SDL_VERSION_ATLEAST(2,0,17)
 #error This backend requires SDL 2.0.17+ because of SDL_RenderGeometry() function
 #endif
+
+void renderingTest() {
+    World ws = World(720,480);
+    SDL_Renderer* renderer = ws.getRenderer();
+
+    const char* location = "C:\\Users\\Ara\\source\\repos\\Projecb-jump\\resources\\tilemap_packed";
+
+    SpriteController world = SpriteController::generateController(location, 8, 8);
+    SpriteController enemy = SpriteController::generateController(location, 8, 8);
+    SpriteController bullet = SpriteController::generateController(location, 8, 8);
+    SpriteController player = SpriteController::generateController(location, 8, 8);
+
+    std::vector<SpriteController> VsC = { world, enemy, bullet, player };
+
+    renderGraphics(ws, renderer, VsC);
+}
 
 // Main code
 int main(int, char**)
