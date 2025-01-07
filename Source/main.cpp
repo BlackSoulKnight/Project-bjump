@@ -16,13 +16,13 @@
 #include <stdio.h>
 #include <SDL.h>
 #include "engine/World.h"
-#include "gameLoop/rendering.h"
-#include "engine/rendering/SpriteController.h"
+
 
 #if !SDL_VERSION_ATLEAST(2,0,17)
 #error This backend requires SDL 2.0.17+ because of SDL_RenderGeometry() function
 #endif
 
+/*
 void renderingTest() {
     World ws = World(720,480);
     SDL_Renderer* renderer = ws.getRenderer();
@@ -38,11 +38,11 @@ void renderingTest() {
 
     renderGraphics(ws, renderer, VsC);
 }
-
+*/
 // Main code
 int main(int, char**)
 {
-    World* newWorld = new World(640,320);
+    World* newWorld = new World(2560,1440);
     newWorld->createGameObject(new Player());
     GameObject* obj = new GameObject();
     obj->position.w = 50;

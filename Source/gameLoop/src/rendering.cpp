@@ -10,7 +10,7 @@ void renderGraphics(const World& wS, SDL_Renderer* renderer) {
 	SDL_RenderClear(renderer);
 
 	// Render Entities
-	renderEntity(wS, renderer, wS.worldObjects, wS.spriteControllers);
+	//renderEntity(wS, renderer, wS.worldObjects, wS.spriteControllers);
 
 
 	SDL_RenderPresent(renderer);

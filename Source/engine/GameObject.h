@@ -14,11 +14,13 @@ public:
 	string name = "";
 	bool isActive;
 	int layer;
+	string tag;
 	vector<GameObject*> collisions;
 	GameObject();
 	virtual void update(int deltaT);
 	SDL_Rect getPosition() { return position; };
 	Sprite getSprite() { return sprite; };
+	vector<GameObject*> traceLine(Vector2 start, Vector2 end, bool includeSelf = false);
 };
 
 class Player: public GameObject {

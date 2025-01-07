@@ -170,6 +170,9 @@
     <ClInclude Include="external-lib\imgui\misc\cpp\imgui_stdlib.h" />
     <ClInclude Include="external-lib\imgui\misc\single_file\imgui_single_file.h" />
     <ClInclude Include="engine\InputManager.h" />
+    <ClInclude Include="gameLoop\headers\eventHandling.h" />
+    <ClInclude Include="gameLoop\headers\gameLogic.h" />
+    <ClInclude Include="gameLoop\headers\rendering.h" />
     <ClInclude Include="Player\player.h" />
   </ItemGroup>
   <ItemGroup>
