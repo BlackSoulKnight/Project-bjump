@@ -27,6 +27,11 @@ private:
     void setSprite(std::vector<SDL_Rect> sprite);
 
 public:
+
+    int getSpritesPerX();
+    int getSpritesPerY();
+    int getSpritesSizeX();
+    int getSpritesSizeY();
     /**
      * generateController - Generates a SpriteController with initialized values to use for a SpriteController initialization.
      *

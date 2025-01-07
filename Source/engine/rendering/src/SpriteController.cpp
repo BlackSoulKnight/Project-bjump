@@ -1,4 +1,4 @@
-#include "../header/SpriteController.h"
+#include "../SpriteController.h"
 
 SpriteController::SpriteController() : _x(0), _y(0) {}
 
@@ -91,4 +91,18 @@ SpriteController  &SpriteController::generateController(const char *fileName, in
 SpriteController &SpriteController::generateController(const char *fileName, int logicPixel)
 {
     return SpriteController::generateController(fileName, logicPixel, logicPixel);
+}
+
+int SpriteController::getSpritesPerX() {
+    return _spritesPerRow;
+}
+int SpriteController::getSpritesPerY() {
+    return _spritesPerColumn;
+}
+
+int SpriteController::getSpritesSizeX() {
+    return _logicPixelsX;
+}
+int SpriteController::getSpritesSizeY() {
+    return _logicPixelsY;
 }

@@ -1,0 +1,334 @@
+#include <iostream>
+#include <stdlib.h>
+#include <windows.h>
+#include <vector>
+#include <print>
+#include <ShObjIdl.h>
+#include <SDL.h>
+#include "engine/rendering/SpriteController.h"
+
+#define FILE_BUFFER_SIZE 200
+
+struct WorldState
+{
+    int zoom = 2; // Funktioniert noch nicht;
+    int WINDOW_SIZE_W = 400;
+    int WINDOW_SIZE_H = 300;
+    SDL_Window* window;
+    SDL_Renderer* renderer;
+    SDL_Texture* texture;
+    SpriteController sprite_controller;
+
+    int selected_tile_x = 0;
+    int selected_tile_y = 0;
+    bool drag = false;
+    bool repeat_placement = false;
+    std::vector<std::vector<int>> tiles;
+
+    SDL_Rect camera = { 0, 0, 0, 0 };
+    SDL_Rect mouse_position_to_highlight = { 0,0,0,0 };
+
+} WS;
+
+#pragma region GameLoop Function Declaration
+void init_sdl(char*);
+void read_events();
+void mutate_world_state();
+void render_graphics();
+#pragma endregion
+
+#pragma region Event Functions
+void mouse_button_1(SDL_Event);
+void mouse_button_2(SDL_Event);
+#pragma endregion
+
+#pragma region File Function Declaration
+void start_editor(char*);
+void save_created_map();
+void load_map(char *);
+void init_sprite_controller(char* filePath, int sizeX, int sizeY);
+PWSTR WINAPI get_file_path();
+char* converter_function(PWSTR);
+#pragma endregion
+
+using namespace std;
+int main(int argc, char **argv)
+{
+    SetConsoleTitle(TEXT("console: BJump Map Editor"));
+    cout << "BJump Map Editor\n";
+    cout << "1: (Partiell) Neue Map erstellen\n2: (Nicht Implementiert) Laden von vorhandener Datei\n\n";
+
+    int input;
+    cin >> input;
+
+    cout << "Waehle das SpriteSheet aus.\n";
+    PWSTR sprite_sheet_path = get_file_path();
+    char* converted_sprite_sheet_path = converter_function(sprite_sheet_path);
+    cout << "Datei: " << converted_sprite_sheet_path << endl << endl;
+    cout << "Sprite groesse X (Adve:8): ";
+    int sizeX = 0;
+    cin >> sizeX;
+    cout << "Sprite groesse Y (Adve:8): ";
+    int sizeY = 0;
+    cin >> sizeY;
+    init_sprite_controller(converted_sprite_sheet_path, sizeX, sizeY);
+ 
+    
+    PWSTR map_file_path = nullptr;
+    char* converted_map_file_path = nullptr;
+     
+    switch (input)
+    {
+    case 1:
+        start_editor(converted_sprite_sheet_path);
+        break;
+    case 2:
+        cout << "Waehl die Map-Datei aus.";
+        map_file_path = get_file_path();
+        converted_map_file_path = converter_function(map_file_path);
+       /* size_t i;
+        converted_map_file_path = (char*)malloc(sizeof(char) * FILE_BUFFER_SIZE);
+        wcstombs_s(&i, converted_map_file_path, (size_t)FILE_BUFFER_SIZE, map_file_path, (size_t)(FILE_BUFFER_SIZE - 1));*/
+
+        cout << converted_map_file_path;
+        cin;
+
+        load_map(converted_map_file_path);
+        //start_editor();
+        break;
+    default:
+        break;
+    }
+
+    return 0;
+    
+}
+
+#pragma region Gameloop Functions
+void start_editor(char* sprite_sheet_path)
+{
+    init_sdl(sprite_sheet_path);
+
+    bool saveMap = false;
+    while (!saveMap)
+    {
+        read_events();
+        mutate_world_state();
+        render_graphics();
+
+    }
+    SDL_DestroyRenderer(WS.renderer);
+    SDL_DestroyWindow(WS.window);
+}
+
+void init_sdl(char* sprite_sheet_path) {
+    SDL_Init(SDL_INIT_EVERYTHING);
+    SDL_Init(IMG_INIT_PNG);
+    SDL_ShowCursor(true);
+    WS.window = SDL_CreateWindow("Map Editor", 0, 20, 1280, 720, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
+    WS.renderer = SDL_CreateRenderer(WS.window, -1, SDL_RENDERER_PRESENTVSYNC);
+    WS.texture = IMG_LoadTexture(WS.renderer, sprite_sheet_path);
+    WS.camera = { 0,0,WS.sprite_controller.getSpritesSizeX(), WS.sprite_controller.getSpritesSizeY()};
+    WS.mouse_position_to_highlight = WS.camera;
+    for (size_t i = 0; i <= 60 ; i++)
+    {
+        WS.tiles.push_back(std::vector<int>(40));
+        std::fill(WS.tiles[i].begin(), WS.tiles[i].end(), 0);
+    }
+        
+    SDL_RenderSetLogicalSize(WS.renderer, 600 / WS.zoom, 400 / WS.zoom);
+}
+
+void read_events() {
+    SDL_PumpEvents();
+
+    bool pressed = false;
+    SDL_Event e;
+    while (SDL_PollEvent(&e))
+    {
+        switch (e.type)
+        {
+        case SDL_QUIT:
+            exit(1);
+            break;
+        case SDL_KEYDOWN:
+            pressed = e.type & 1;
+            switch (e.key.keysym.scancode)
+            {
+            case SDL_SCANCODE_S:
+                save_created_map();
+                break;
+            default:
+                break;
+            }
+            break;
+
+        case SDL_MOUSEBUTTONUP:
+            switch (e.button.button)
+            {
+            case SDL_BUTTON_LEFT:
+                break;
+            case SDL_BUTTON_RIGHT:
+                break;
+            }
+        case SDL_MOUSEBUTTONDOWN:
+            switch (e.button.button)
+            {
+            case SDL_BUTTON_LEFT:
+                mouse_button_1(e);
+                WS.repeat_placement = !WS.repeat_placement;
+                break;
+            case SDL_BUTTON_RIGHT:
+                WS.drag = !WS.drag;
+                break;
+            }
+            break;
+        case SDL_MOUSEMOTION:
+            if (WS.drag) {
+                cout << e.motion.xrel << " " << e.motion.yrel << endl;
+                WS.camera.x += e.motion.xrel;
+                WS.camera.y += e.motion.yrel;
+            }
+            if (WS.repeat_placement) {
+                mouse_button_1(e);
+            }
+            int xPos = (e.motion.x - WS.camera.x) / WS.sprite_controller.getSpritesSizeX();
+            int yPos = (e.motion.y - WS.camera.y) / WS.sprite_controller.getSpritesSizeY();
+            WS.mouse_position_to_highlight.x = xPos * 8;
+            WS.mouse_position_to_highlight.y = yPos * 8;
+            break;
+        }
+    }
+}
+void mutate_world_state() {
+
+}
+void render_graphics() {
+  
+    SDL_SetRenderDrawColor(WS.renderer, 0, 0, 0, 255);
+    SDL_RenderClear(WS.renderer);
+
+    SDL_Rect initial_cam_pos = WS.camera;
+    int origin = initial_cam_pos.x;
+    for (auto y : WS.tiles) {
+        for (auto x : y) {
+            SDL_RenderCopy(WS.renderer, WS.texture, WS.sprite_controller.getSprite(x), &initial_cam_pos);
+            initial_cam_pos.x += WS.sprite_controller.getSpritesSizeX();
+        }
+        initial_cam_pos.y += WS.sprite_controller.getSpritesSizeY();
+        initial_cam_pos.x = origin;
+    }
+
+    SDL_Rect to_place_position = WS.mouse_position_to_highlight;
+    to_place_position.x += WS.camera.x;
+    to_place_position.y += WS.camera.y;
+
+    SDL_SetRenderDrawColor(WS.renderer, 0, 255, 0, 127);
+    SDL_RenderDrawRect(WS.renderer, &to_place_position);
+
+    SDL_Rect selectable_tiles = {   0,
+                                    0, 
+                                    WS.sprite_controller.getSpritesSizeX() / WS.zoom,
+                                    WS.sprite_controller.getSpritesSizeY() / WS.zoom };
+    for (int y = 0; y < WS.sprite_controller.getSpritesPerY(); y++)
+    {
+        int sprites_per_x = WS.sprite_controller.getSpritesPerX();
+        for (int x = 0; x < sprites_per_x; x++)
+        {
+            SDL_RenderCopy(WS.renderer, WS.texture, WS.sprite_controller.getSprite(x + (y * sprites_per_x)), &selectable_tiles);
+            selectable_tiles.x += WS.sprite_controller.getSpritesSizeX() / WS.zoom;
+        }
+        selectable_tiles.y += WS.sprite_controller.getSpritesSizeY() / WS.zoom;
+        selectable_tiles.x = 0;
+    }
+
+
+    SDL_Rect selected_tile = {  WS.selected_tile_x * WS.sprite_controller.getSpritesSizeX() / WS.zoom,
+                                WS.selected_tile_y * WS.sprite_controller.getSpritesSizeY() / WS.zoom,
+                                WS.sprite_controller.getSpritesSizeX() / WS.zoom,
+                                WS.sprite_controller.getSpritesSizeY() / WS.zoom };
+    SDL_SetRenderDrawColor(WS.renderer, 155, 0, 0, 255);
+    SDL_RenderDrawRect(WS.renderer, &selected_tile);
+
+    
+    SDL_RenderPresent(WS.renderer);
+}
+
+#pragma endregion
+
+#pragma region Event Functions
+void mouse_button_1(SDL_Event e) {
+    SDL_MouseButtonEvent mbe = e.button;
+    int xPos = mbe.x / (WS.sprite_controller.getSpritesSizeX() / WS.zoom);
+    int yPos = mbe.y / (WS.sprite_controller.getSpritesSizeY() / WS.zoom);
+    cout << "LMB x:" << xPos << " y: " << yPos << endl;
+    if (xPos < WS.sprite_controller.getSpritesPerX() && xPos >= 0 && yPos < WS.sprite_controller.getSpritesPerY() && yPos >= 0) {
+        WS.selected_tile_x = xPos;
+        WS.selected_tile_y = yPos;
+    }
+    else {
+        //Kamera offset mit einbeziehen beim platzieren
+        xPos = (mbe.x - WS.camera.x) / WS.sprite_controller.getSpritesSizeX();
+        yPos = (mbe.y - WS.camera.y) / WS.sprite_controller.getSpritesSizeY();
+        cout << "INFO: outside of selectMap" << endl;
+        if ((xPos < 0 || WS.tiles[0].size() <= xPos) || (yPos < 0 || WS.tiles.size() <= yPos))
+            return;
+
+        if (WS.tiles.at(yPos).at(xPos) == WS.selected_tile_x + (WS.selected_tile_y * WS.sprite_controller.getSpritesPerX()))
+            return;
+        WS.tiles.at(yPos).at(xPos) = WS.selected_tile_x + (WS.selected_tile_y * WS.sprite_controller.getSpritesPerX());
+    }
+}
+void mouse_button_2(SDL_Event e) {
+}
+#pragma endregion
+
+#pragma region File Functions
+void save_created_map()
+{
+}
+
+void load_map(char* filePath)
+{
+}
+
+void init_sprite_controller(char* filePath, int sizeX, int sizeY)
+{
+    WS.sprite_controller = SpriteController::generateController(filePath, sizeX, sizeY);
+}
+
+char* converter_function(PWSTR convert_from) {
+    size_t i;
+    char* converted_string = (char*)malloc(sizeof(char) * FILE_BUFFER_SIZE);
+    wcstombs_s(&i, converted_string, (size_t)FILE_BUFFER_SIZE, convert_from, (size_t)(FILE_BUFFER_SIZE - 1));
+    return converted_string;
+}
+
+PWSTR WINAPI get_file_path()
+{
+    PWSTR toWriteTo = nullptr;
+    HRESULT hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
+    if (SUCCEEDED(hr)) {
+        IFileDialog* pFileOpen;
+        hr = CoCreateInstance(CLSID_FileOpenDialog, NULL, CLSCTX_ALL, IID_IFileOpenDialog, reinterpret_cast<void**>(&pFileOpen));
+        if (SUCCEEDED(hr)) {
+            hr = pFileOpen->Show(NULL);
+
+            if (SUCCEEDED(hr)) {
+                IShellItem* pItem;
+                hr = pFileOpen->GetResult(&pItem);
+                if (SUCCEEDED(hr)) {
+                    hr = pItem->GetDisplayName(SIGDN_FILESYSPATH, &toWriteTo);
+                    pItem->Release();
+                }
+                
+            }
+        }
+        pFileOpen->Release();
+    }
+    CoUninitialize();
+    //return result;
+    return toWriteTo;
+}
+
+#pragma endregion
