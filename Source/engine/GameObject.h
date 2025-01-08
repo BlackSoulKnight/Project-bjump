@@ -22,12 +22,5 @@ public:
 	Sprite getSprite() { return sprite; };
 	vector<GameObject*> traceLine(Vector2 start, Vector2 end, bool includeSelf = false);
 	vector<tuple<GameObject*, SDL_Rect>> getCollision();
-};
-
-class Player: public GameObject {
-public:
-	void update(int deltaT);
-	void moveAndCollide(Vector2);
-	Player();
-	int speed = 1;
+	bool getInputState(string Action);
 };

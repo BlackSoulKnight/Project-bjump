@@ -1,13 +1,9 @@
 #include "Player.h"
 
-Players::Players(float startX, float startY, float w, float h)
-    : x(startX), y(startY), vx(0), vy(0), width(w), height(h),
-    jumpState(ON_GROUND), spacePressed(false), canDash(true), dashing(false), dashTime(0) {}
-
-float Players::getX() const { return x; }
-float Players::getY() const { return y; }
-float Players::getWidth() const { return width; }
-float Players::getHeight() const { return height; }
+float Player::getX() const { return position.x; }
+float Player::getY() const { return position.y; }
+float Player::getWidth() const { return position.w; }
+float Player::getHeight() const { return position.h; }
 
 void Players::handleInput() {
     const Uint8* state = SDL_GetKeyboardState(NULL);
@@ -58,7 +54,49 @@ void Players::handleInput() {
     }
 }
 
-void Players::update() {
+
+
+void Player::checkGroundCollision(int screenHeight) {
+    // Kollision mit dem Boden
+    if (y + height >= screenHeight) {
+        y = screenHeight - height; // Spieler auf den Boden setzen
+        vy = 0;                    // Geschwindigkeit in Y-Richtung zurücksetzen
+        jumpState = ON_GROUND;     // Zustand auf "ON_GROUND" setzen
+        canDash = true;            // Dash zurücksetzen
+    }
+}
+
+void Player::printState() const {
+    switch (jumpState) {
+    case ON_GROUND:
+        std::cout << "State: ON_GROUND" << std::endl;
+        break;
+    case JUMPING:
+        std::cout << "State: JUMPING" << std::endl;
+        break;
+    case DOUBLE_JUMPING:
+        std::cout << "State: DOUBLE_JUMPING" << std::endl;
+        break;
+    case DASHING:
+        std::cout << "State: DASHING" << std::endl;
+        break;
+    case WALL_JUMPING:
+        std::cout << "State: WALLJUMPING" << std::endl;
+        break;
+    }
+}
+void Player::checkWallCollision() {
+    // Hier prüfen wir, ob der Spieler eine Wand berührt. Das könnte eine Kollision mit der linken oder rechten Seite des Bildschirms oder mit einem Hindernis sein.
+    // Wir setzen dies hier als Beispiel für eine einfache Wandkollision.
+    if (x <= 0 || x + width >= 640) {  // Beispiel für Wandkollision mit Bildschirmgrenze
+        touchingWall = true;
+    }
+    else {
+        touchingWall = false;
+    }
+}
+/*
+void Player::update() {
     if (dashing) {
         dashTime--; // Dash-Timer herunterzählen
         if (dashTime <= 0) {
@@ -93,51 +131,63 @@ void Players::update() {
         x = 640 - width;
     }
 }
+*/
 
-
-void Players::checkGroundCollision(int screenHeight) {
-    // Kollision mit dem Boden
-    if (y + height >= screenHeight) {
-        y = screenHeight - height; // Spieler auf den Boden setzen
-        vy = 0;                    // Geschwindigkeit in Y-Richtung zurücksetzen
-        jumpState = ON_GROUND;     // Zustand auf "ON_GROUND" setzen
-        canDash = true;            // Dash zurücksetzen
-    }
-}
-
-void Players::render(SDL_Renderer* renderer) const {
-    SDL_Rect rect = { (int)x, (int)y, (int)width, (int)height };
-    SDL_SetRenderDrawColor(renderer, dashing ? 0 : 255, dashing ? 255 : 0, 0, 255); // Grün bei Dash, Rot sonst
-    SDL_RenderFillRect(renderer, &rect);
-}
-
-void Players::printState() const {
-    switch (jumpState) {
-    case ON_GROUND:
-        std::cout << "State: ON_GROUND" << std::endl;
+void Player::update(int deltaT) {
+    switch (playerState) {
+    case PlayerState::ON_GROUND:
+        if (getInputState("Left"))
+            vx = -MOVE_SPEED;
+        else if (getInputState("Right"))
+            vx = MOVE_SPEED;
+        else 
+            vx = 0;
+        if (getInputState("Jump")) {
+            playerState = JUMPING;
+        }
         break;
     case JUMPING:
-        std::cout << "State: JUMPING" << std::endl;
+        
         break;
-    case DOUBLE_JUMPING:
-        std::cout << "State: DOUBLE_JUMPING" << std::endl;
-        break;
-    case DASHING:
-        std::cout << "State: DASHING" << std::endl;
-        break;
-    case WALL_JUMPING:
-        std::cout << "State: WALLJUMPING" << std::endl;
-        break;
+
     }
-}
-void Players::checkWallCollision() {
-    // Hier prüfen wir, ob der Spieler eine Wand berührt. Das könnte eine Kollision mit der linken oder rechten Seite des Bildschirms oder mit einem Hindernis sein.
-    // Wir setzen dies hier als Beispiel für eine einfache Wandkollision.
-    if (x <= 0 || x + width >= 640) {  // Beispiel für Wandkollision mit Bildschirmgrenze
-        touchingWall = true;
-    }
-    else {
-        touchingWall = false;
-    }
+    moveAndCollide(Vector2(vx,vy));
 }
 
+Player::Player():jumpState(ON_GROUND), spacePressed(false), canDash(true), dashing(false), dashTime(0)
+{
+    position.x = 50;
+    position.w = 100;
+    position.h = 100;
+    name = "player";
+}
+
+void Player::moveAndCollide(Vector2 direction) {
+
+    vector<tuple<GameObject*, SDL_Rect>> collisions = getCollision();
+    //x
+    position.x += direction.x;
+    while ((collisions = getCollision()).size() > 0) {
+
+        if (position.x + position.w / 2 > get<1>(collisions[0]).x)
+        {
+            position.x += get<1>(collisions[0]).w;
+        }
+        else {
+            position.x -= get<1>(collisions[0]).w;
+        }
+    }
+
+    //y
+    position.y += direction.y;
+    while ((collisions = getCollision()).size() > 0) {
+
+        if (position.y + position.h / 2 > get<1>(collisions[0]).y)
+        {
+            position.y += get<1>(collisions[0]).h;
+        }
+        else {
+            position.y -= get<1>(collisions[0]).h;
+        }
+    }
+}

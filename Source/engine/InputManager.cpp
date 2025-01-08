@@ -1,6 +1,15 @@
 #include "InputManager.h"
 
-map<string, bool> InputManager::actionState;
+
+map<string, bool> init() {
+    map<string, bool> t;
+    t["Left"] = false;
+    t["Right"] = false;
+    t["Jump"] = false;
+    return t;
+}
+map<string, bool> InputManager::actionState = init();
+
 
 void InputManager::pump() {
     SDL_PumpEvents();

@@ -3,6 +3,54 @@
 
 #include <SDL.h>
 #include <iostream> // Für Konsolenausgabe
+#include "../engine/Utility.h"
+#include "../engine/GameObject.h"   
+
+class Player : public GameObject {
+
+private:
+    float x, y;        // Position
+    float vx, vy;      // Geschwindigkeit
+    float width, height;
+
+    enum PlayerState {
+        ON_GROUND, JUMPING, DOUBLE_JUMPING, DASHING, WALL_JUMPING, FALLING
+    } jumpState; // Sprung- und Dash-Zustände
+    bool spacePressed; // Ob die Leertaste bereits gedrückt wurde
+    bool canDash;      // Ob der Dash verfügbar ist
+    bool dashing;      // Ob der Spieler gerade dasht
+    float dashTime;    // Timer für die Dash-Dauer
+    bool touchingWall; // Ob der Spieler eine Wand berührt
+    PlayerState playerState;
+
+    static constexpr float GRAVITY = 0.5f;      // Schwerkraft
+    static constexpr float JUMP_FORCE = -10.0f; // Sprungkraft
+    static constexpr float FALL_SPEED = 10.0f;  // Maximale Fallgeschwindigkeit
+    static constexpr float MOVE_SPEED = 5.0f;   // Bewegungsgeschwindigkeit
+    static constexpr float DASH_SPEED = 10.0f;  // Geschwindigkeit während des Dashs
+    static constexpr float DASH_DURATION = 20;  // Dash-Dauer 
+    static constexpr float WALL_JUMP_FORCE = -8.0f; // Walljump Sprungkraft
+    static constexpr float WALL_JUMP_SPEED = 5.0f;  // Walljump seitliche Geschwindigkeit
+
+public:
+    void update(int deltaT);
+    void moveAndCollide(Vector2);
+    Player();
+    int speed = 1;
+    void printState() const;
+
+
+    float getX() const;
+    float getY() const;
+    float getWidth() const;
+    float getHeight() const;
+    // Kollision mit dem Boden
+    void checkGroundCollision(int screenHeight);
+    void checkWallCollision();  // Kollision mit Wänden überprüfen
+
+};
+
+
 
 class Players {
 private:
