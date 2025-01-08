@@ -38,7 +38,6 @@ void InputManager::pump() {
             case SDL_SCANCODE_S:
                 actionState["Drop"] = pressed;
             }
-
             break;
         }
     }
