@@ -41,11 +41,11 @@ struct WorldState
 
     LPCWSTR editor_controlls =
         L"Hide controlls:\tSet WorldState.show_controlls=false\n\n"
-        L"L_Click:\t\tPlace Tiles\n"
-        L"R_Click:\t\tPan camera\n"
-        L"S:\t\tsave(not done)\n"
-        L"G:\t\tactivate/decativate Grid\n"
-        L"UP/DOWN:\tZoom in/out\n";
+        L"L_Click:\t\tTiles Platzieren\n"
+        L"R_Click:\t\tKamera bewegen\n"
+        L"S:\t\tSpeichern\n"
+        L"G:\t\tGrid aktivieren/deaktivieren\n"
+        L"UP/DOWN:\tZoom +/-\n";
 
 } WS;
 
