@@ -110,7 +110,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)\external-lib\imgui;$(SolutionDir)\external-lib\imgui\backends;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\external-lib\imgui;$(SolutionDir)\external-lib\imgui\backends;$(SolutionDir)\engine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -136,6 +136,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Enemy\Bullet.cpp" />
+    <ClCompile Include="Enemy\Enemy.cpp" />
     <ClCompile Include="engine\GameObject.cpp" />
     <ClCompile Include="external-lib\imgui\backends\imgui_impl_sdl2.cpp" />
     <ClCompile Include="external-lib\imgui\backends\imgui_impl_sdlrenderer2.cpp" />
@@ -156,6 +158,8 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Enemy\Bullet.h" />
+    <ClInclude Include="Enemy\Enemy.h" />
     <ClInclude Include="engine\GameObject.h" />
     <ClInclude Include="engine\Utility.h" />
     <ClInclude Include="engine\World.h" />
