@@ -18,10 +18,12 @@
 #include "engine/World.h"
 #include "Player/player.h"
 
+
 #if !SDL_VERSION_ATLEAST(2,0,17)
 #error This backend requires SDL 2.0.17+ because of SDL_RenderGeometry() function
 #endif
 
+/*
 void renderingTest() {
     World ws = World(720,480);
     SDL_Renderer* renderer = ws.getRenderer();
@@ -37,64 +39,21 @@ void renderingTest() {
 
     renderGraphics(ws, renderer, VsC);
 }
-
+*/
 // Main code
+
 int main(int, char**)
 {
-
-
-    if (SDL_Init(SDL_INIT_VIDEO) != 0) {
-        printf("Error: %s\n", SDL_GetError());
-        return -1;
-    }
-
-    // Fenster erstellen
-    SDL_Window* window = SDL_CreateWindow("Player Physics - Doppelsprung", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 320, SDL_WINDOW_SHOWN);
-    if (window == NULL) {
-        SDL_Log("Failed to create window: %s", SDL_GetError());
-        SDL_Quit();
-        return -1;
-    }
-
-    // Renderer erstellen
-    SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-    if (renderer == NULL) {
-        SDL_Log("Failed to create renderer: %s", SDL_GetError());
-        SDL_DestroyWindow(window);
-        SDL_Quit();
-        return -1;
-    }
-
-    // Spieler erstellen
-    Player player(100, 320 - 50, 50, 50); // Spielerposition (100, 270) und Größe (50, 50)
-
-    bool quit = false;
-    SDL_Event event;
-
-
-
-    // Hauptspielschleife
-    while (!quit) {
-        while (SDL_PollEvent(&event)) {
-            if (event.type == SDL_QUIT) {
-                quit = true;
-            }
-        }
-
-        // Eingaben und Spiellogik
-        player.handleInput();
-        player.update();
-        player.printState();
-
-        // Bildschirm löschen (Schwarzer Hintergrund)
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); // Schwarz
-        SDL_RenderClear(renderer);
-
-        // Spieler rendern
-        player.render(renderer);
-
-        // Gezeichnete Inhalte anzeigen
-        SDL_RenderPresent(renderer);
+    World* newWorld = new World(680,420);
+    newWorld->createGameObject(new Player());
+    GameObject* obj = new GameObject();
+    obj->position.w = 50;
+    obj->position.h = 50;
+    obj->position.x = 150;
+    obj->position.y = 150;
+    obj->name = "LUL";
+    newWorld->createGameObject(obj);
+    while (newWorld->run()) {
 
         // Kurze Verzögerung für eine bessere Bildrate
         SDL_Delay(16); // Etwa 60 FPS
@@ -108,16 +67,16 @@ int main(int, char**)
     return 0;
 }
 
-
 /*
-    IMGUI EXAMPLE
+int main(int, char**) {
+    //IMGUI EXAMPLE
 
-    // Setup SDL
-    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER) != 0)
-    {
-        printf("Error: %s\n", SDL_GetError());
-        return -1;
-    }
+        // Setup SDL
+        if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER) != 0)
+        {
+            printf("Error: %s\n", SDL_GetError());
+            return -1;
+        }
 
     // From 2.0.18: Enable native IME.
 #ifdef SDL_HINT_IME_SHOW_UI
@@ -262,4 +221,6 @@ int main(int, char**)
     SDL_DestroyWindow(window);
     SDL_Quit();
 
+    return 0;
+}
 */

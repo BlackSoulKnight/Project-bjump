@@ -1,13 +1,16 @@
 #include "World.h"
 #include <chrono>
 
+World* World::Instance = nullptr;
+
 World::World(int _windowSizeX, int _windowSizeY) {
     windowSizeX = _windowSizeX;
     windowSizeY = _windowSizeY;
     deltaT = 0;
-    targetFrameRate = 60;
+    targetFrameRate = 300;
     SDL_Init(SDL_INIT_EVERYTHING);
     SDL_CreateWindowAndRenderer(_windowSizeX, _windowSizeY, SDL_WINDOW_RESIZABLE, &window, &renderer);
+    World::Instance = this;
 
 }
 
@@ -25,10 +28,7 @@ bool World::run() {
     }
     
     //Collide WorldState
-    for (int i = 0; i < gameObjects.size(); i++) {
-        gameObjects[i]->collisions = getCollisions(gameObjects[i]);
-    }
-
+    
 
 
     //Render
@@ -49,13 +49,15 @@ bool World::run() {
     return running;
 }
 
-vector<GameObject*> World::getCollisions(GameObject *origin) {
-    vector<GameObject*> collisions;
+vector<tuple<GameObject*,SDL_Rect>> World::getCollisions(GameObject *origin) {
+    vector<tuple<GameObject*, SDL_Rect>> collisions;
+    
     for (int i = 0; i < gameObjects.size();i++) {
+        SDL_Rect a;
         if (!gameObjects[i]->isActive || gameObjects[i] == origin)
             continue;
-        if (SDL_HasIntersection(&gameObjects[i]->position, &origin->position))
-            collisions.push_back(gameObjects[i]);
+        if (SDL_IntersectRect(&gameObjects[i]->position, &origin->position,&a))
+            collisions.push_back({ gameObjects[i],a });
 
     }
     return collisions;
@@ -79,3 +81,34 @@ bool World::destroyGameObject(GameObject* obj) {
 SDL_Renderer* World::getRenderer() {
     return renderer;
 }
+
+vector<GameObject*> World::getTraceCollisions(Vector2 &start, Vector2 &end,vector<GameObject*> ignoreList, bool closest) {
+    vector<GameObject*> result;
+    Vector2 _start, _end, closestPoint;
+    for (int i = 0; i < gameObjects.size(); i++) {
+        _start = start;
+        _end = end;
+        if (find(ignoreList.begin(),ignoreList.end(),gameObjects[i]) != ignoreList.end()) {
+            continue;
+        }
+        if (SDL_IntersectRectAndLine(&gameObjects[i]->position, &_start.x, &_start.y, &_end.x, &_end.y))
+        {
+            if (closest) {
+
+            }
+            result.push_back(gameObjects[i]);
+        }
+    }
+    return result;
+}
+
+vector<GameObject*> World::getCollisions(SDL_Rect area) {
+    vector<GameObject*> result;
+    for (int i = 0; i < gameObjects.size(); i++) {
+        if (SDL_HasIntersection(&gameObjects[i]->position, &area))
+            result.push_back(gameObjects[i]);
+    }
+    return result;
+}
+
+
