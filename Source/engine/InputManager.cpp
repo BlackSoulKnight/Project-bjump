@@ -6,6 +6,8 @@ map<string, bool> init() {
     t["Left"] = false;
     t["Right"] = false;
     t["Jump"] = false;
+    t["Dash"] = false;
+    t["Drop"] = false;
     return t;
 }
 map<string, bool> InputManager::actionState = init();
@@ -30,7 +32,13 @@ void InputManager::pump() {
             case SDL_SCANCODE_SPACE:
                 actionState["Jump"] = pressed;
                 break;
+            case SDL_SCANCODE_LSHIFT:
+                actionState["Dash"] = pressed;
+                break;
+            case SDL_SCANCODE_S:
+                actionState["Drop"] = pressed;
             }
+
             break;
         }
     }
