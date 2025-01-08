@@ -137,7 +137,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="engine\GameObject.cpp" />
-    <ClCompile Include="engine\rendering\src\SpriteController.cpp" />
     <ClCompile Include="external-lib\imgui\backends\imgui_impl_sdl2.cpp" />
     <ClCompile Include="external-lib\imgui\backends\imgui_impl_sdlrenderer2.cpp" />
     <ClCompile Include="external-lib\imgui\imgui.cpp" />
@@ -147,9 +146,6 @@
     <ClCompile Include="external-lib\imgui\imgui_widgets.cpp" />
     <ClCompile Include="external-lib\imgui\misc\cpp\imgui_stdlib.cpp" />
     <ClCompile Include="engine\InputManager.cpp" />
-    <ClCompile Include="gameLoop\src\eventHandling.cpp" />
-    <ClCompile Include="gameLoop\src\gameLogic.cpp" />
-    <ClCompile Include="gameLoop\src\rendering.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="engine\World.cpp" />
     <ClCompile Include="Player\player.cpp" />
@@ -161,7 +157,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\GameObject.h" />
-    <ClInclude Include="engine\rendering\SpriteController.h" />
     <ClInclude Include="engine\Utility.h" />
     <ClInclude Include="engine\World.h" />
     <ClInclude Include="external-lib\imgui\backends\imgui_impl_sdl2.h" />
@@ -175,9 +170,6 @@
     <ClInclude Include="external-lib\imgui\misc\cpp\imgui_stdlib.h" />
     <ClInclude Include="external-lib\imgui\misc\single_file\imgui_single_file.h" />
     <ClInclude Include="engine\InputManager.h" />
-    <ClInclude Include="gameLoop\eventHandling.h" />
-    <ClInclude Include="gameLoop\gameLogic.h" />
-    <ClInclude Include="gameLoop\rendering.h" />
     <ClInclude Include="Player\player.h" />
   </ItemGroup>
   <ItemGroup>

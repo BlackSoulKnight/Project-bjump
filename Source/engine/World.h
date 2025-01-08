@@ -7,7 +7,7 @@
 #include <string>
 #include <iostream>
 #include "InputManager.h"
-#include "rendering/SpriteController.h"
+//#include "rendering/SpriteController.h"
 
 using namespace std;
 
@@ -32,7 +32,7 @@ private:
 public:
 
 	static World* Instance;
-	map<string, SpriteController> spriteControllers;
+	//map<string, SpriteController> spriteControllers;
 
 	World(int _windowSizeX, int _windowSizeY);
 
