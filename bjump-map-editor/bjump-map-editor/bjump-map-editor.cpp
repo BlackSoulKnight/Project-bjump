@@ -5,13 +5,16 @@
 #include <print>
 #include <ShObjIdl.h>
 #include <SDL.h>
+#include <iomanip>
 #include "engine/rendering/SpriteController.h"
 
 #define FILE_BUFFER_SIZE 200
 
 struct WorldState
 {
-    int zoom = 2; // Funktioniert noch nicht;
+    bool show_controlls = true;
+
+    float zoom = 1;
     int WINDOW_SIZE_W = 400;
     int WINDOW_SIZE_H = 300;
     SDL_Window* window;
@@ -23,15 +26,24 @@ struct WorldState
     int selected_tile_y = 0;
     bool drag = false;
     bool repeat_placement = false;
+    bool grid = false;
     std::vector<std::vector<int>> tiles;
 
     SDL_Rect camera = { 0, 0, 0, 0 };
     SDL_Rect mouse_position_to_highlight = { 0,0,0,0 };
 
+    LPCWSTR editor_controlls =
+        L"Hide controlls:\tSet WorldState.show_controlls=false\n\n"
+        L"L_Click:\t\tPlace Tiles\n"
+        L"R_Click:\t\tPan camera\n"
+        L"S:\t\tsave(not done)\n"
+        L"G:\t\tactivate/decativate Grid\n"
+        L"UP/DOWN:\tZoom in/out\n";
+
 } WS;
 
 #pragma region GameLoop Function Declaration
-void init_sdl(char*);
+void init_editor(char*);
 void read_events();
 void mutate_world_state();
 void render_graphics();
@@ -39,7 +51,7 @@ void render_graphics();
 
 #pragma region Event Functions
 void mouse_button_1(SDL_Event);
-void mouse_button_2(SDL_Event);
+void set_tile_to_zero(SDL_Event);
 #pragma endregion
 
 #pragma region File Function Declaration
@@ -100,14 +112,13 @@ int main(int argc, char **argv)
         break;
     }
 
-    return 0;
-    
+    return 0;    
 }
 
 #pragma region Gameloop Functions
 void start_editor(char* sprite_sheet_path)
 {
-    init_sdl(sprite_sheet_path);
+    init_editor(sprite_sheet_path);
 
     bool saveMap = false;
     while (!saveMap)
@@ -121,7 +132,7 @@ void start_editor(char* sprite_sheet_path)
     SDL_DestroyWindow(WS.window);
 }
 
-void init_sdl(char* sprite_sheet_path) {
+void init_editor(char* sprite_sheet_path) {
     SDL_Init(SDL_INIT_EVERYTHING);
     SDL_Init(IMG_INIT_PNG);
     SDL_ShowCursor(true);
@@ -133,10 +144,18 @@ void init_sdl(char* sprite_sheet_path) {
     for (size_t i = 0; i <= 60 ; i++)
     {
         WS.tiles.push_back(std::vector<int>(40));
-        std::fill(WS.tiles[i].begin(), WS.tiles[i].end(), 0);
+        std::fill(WS.tiles[i].begin(), WS.tiles[i].end(), -1);
     }
         
-    SDL_RenderSetLogicalSize(WS.renderer, 600 / WS.zoom, 400 / WS.zoom);
+    SDL_RenderSetLogicalSize(WS.renderer, 600, 400);
+
+    if (WS.show_controlls)
+        int msgboxID = MessageBox(
+            NULL,
+            WS.editor_controlls,
+        (LPCWSTR)L"Editor Controlls",
+        0);
+
 }
 
 void read_events() {
@@ -158,6 +177,21 @@ void read_events() {
             case SDL_SCANCODE_S:
                 save_created_map();
                 break;
+            case SDL_SCANCODE_G:
+                WS.grid = !WS.grid;
+                break;
+            case SDL_SCANCODE_SPACE:
+                //set_tile_to_zero(e);
+                break;
+            case SDL_SCANCODE_UP:
+                WS.zoom += 0.25;
+                //WS.camera = { WS.camera.x / WS.zoom, WS.camera.y / WS.zoom ,WS.camera.w ,WS.camera.h };
+                break;
+            case SDL_SCANCODE_DOWN:
+                if (WS.zoom != 1)
+                    WS.zoom -= 0.25;
+                //WS.camera = { WS.camera.x * WS.zoom, WS.camera.y * WS.zoom ,WS.camera.w ,WS.camera.h };
+                break;
             default:
                 break;
             }
@@ -176,6 +210,7 @@ void read_events() {
             {
             case SDL_BUTTON_LEFT:
                 mouse_button_1(e);
+                
                 WS.repeat_placement = !WS.repeat_placement;
                 break;
             case SDL_BUTTON_RIGHT:
@@ -207,48 +242,84 @@ void render_graphics() {
   
     SDL_SetRenderDrawColor(WS.renderer, 0, 0, 0, 255);
     SDL_RenderClear(WS.renderer);
+    SDL_RenderSetScale(WS.renderer, WS.zoom, WS.zoom);
 
     SDL_Rect initial_cam_pos = WS.camera;
     int origin = initial_cam_pos.x;
+    // Render Map
     for (auto y : WS.tiles) {
         for (auto x : y) {
-            SDL_RenderCopy(WS.renderer, WS.texture, WS.sprite_controller.getSprite(x), &initial_cam_pos);
+            if (x != -1) {
+                SDL_RenderCopy(WS.renderer, WS.texture, WS.sprite_controller.getSprite(x), &initial_cam_pos);
+            }
             initial_cam_pos.x += WS.sprite_controller.getSpritesSizeX();
         }
         initial_cam_pos.y += WS.sprite_controller.getSpritesSizeY();
         initial_cam_pos.x = origin;
     }
-
+    if (WS.grid)
+    {
+        SDL_SetRenderDrawColor(WS.renderer, 255, 255, 255, 30);
+        SDL_BlendMode original_blend_mode = SDL_BLENDMODE_NONE;
+        SDL_GetRenderDrawBlendMode(WS.renderer, &original_blend_mode);
+        SDL_SetRenderDrawBlendMode(WS.renderer, SDL_BLENDMODE_BLEND);
+        // Render Grid
+        for (int y = 0; y <= WS.tiles.size() * WS.sprite_controller.getSpritesSizeY(); y += WS.sprite_controller.getSpritesSizeY())
+        {
+            SDL_RenderDrawLine(WS.renderer, 0 + WS.camera.x, y + WS.camera.y, (WS.tiles[0].size() * WS.sprite_controller.getSpritesSizeX()) + WS.camera.x, y + WS.camera.y);
+        }
+        for (int x = 0; x <= WS.tiles[0].size() * WS.sprite_controller.getSpritesSizeX(); x += WS.sprite_controller.getSpritesSizeX())
+        {
+            SDL_RenderDrawLine(WS.renderer, x + WS.camera.x, 0 + WS.camera.y, x + WS.camera.x, (WS.tiles.size() * WS.sprite_controller.getSpritesSizeY()) + WS.camera.y);
+        }
+        SDL_SetRenderDrawBlendMode(WS.renderer,original_blend_mode);
+    }
     SDL_Rect to_place_position = WS.mouse_position_to_highlight;
     to_place_position.x += WS.camera.x;
     to_place_position.y += WS.camera.y;
-
+    // Render highlight on Map
     SDL_SetRenderDrawColor(WS.renderer, 0, 255, 0, 127);
     SDL_RenderDrawRect(WS.renderer, &to_place_position);
 
-    SDL_Rect selectable_tiles = {   0,
-                                    0, 
-                                    WS.sprite_controller.getSpritesSizeX() / WS.zoom,
-                                    WS.sprite_controller.getSpritesSizeY() / WS.zoom };
+
+    // Render Level Border
+    SDL_FRect gameBorder = {
+        0 + WS.camera.x,
+        0 + WS.camera.y,
+        WS.tiles[0].size() * WS.sprite_controller.getSpritesSizeX(),
+        WS.tiles.size() * WS.sprite_controller.getSpritesSizeY()
+    };
+    SDL_SetRenderDrawColor(WS.renderer, (0 + WS.camera.x) % 256, (0 + WS.camera.y) % 256, 100, 255);
+    SDL_RenderDrawRectF(WS.renderer, &gameBorder);
+    SDL_SetRenderDrawColor(WS.renderer, 0, 0, 0, 255);
+
+    SDL_FRect selectable_tiles = { 0.0,
+                                0.0,
+                                WS.sprite_controller.getSpritesSizeX() / WS.zoom,
+                                WS.sprite_controller.getSpritesSizeY() / WS.zoom };
+
+
+    // Render selectable tileset
     for (int y = 0; y < WS.sprite_controller.getSpritesPerY(); y++)
     {
         int sprites_per_x = WS.sprite_controller.getSpritesPerX();
         for (int x = 0; x < sprites_per_x; x++)
         {
-            SDL_RenderCopy(WS.renderer, WS.texture, WS.sprite_controller.getSprite(x + (y * sprites_per_x)), &selectable_tiles);
+            SDL_RenderCopyF(WS.renderer, WS.texture, WS.sprite_controller.getSprite(x + (y * sprites_per_x)), &selectable_tiles);
             selectable_tiles.x += WS.sprite_controller.getSpritesSizeX() / WS.zoom;
         }
-        selectable_tiles.y += WS.sprite_controller.getSpritesSizeY() / WS.zoom;
+        selectable_tiles.y += WS.sprite_controller.getSpritesSizeY()/ (WS.zoom);
         selectable_tiles.x = 0;
     }
 
-
-    SDL_Rect selected_tile = {  WS.selected_tile_x * WS.sprite_controller.getSpritesSizeX() / WS.zoom,
+    // Render selected tile
+    SDL_FRect selected_tile = {  WS.selected_tile_x * WS.sprite_controller.getSpritesSizeX() / WS.zoom,
                                 WS.selected_tile_y * WS.sprite_controller.getSpritesSizeY() / WS.zoom,
                                 WS.sprite_controller.getSpritesSizeX() / WS.zoom,
-                                WS.sprite_controller.getSpritesSizeY() / WS.zoom };
+                                WS.sprite_controller.getSpritesSizeY() /WS.zoom };
     SDL_SetRenderDrawColor(WS.renderer, 155, 0, 0, 255);
-    SDL_RenderDrawRect(WS.renderer, &selected_tile);
+    
+    SDL_RenderDrawRectF(WS.renderer, &selected_tile);
 
     
     SDL_RenderPresent(WS.renderer);
@@ -257,6 +328,10 @@ void render_graphics() {
 #pragma endregion
 
 #pragma region Event Functions
+void set_at_position() {
+
+}
+
 void mouse_button_1(SDL_Event e) {
     SDL_MouseButtonEvent mbe = e.button;
     int xPos = mbe.x / (WS.sprite_controller.getSpritesSizeX() / WS.zoom);
@@ -279,7 +354,9 @@ void mouse_button_1(SDL_Event e) {
         WS.tiles.at(yPos).at(xPos) = WS.selected_tile_x + (WS.selected_tile_y * WS.sprite_controller.getSpritesPerX());
     }
 }
-void mouse_button_2(SDL_Event e) {
+
+void set_tile_to_zero(SDL_Event e) {
+
 }
 #pragma endregion
 
