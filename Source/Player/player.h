@@ -45,7 +45,7 @@ public:
     float getWidth() const;
     float getHeight() const;
     // Kollision mit dem Boden
-    void checkGroundCollision(int screenHeight);
+    bool checkGroundCollision(int screenHeight);
     void checkWallCollision();  // Kollision mit Wänden überprüfen
 
 };
