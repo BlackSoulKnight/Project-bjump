@@ -40,14 +40,16 @@ void renderingTest() {
 }
 */
 // Main code
+
 int main(int, char**)
 {
-    World* newWorld = new World(2560,1440);
+    World* newWorld = new World(680,420);
     newWorld->createGameObject(new Player());
     GameObject* obj = new GameObject();
     obj->position.w = 50;
     obj->position.h = 50;
     obj->position.x = 150;
+    obj->position.y = 150;
     obj->name = "LUL";
     newWorld->createGameObject(obj);
     while (newWorld->run()) {
@@ -57,16 +59,16 @@ int main(int, char**)
     return 0;
 }
 
-
 /*
-    IMGUI EXAMPLE
+int main(int, char**) {
+    //IMGUI EXAMPLE
 
-    // Setup SDL
-    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER) != 0)
-    {
-        printf("Error: %s\n", SDL_GetError());
-        return -1;
-    }
+        // Setup SDL
+        if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER) != 0)
+        {
+            printf("Error: %s\n", SDL_GetError());
+            return -1;
+        }
 
     // From 2.0.18: Enable native IME.
 #ifdef SDL_HINT_IME_SHOW_UI
@@ -211,4 +213,6 @@ int main(int, char**)
     SDL_DestroyWindow(window);
     SDL_Quit();
 
+    return 0;
+}
 */

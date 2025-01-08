@@ -7,7 +7,7 @@ World::World(int _windowSizeX, int _windowSizeY) {
     windowSizeX = _windowSizeX;
     windowSizeY = _windowSizeY;
     deltaT = 0;
-    targetFrameRate = 60;
+    targetFrameRate = 300;
     SDL_Init(SDL_INIT_EVERYTHING);
     SDL_CreateWindowAndRenderer(_windowSizeX, _windowSizeY, SDL_WINDOW_RESIZABLE, &window, &renderer);
     World::Instance = this;
@@ -28,10 +28,7 @@ bool World::run() {
     }
     
     //Collide WorldState
-    for (int i = 0; i < gameObjects.size(); i++) {
-        gameObjects[i]->collisions = getCollisions(gameObjects[i]);
-    }
-
+    
 
 
     //Render
@@ -52,13 +49,15 @@ bool World::run() {
     return running;
 }
 
-vector<GameObject*> World::getCollisions(GameObject *origin) {
-    vector<GameObject*> collisions;
+vector<tuple<GameObject*,SDL_Rect>> World::getCollisions(GameObject *origin) {
+    vector<tuple<GameObject*, SDL_Rect>> collisions;
+    
     for (int i = 0; i < gameObjects.size();i++) {
+        SDL_Rect a;
         if (!gameObjects[i]->isActive || gameObjects[i] == origin)
             continue;
-        if (SDL_HasIntersection(&gameObjects[i]->position, &origin->position))
-            collisions.push_back(gameObjects[i]);
+        if (SDL_IntersectRect(&gameObjects[i]->position, &origin->position,&a))
+            collisions.push_back({ gameObjects[i],a });
 
     }
     return collisions;

@@ -27,23 +27,66 @@ vector<GameObject*> GameObject::traceLine(Vector2 start, Vector2 end, bool inclu
 	return result;
 }
 
+vector<tuple<GameObject*, SDL_Rect>> GameObject::getCollision() {
+	return World::Instance->getCollisions(this);
+}
+
+
 void Player::update(int deltaT) {
 	map<string, bool> inputs = InputManager::getInput();
 	if (collisions.size() > 0) {
 		cout << collisions[0]->name;
 	}
-	vector<GameObject*> t = traceLine(Vector2(this->position.x, this->position.y), Vector2(this->position.x+30, this->position.y));
-	for (int i = 0; i < t.size(); i++) {
-		cout << t[i]->name;
+	vector<tuple<GameObject*, SDL_Rect>> test = getCollision();
+	for (int i = 0; i < test.size(); i++) {
+		cout << get<0>(test[i])->name;
 	}
+	Vector2 movement = Vector2(0,0);
 	if(inputs.contains("Right") && inputs["Right"])
-		position.x += speed*deltaT;
+		movement.x += speed*deltaT;
 	if(inputs.contains("Left") && inputs["Left"])
-		position.x -= speed*deltaT;
+		movement.x -= speed*deltaT;
+	if (inputs.contains("Jump") && inputs["Jump"])
+		movement.y += speed*deltaT;
+	else if (position.y > 0)
+		movement.y -= 1;
+	moveAndCollide(movement);
 }
 
-Player::Player() {
+Player::Player()
+{
+	position.x = 50;
 	position.w = 100;
 	position.h = 100;
 	name = "player";
+}
+
+void Player::moveAndCollide(Vector2 direction) {
+
+	vector<tuple<GameObject*, SDL_Rect>> collisions = getCollision();
+	//x
+	position.x += direction.x;
+	while ((collisions = getCollision()).size() > 0) {
+
+		if (position.x + position.w / 2 > get<1>(collisions[0]).x)
+		{
+			position.x += get<1>(collisions[0]).w;
+		}
+		else {
+			position.x -= get<1>(collisions[0]).w;
+		}
+	}
+	
+	//y
+	position.y += direction.y;
+	while ((collisions = getCollision()).size() > 0) {
+
+		if (position.y + position.h / 2 > get<1>(collisions[0]).y)
+		{
+			position.y += get<1>(collisions[0]).h;
+		}
+		else {
+			position.y -= get<1>(collisions[0]).h;
+		}
+	}
 }
