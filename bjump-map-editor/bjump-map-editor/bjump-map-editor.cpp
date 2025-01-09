@@ -417,7 +417,7 @@ PWSTR WINAPI get_file_path()
     return toWriteTo;
 }
 
-int showMessage(LPCWSTR msg, LPCWSTR windowTitle){
+int WINAPI showMessage(LPCWSTR msg, LPCWSTR windowTitle){
     return MessageBox(
         NULL,
         msg,
