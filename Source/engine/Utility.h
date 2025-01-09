@@ -4,6 +4,10 @@
 #include <vector>
 #include <map>
 #include <iostream>
+#include <sstream>
+#include <fstream>
+#include <iterator>
+#include <sstream>
 using namespace std;
 
 struct Vector3f {
@@ -37,3 +41,4 @@ struct Sprite {
 	int animationSize; // Minimum 0; Maximum X
 	bool flipH, flipV;
 };
+

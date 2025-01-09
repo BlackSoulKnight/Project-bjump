@@ -1,13 +1,16 @@
 #pragma once
 #include <SDL.h>
-#include "GameObject.h"
 #include <stdio.h>
 #include <vector>
 #include <map>
 #include <string>
 #include <iostream>
+#include <chrono>
+#include <filesystem>
+#include "GameObject.h"
 #include "InputManager.h"
-//#include "rendering/SpriteController.h"
+#include "Utility.h"
+#include "rendering/SpriteController.h"
 
 using namespace std;
 
@@ -28,15 +31,23 @@ private:
 
 	int targetFrameRate;
 	map<int, vector<GameObject*>> scenes;
+	GameObject* generateBlock(int, SDL_Rect, int, int);
+	GameObject* generateDefaultBackground(SDL_Rect, int mapWidth, int mapHeight);
+
 
 public:
-
+	void LoadGameAssets();
 	static World* Instance;
-	//map<string, SpriteController> spriteControllers;
+	map<string, SpriteController> spriteControllers;
+	void LoadFile(string);
+	vector<vector<int>> load_map(const char* filePath);
 
 	World(int _windowSizeX, int _windowSizeY);
 
 	bool run();
+	void renderGraphics();
+	void renderEntity(GameObject&); 
+	//SDL_Rect scaleEntityPosition(GameObject); <- Macht probleme, siehe funktion.
 	bool createGameObject(GameObject* obj);
 	bool destroyGameObject(GameObject* obj);
 	bool destroyGameObject(int pos);

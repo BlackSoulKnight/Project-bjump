@@ -100,9 +100,13 @@ int SpriteController::getSpritesPerY() {
     return _spritesPerColumn;
 }
 
-int SpriteController::getSpritesSizeX() {
+int SpriteController::getSpriteSizeX() {
     return _logicPixelsX;
 }
-int SpriteController::getSpritesSizeY() {
+int SpriteController::getSpriteSizeY() {
     return _logicPixelsY;
+}
+
+SDL_Surface* SpriteController::getSpriteSurface() {
+    return _spriteSurface;
 }

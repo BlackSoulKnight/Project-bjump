@@ -38,3 +38,4 @@ bool GameObject::getInputState(string Action) {
 	}
 	return inputs[Action];
 }
+

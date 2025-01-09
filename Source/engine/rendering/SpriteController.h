@@ -22,16 +22,12 @@ private:
     int _spritesPerRow;
     int _spritesPerColumn;
 
-    SDL_Surface *_spriteSurface;
+    SDL_Surface* _spriteSurface;
 
     void setSprite(std::vector<SDL_Rect> sprite);
 
 public:
-
-    int getSpritesPerX();
-    int getSpritesPerY();
-    int getSpritesSizeX();
-    int getSpritesSizeY();
+    
     /**
      * generateController - Generates a SpriteController with initialized values to use for a SpriteController initialization.
      *
@@ -119,4 +115,35 @@ public:
      */
     SDL_Rect *getSprite();
     SDL_Rect *getSprite(int index);
+
+    /**
+     * getSpritesPerX/Y() - Returns the value of how many sprites per row/column exists.
+     *
+     * Example:
+     *          int spritesPerRow       = yourSpriteController.getSpritesPerX();
+     *          int spritesPerColumn    = yourSpriteController.getSpritesPerY();
+     *
+     */
+    int getSpritesPerX();
+    int getSpritesPerY();
+
+    /**
+     * getSpriteSizeX/Y() - Returns the value of the size of one sprite in direction X/Y.
+     *
+     * Example:
+     *          int horizontalSpriteSize    = yourSpriteController.getSpriteSizeX();
+     *          int verticalSpriteSize      = yourSpriteController.getSpriteSizeY();
+     *
+     */
+    int getSpriteSizeX();
+    int getSpriteSizeY();
+
+    /**
+     * getSpriteSurface - Returns the spriteSurface.
+     *
+     * Example:
+     *          SpriteSurface* yourSpriteSurface    = yourSpriteController.getSpriteSurface();
+     *
+     */
+    SDL_Surface* getSpriteSurface();
 };
