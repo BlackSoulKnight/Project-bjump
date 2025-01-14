@@ -32,8 +32,8 @@ private:
     static constexpr float JUMP_FORCE = -10.0f;
     static constexpr float FALL_SPEED = 10.0f;
     static constexpr float MOVE_SPEED = 5.0f;
-    static constexpr float DASH_SPEED = 10.0f;
-    static constexpr float DASH_DURATION = 20;
+    static constexpr float DASH_SPEED = 20.0f;
+    static constexpr float DASH_DURATION = 0.5;
     static constexpr float WALL_JUMP_FORCE_Y = -8.0f;
     static constexpr float WALL_JUMP_FORCE_X = 5.0f;
 
@@ -46,7 +46,7 @@ public:
     Player();
 
     // Methoden
-    void handleInput();
+    
     void update(int deltaT);
     void moveAndCollide(Vector2 direction);
     void printState() const;
