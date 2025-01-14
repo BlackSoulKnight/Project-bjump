@@ -1,5 +1,5 @@
 #include "World.h"
-
+#define MAP_SPRITE_SHEET "../resources/Tilemap/monochrome_tilemap_transparent_packed.png"
 
 World* World::Instance = nullptr;
 
@@ -14,10 +14,11 @@ World::World(int _windowSizeX, int _windowSizeY) {
     //SDL_RenderSetLogicalSize(renderer, 16*20, 16*15);
     
     //Load map Sprites
-    LoadGameAssets();
-    //LoadFile(string("../Levels/map.bjump"));
-
     World::Instance = this;
+    LoadGameAssets();
+    LoadFile(string("../Levels/map.bjump"));
+
+
 
 }
 
@@ -54,6 +55,7 @@ bool World::run() {
     if (frameRate > deltaT)
         SDL_Delay(frameRate-deltaT);
     deltaT = chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now() - start).count();
+    cout << deltaT << "\n";
     //SDL_SetWindowTitle(window, to_string(deltaT).c_str());
     return running;
 }
@@ -139,9 +141,12 @@ void World::LoadFile(string fileName) {
         for (auto tile : row) {
             if (xIndex >= xMapMaxSize)
                 xMapMaxSize = xIndex;
-
+            if (tile == -1) {
+                xIndex++;
+                continue;
+            }
             //    8,8 Muss angepasst werden wenn wir andere tiles nutzen
-            SDL_Rect posOfTile = { xIndex,yIndex, 8,8 };
+            SDL_Rect posOfTile = { xIndex * 16, yIndex * 16, 16, 16};
             reducedDimensionMap.push_back(tile);
             reducedDimensionTilePosition.push_back(posOfTile);
             xIndex++;
@@ -198,11 +203,11 @@ void World::renderGraphics() {
 GameObject* World::generateBlock(int tile, SDL_Rect tilePos, int mapWidth, int mapHeight) {
     GameObject* block = new GameObject();
     Sprite spriteData;
-    SpriteController blockSprites = spriteControllers["../resources/adve/tiles.png"];
+    SpriteController blockSprites = spriteControllers["../resources/Tilemap/monochrome_tilemap_transparent_packed.png"];
     spriteData.flipH = false, spriteData.flipV = false;
     spriteData.animationSize = 0;
     // Adve hardcoded für Blöcke der Welt
-    spriteData.spiteSheetLocation = "../resources/adve/tiles.png";
+    spriteData.spiteSheetLocation = "../resources/Tilemap/monochrome_tilemap_transparent_packed.png";
 
     // Berechnen der XY position durch umkehren der Tile berechnung
     //  spriteSheetWidth * posY + posX = tile
@@ -235,11 +240,11 @@ GameObject* World::generateBlock(int tile, SDL_Rect tilePos, int mapWidth, int m
 GameObject* World::generateDefaultBackground(SDL_Rect bgPos, int mapWidth, int mapHeight) {
     GameObject* block = new GameObject();
     Sprite spriteData;
-    SpriteController blockSprites = spriteControllers["../resources/adve/tiles.png"];
+    SpriteController blockSprites = spriteControllers["../resources/Tilemap/monochrome_tilemap_transparent_packed.png"];
     spriteData.flipH = false, spriteData.flipV = false;
     spriteData.animationSize = 0;
     // Adve hardcoded für Blöcke der Welt
-    spriteData.spiteSheetLocation = "../resources/adve/tiles.png";
+    spriteData.spiteSheetLocation = "../resources/Tilemap/monochrome_tilemap_transparent_packed.png";
 
     // Berechnen der XY position durch umkehren der Tile berechnung
     //  spriteSheetWidth * posY + posX = tile
@@ -281,9 +286,8 @@ void World::renderEntity(GameObject &entity) {
         SpriteController tmpSpriteController = SpriteController::generateController(entity.sprite.spiteSheetLocation.c_str(), 16, 16);
         spriteControllers.insert({ entity.sprite.spiteSheetLocation, tmpSpriteController });
     }
-    
     SpriteController entitySpriteController = spriteControllers.at(entity.sprite.spiteSheetLocation);
-    SDL_Surface *toTransform = entitySpriteController.getSpriteSurface();
+
     // Transformieren des Sprites
     int flipDirection = 0;
     if (entity.sprite.flipV)
@@ -291,7 +295,6 @@ void World::renderEntity(GameObject &entity) {
     if (entity.sprite.flipH)
         flipDirection += SDL_FLIP_HORIZONTAL;
 
-    SDL_Texture *generatedTexture = SDL_CreateTextureFromSurface(renderer, toTransform);
     // Hardcoded 8,8 muss ausgewechselt werden!
     SDL_Rect spriteSheetLocation = { entity.getSprite().x, entity.getSprite().y , 16 ,16 };
     SDL_Rect actualPosition = {
@@ -300,13 +303,12 @@ void World::renderEntity(GameObject &entity) {
         16,16 };
     SDL_RenderCopyEx(
         renderer, 
-        generatedTexture, 
+        entitySpriteController.getTexture(),
         entitySpriteController.x(entity.sprite.x).y(entity.sprite.y).getSprite(),
         &actualPosition,
         0,
         NULL,
         (SDL_RendererFlip)(flipDirection));
-    SDL_DestroyTexture(generatedTexture);
 }
 /*
 SDL_Rect scaleEntityPosition(GameObject entity) {
@@ -344,10 +346,10 @@ vector<vector<int>> World::load_map(const char* filePath)
 
 void World::LoadGameAssets() {
     SpriteController tmpSpriteController;
-    if (!spriteControllers.contains("../resources/adve/tiles.png"));
+    if (!spriteControllers.contains(MAP_SPRITE_SHEET));
     {
-        tmpSpriteController = SpriteController::generateController("../resources/adve/tiles.png", 8, 8);
+        tmpSpriteController = SpriteController::generateController(MAP_SPRITE_SHEET, 16,16);
 
-        spriteControllers.insert({ string("../resources/adve/tiles.png"), tmpSpriteController });
+        spriteControllers.insert({ string(MAP_SPRITE_SHEET), tmpSpriteController });
     }
 }

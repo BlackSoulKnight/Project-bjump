@@ -196,7 +196,7 @@ void read_events() {
                 //WS.camera = { WS.camera.x / WS.zoom, WS.camera.y / WS.zoom ,WS.camera.w ,WS.camera.h };
                 break;
             case SDL_SCANCODE_DOWN:
-                if (WS.zoom != 1)
+                if (WS.zoom > 0.25)
                     WS.zoom -= 0.25;
                 //WS.camera = { WS.camera.x * WS.zoom, WS.camera.y * WS.zoom ,WS.camera.w ,WS.camera.h };
                 break;
@@ -226,6 +226,9 @@ void read_events() {
                 break;
             }
             break;
+        case SDL_MOUSEWHEEL:
+            WS.selected_tile_set_factor += e.wheel.y * 0.25;
+            break;
         case SDL_MOUSEMOTION:
             if (WS.drag) {
                 cout << e.motion.xrel << " " << e.motion.yrel << endl;
@@ -237,9 +240,10 @@ void read_events() {
             }
             int xPos = (e.motion.x - WS.camera.x) / WS.sprite_controller.getSpriteSizeX();
             int yPos = (e.motion.y - WS.camera.y) / WS.sprite_controller.getSpriteSizeY();
-            WS.mouse_position_to_highlight.x = xPos * 8;
-            WS.mouse_position_to_highlight.y = yPos * 8;
+            WS.mouse_position_to_highlight.x = xPos * WS.sprite_controller.getSpriteSizeX();
+            WS.mouse_position_to_highlight.y = yPos * WS.sprite_controller.getSpriteSizeY();
             break;
+
         }
     }
 }

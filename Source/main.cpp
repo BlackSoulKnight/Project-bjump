@@ -27,12 +27,10 @@
 
 int main(int, char**)
 {
-    World* newWorld = new World(400,800);
+    World* newWorld = new World(800,400);
 
     newWorld->createGameObject(new Player());
     GameObject* obj = new GameObject();
-    obj->position.w = 1000;
-    obj->position.h = 1000;
     obj->position.x = 150;
     obj->position.y = 150;
     obj->name = "Test Object";   
