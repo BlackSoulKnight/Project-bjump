@@ -141,7 +141,7 @@ void World::LoadFile(string fileName) {
         for (auto tile : row) {
             if (xIndex >= xMapMaxSize)
                 xMapMaxSize = xIndex;
-
+            if (tile == -1) continue;
             //    8,8 Muss angepasst werden wenn wir andere tiles nutzen
             SDL_Rect posOfTile = { xIndex * 16, yIndex * 16, 16, 16};
             reducedDimensionMap.push_back(tile);
@@ -345,7 +345,7 @@ void World::LoadGameAssets() {
     SpriteController tmpSpriteController;
     if (!spriteControllers.contains(MAP_SPRITE_SHEET));
     {
-        tmpSpriteController = SpriteController::generateController(MAP_SPRITE_SHEET, 8, 8);
+        tmpSpriteController = SpriteController::generateController(MAP_SPRITE_SHEET, 16,16);
 
         spriteControllers.insert({ string(MAP_SPRITE_SHEET), tmpSpriteController });
     }
