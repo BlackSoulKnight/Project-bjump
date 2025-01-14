@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <windows.h>
 #include <vector>
-#include <print>
 #include <ShObjIdl.h>
 #include <SDL.h>
 #include <fstream>

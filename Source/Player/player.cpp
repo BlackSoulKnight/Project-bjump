@@ -9,20 +9,18 @@ Player::Player()
     dashTime(0),
     vx(0),
     vy(0),
-    width(50),
-    height(50) {
+    width(16),
+    height(16) {
     position.x = 50;
     position.y = 200;
     position.w = width;
     position.h = height;
-    name = "player";
+    name = "Quatsch";
+    sprite.spiteSheetLocation = "../resources/Tilemap/monochrome_tilemap_transparent_packed.png";
+    sprite.x = 0;
+    sprite.y = 11;
+    sprite.animationSize = 4;
 }
-
-// Zugriffsmethoden
-float Player::getX() const { return position.x; }
-float Player::getY() const { return position.y; }
-float Player::getWidth() const { return width; }
-float Player::getHeight() const { return height; }
 
 // Eingaben behandeln
 void Player::handleInput() {
