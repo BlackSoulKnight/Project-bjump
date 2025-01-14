@@ -141,7 +141,10 @@ void World::LoadFile(string fileName) {
         for (auto tile : row) {
             if (xIndex >= xMapMaxSize)
                 xMapMaxSize = xIndex;
-            if (tile == -1) continue;
+            if (tile == -1) {
+                xIndex++;
+                continue;
+            }
             //    8,8 Muss angepasst werden wenn wir andere tiles nutzen
             SDL_Rect posOfTile = { xIndex * 16, yIndex * 16, 16, 16};
             reducedDimensionMap.push_back(tile);
