@@ -1,5 +1,4 @@
 #include "../SpriteController.h"
-#include "../../World.h"
 
 SpriteController::SpriteController() : _x(0), _y(0) {}
 
@@ -44,10 +43,10 @@ void SpriteController::setSprite(std::vector<SDL_Rect> sprite)
     _sprite = sprite;
 }
 
-SpriteController  &SpriteController::generateController(const char *fileName, int logicPixelHorizontal, int logicPixelVertical)
+SpriteController  &SpriteController::generateController(const char *fileName, int logicPixelHorizontal, int logicPixelVertical, SDL_Renderer* renderer)
 {
     SDL_Surface *spriteSheet = IMG_Load(fileName);
-    SDL_Texture *texture = IMG_LoadTexture(World::Instance->getRenderer(), fileName);
+    SDL_Texture *texture = IMG_LoadTexture(renderer, fileName);
     int imageWidth = spriteSheet->w;
     int imageHeight = spriteSheet->h;
 
@@ -91,10 +90,6 @@ SpriteController  &SpriteController::generateController(const char *fileName, in
     return *returnController;
 }
 
-SpriteController &SpriteController::generateController(const char *fileName, int logicPixel)
-{
-    return SpriteController::generateController(fileName, logicPixel, logicPixel);
-}
 
 int SpriteController::getSpritesPerX() {
     return _spritesPerRow;

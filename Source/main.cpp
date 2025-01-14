@@ -28,8 +28,9 @@
 int main(int, char**)
 {
     World* newWorld = new World(800,400);
-
-    newWorld->createGameObject(new Player());
+    Player* player = new Player();
+    newWorld->createGameObject(player);
+    newWorld->player = player;
     GameObject* obj = new GameObject();
     obj->position.x = 150;
     obj->position.y = 150;

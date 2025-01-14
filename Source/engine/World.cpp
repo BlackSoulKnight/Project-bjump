@@ -17,9 +17,7 @@ World::World(int _windowSizeX, int _windowSizeY) {
     World::Instance = this;
     LoadGameAssets();
     LoadFile(string("../Levels/map.bjump"));
-
-
-
+    camera = { 0,0,0,0 };
 }
 
 bool World::run() {
@@ -158,7 +156,7 @@ void World::LoadFile(string fileName) {
     //Load Default BG
     for (int i = 0; i < reducedDimensionMap.size(); i++)
     {
-        if (reducedDimensionMap[i] != '\0')
+        if (reducedDimensionMap[i] != '-1')
             background.push_back(generateDefaultBackground(
                 reducedDimensionTilePosition[i],
                 xMapMaxSize,
@@ -168,7 +166,7 @@ void World::LoadFile(string fileName) {
 
 
     for (int i = 0; i < reducedDimensionMap.size(); i++) {
-        if (reducedDimensionMap[i] != '\0')
+        if (reducedDimensionMap[i] != '-1')
         gameObjects.push_back(generateBlock(
             reducedDimensionMap[i],
             reducedDimensionTilePosition[i],
@@ -272,18 +270,20 @@ GameObject* World::generateDefaultBackground(SDL_Rect bgPos, int mapWidth, int m
 
 void World::renderEntity(GameObject &entity) {
 
+    if (entity.name == "Player") {
+        camera.x = (windowSizeX / 2) + (entity.sprite.x - entity.position.x);
+        camera.y = (windowSizeY / 2) + (entity.sprite.y - entity.position.y);
+    }
+
     if (!entity.isActive)
         return;
-    int a = 0;
-    if (entity.name == "Test Object") // Muss geändert werden!
-        a = 1;
 
     // Scaling nicht an
     //SDL_Rect entityPosition = scaleEntityPosition(entity);
 
     if (!spriteControllers.contains(entity.sprite.spiteSheetLocation))
     {
-        SpriteController tmpSpriteController = SpriteController::generateController(entity.sprite.spiteSheetLocation.c_str(), 16, 16);
+        SpriteController tmpSpriteController = SpriteController::generateController(entity.sprite.spiteSheetLocation.c_str(), 16, 16, renderer);
         spriteControllers.insert({ entity.sprite.spiteSheetLocation, tmpSpriteController });
     }
     SpriteController entitySpriteController = spriteControllers.at(entity.sprite.spiteSheetLocation);
@@ -298,8 +298,8 @@ void World::renderEntity(GameObject &entity) {
     // Hardcoded 8,8 muss ausgewechselt werden!
     SDL_Rect spriteSheetLocation = { entity.getSprite().x, entity.getSprite().y , 16 ,16 };
     SDL_Rect actualPosition = {
-        (entity.position.x),
-        -(entity.position.y) + windowSizeY,
+        entity.position.x + camera.x,
+        entity.position.y + camera.y,
         16,16 };
 
     /*
@@ -316,11 +316,21 @@ void World::renderEntity(GameObject &entity) {
         0,
         NULL,
         (SDL_RendererFlip)(flipDirection));
+
+    if (debug) {
+        SDL_Rect collisionbox = { 0,0,16,16 };
+        collisionbox.x = entity.position.x + camera.x;
+        collisionbox.y = entity.position.y + camera.y;
+        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+        SDL_RenderDrawRect(renderer, &collisionbox);
+    }
+
     /*
     if (entity.sprite.animationSize == 0)
         return;
     entity.frameCount++;
     */
+
 }
 
 /*
@@ -351,7 +361,7 @@ vector<vector<int>> World::load_map(const char* filePath)
         }
         if (tmp.size() == 0)
             break;
-        mapData.insert(mapData.begin(), tmp);
+        mapData.push_back(tmp);
     }
     level.close();
     return mapData;
@@ -361,7 +371,7 @@ void World::LoadGameAssets() {
     SpriteController tmpSpriteController;
     if (!spriteControllers.contains(MAP_SPRITE_SHEET));
     {
-        tmpSpriteController = SpriteController::generateController(MAP_SPRITE_SHEET, 16,16);
+        tmpSpriteController = SpriteController::generateController(MAP_SPRITE_SHEET, 16,16, renderer);
 
         spriteControllers.insert({ string(MAP_SPRITE_SHEET), tmpSpriteController });
     }

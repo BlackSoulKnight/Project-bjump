@@ -18,6 +18,8 @@ using namespace std;
 class World
 {
 private:
+	SDL_Rect camera;
+	bool debug = true;
 	SDL_Window* window;
 	SDL_Renderer* renderer;
 	bool running = true;
@@ -26,7 +28,6 @@ private:
 
 	vector<GameObject*> background;
 	vector<GameObject*> gameObjects;
-	GameObject* player;
 	vector<GameObject*> Enemies;
 
 	int targetFrameRate;
@@ -36,6 +37,7 @@ private:
 
 
 public:
+	GameObject* player;
 	void LoadGameAssets();
 	static World* Instance;
 	map<string, SpriteController> spriteControllers;

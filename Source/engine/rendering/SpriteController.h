@@ -37,8 +37,7 @@ public:
      *
      * This is the preffered way to create a SpriteController.
      */
-    static SpriteController &generateController(const char *fileName, int logicPixelHorizontal, int logicPixelVertical);
-    static SpriteController &generateController(const char *fileName, int logicPixel);
+    static SpriteController &generateController(const char *fileName, int logicPixelHorizontal, int logicPixelVertical, SDL_Renderer* renderer);
 
     /**
      * Constructor
