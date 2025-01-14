@@ -162,9 +162,9 @@ void Player::update(int deltaT) {
                 vy = 0;  // Keine vertikale Bewegung beim Dash
                 canDash = false;  // Dash deaktivieren
             }
-            if (vy > 0) {
-                playerState = PlayerState::FALLING;  // In "FALLING", wenn nach unten
-            }
+        }
+        if (vy > 0) {
+            playerState = PlayerState::FALLING;  // In "FALLING", wenn nach unten
         }
 
         break;
@@ -186,6 +186,9 @@ void Player::update(int deltaT) {
             vy = WALL_JUMP_FORCE_Y;  // Wand-Sprung ausführen
             vx = (x < 320) ? WALL_JUMP_FORCE_X : -WALL_JUMP_FORCE_X;
             playerState = PlayerState::FALLING;  // Nach Wand-Sprung in FALLING
+        }
+        if (vy > 0) {
+            playerState = PlayerState::FALLING;  // In "FALLING", wenn nach unten
         }
         break;
 
