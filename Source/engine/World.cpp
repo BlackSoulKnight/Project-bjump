@@ -298,18 +298,31 @@ void World::renderEntity(GameObject &entity) {
     // Hardcoded 8,8 muss ausgewechselt werden!
     SDL_Rect spriteSheetLocation = { entity.getSprite().x, entity.getSprite().y , 16 ,16 };
     SDL_Rect actualPosition = {
-        entity.position.x,
-        entity.position.y,
+        (entity.position.x),
+        -(entity.position.y) + windowSizeY,
         16,16 };
+
+    /*
+    int rowOverflow = 0;
+    if (((entity.frameCount / 60) % entitySpriteController.getSpritesPerX()) + entity.sprite.x > entitySpriteController.getSpritesPerX())
+        rowOverflow++;
+    */
     SDL_RenderCopyEx(
-        renderer, 
+        renderer,
         entitySpriteController.getTexture(),
+        //Berechnung in XY in eigene funktion lagern
         entitySpriteController.x(entity.sprite.x).y(entity.sprite.y).getSprite(),
         &actualPosition,
         0,
         NULL,
         (SDL_RendererFlip)(flipDirection));
+    /*
+    if (entity.sprite.animationSize == 0)
+        return;
+    entity.frameCount++;
+    */
 }
+
 /*
 SDL_Rect scaleEntityPosition(GameObject entity) {
     return SDL_Rect{

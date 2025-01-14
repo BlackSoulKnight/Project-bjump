@@ -16,6 +16,7 @@ public:
 	int layer;
 	string tag;
 	vector<GameObject*> collisions;
+	long int frameCount;
 	GameObject();
 	virtual void update(int deltaT);
 	SDL_Rect getPosition() { return position; };
