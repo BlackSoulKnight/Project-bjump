@@ -9,5 +9,8 @@ public:
 	map<string, int> keybinds;
 	static map<string, bool> getInput() { return actionState; };
 	static void pump();
+	static bool checkInput(string Action) {
+		return actionState.contains(Action) ? actionState[Action]:false;
+	};
 };
 
