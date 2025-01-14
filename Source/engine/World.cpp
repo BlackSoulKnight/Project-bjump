@@ -11,7 +11,7 @@ World::World(int _windowSizeX, int _windowSizeY) {
     targetFrameRate = 60;
     SDL_Init(SDL_INIT_EVERYTHING);
     SDL_CreateWindowAndRenderer(_windowSizeX, _windowSizeY, SDL_WINDOW_RESIZABLE, &window, &renderer);
-    SDL_RenderSetLogicalSize(renderer, 16*20, 16*15);
+    //SDL_RenderSetLogicalSize(renderer, 16*20, 16*15);
     
     //Load map Sprites
     LoadGameAssets();
