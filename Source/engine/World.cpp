@@ -8,14 +8,14 @@ World::World(int _windowSizeX, int _windowSizeY) {
     windowSizeX = _windowSizeX;
     windowSizeY = _windowSizeY;
     deltaT = 0;
-    targetFrameRate = 300;
+    targetFrameRate = 60;
     SDL_Init(SDL_INIT_EVERYTHING);
     SDL_CreateWindowAndRenderer(_windowSizeX, _windowSizeY, SDL_WINDOW_RESIZABLE, &window, &renderer);
-    SDL_RenderSetLogicalSize(renderer, 8*20, 8*15);
+    //SDL_RenderSetLogicalSize(renderer, 16*20, 16*15);
     
     //Load map Sprites
     LoadGameAssets();
-    LoadFile(string("../Levels/map.bjump"));
+    //LoadFile(string("../Levels/map.bjump"));
 
     World::Instance = this;
 
@@ -269,18 +269,19 @@ void World::renderEntity(GameObject &entity) {
 
     if (!entity.isActive)
         return;
-
-    if (entity.name == "Player") // Muss geändert werden!
-        return;
+    int a = 0;
+    if (entity.name == "Test Object") // Muss geändert werden!
+        a = 1;
 
     // Scaling nicht an
     //SDL_Rect entityPosition = scaleEntityPosition(entity);
 
     if (!spriteControllers.contains(entity.sprite.spiteSheetLocation))
     {
-        SpriteController tmpSpriteController = SpriteController::generateController(entity.sprite.spiteSheetLocation.c_str(), 8, 8);
+        SpriteController tmpSpriteController = SpriteController::generateController(entity.sprite.spiteSheetLocation.c_str(), 16, 16);
         spriteControllers.insert({ entity.sprite.spiteSheetLocation, tmpSpriteController });
     }
+    
     SpriteController entitySpriteController = spriteControllers.at(entity.sprite.spiteSheetLocation);
     SDL_Surface *toTransform = entitySpriteController.getSpriteSurface();
     // Transformieren des Sprites
@@ -292,11 +293,11 @@ void World::renderEntity(GameObject &entity) {
 
     SDL_Texture *generatedTexture = SDL_CreateTextureFromSurface(renderer, toTransform);
     // Hardcoded 8,8 muss ausgewechselt werden!
-    SDL_Rect spriteSheetLocation = { entity.getSprite().x, entity.getSprite().y , 8 ,8 };
+    SDL_Rect spriteSheetLocation = { entity.getSprite().x, entity.getSprite().y , 16 ,16 };
     SDL_Rect actualPosition = {
-        entity.position.x * entitySpriteController.getSpriteSizeX(),
-        entity.position.y * entitySpriteController.getSpriteSizeY(),
-        8,8 };
+        entity.position.x,
+        entity.position.y,
+        16,16 };
     SDL_RenderCopyEx(
         renderer, 
         generatedTexture, 
