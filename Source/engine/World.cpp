@@ -14,10 +14,17 @@ World::World(int _windowSizeX, int _windowSizeY) {
     //SDL_RenderSetLogicalSize(renderer, 16*20, 16*15);
     
     //Load map Sprites
+<<<<<<< HEAD
     LoadGameAssets();
     LoadFile(string("../Levels/map.bjump"));
 
+=======
+>>>>>>> 2ea9ec31f104c97783e45f46f0659b79e5e93848
     World::Instance = this;
+    LoadGameAssets();
+    LoadFile(string("../Levels/map.bjump"));
+
+
 
 }
 
@@ -54,6 +61,7 @@ bool World::run() {
     if (frameRate > deltaT)
         SDL_Delay(frameRate-deltaT);
     deltaT = chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now() - start).count();
+    cout << deltaT << "\n";
     //SDL_SetWindowTitle(window, to_string(deltaT).c_str());
     return running;
 }
@@ -198,11 +206,11 @@ void World::renderGraphics() {
 GameObject* World::generateBlock(int tile, SDL_Rect tilePos, int mapWidth, int mapHeight) {
     GameObject* block = new GameObject();
     Sprite spriteData;
-    SpriteController blockSprites = spriteControllers["../resources/adve/tiles.png"];
+    SpriteController blockSprites = spriteControllers["../resources/Tilemap/monochrome_tilemap_transparent_packed.png"];
     spriteData.flipH = false, spriteData.flipV = false;
     spriteData.animationSize = 0;
     // Adve hardcoded für Blöcke der Welt
-    spriteData.spiteSheetLocation = "../resources/adve/tiles.png";
+    spriteData.spiteSheetLocation = "../resources/Tilemap/monochrome_tilemap_transparent_packed.png";
 
     // Berechnen der XY position durch umkehren der Tile berechnung
     //  spriteSheetWidth * posY + posX = tile
@@ -235,11 +243,11 @@ GameObject* World::generateBlock(int tile, SDL_Rect tilePos, int mapWidth, int m
 GameObject* World::generateDefaultBackground(SDL_Rect bgPos, int mapWidth, int mapHeight) {
     GameObject* block = new GameObject();
     Sprite spriteData;
-    SpriteController blockSprites = spriteControllers["../resources/adve/tiles.png"];
+    SpriteController blockSprites = spriteControllers["../resources/Tilemap/monochrome_tilemap_transparent_packed.png"];
     spriteData.flipH = false, spriteData.flipV = false;
     spriteData.animationSize = 0;
     // Adve hardcoded für Blöcke der Welt
-    spriteData.spiteSheetLocation = "../resources/adve/tiles.png";
+    spriteData.spiteSheetLocation = "../resources/Tilemap/monochrome_tilemap_transparent_packed.png";
 
     // Berechnen der XY position durch umkehren der Tile berechnung
     //  spriteSheetWidth * posY + posX = tile
@@ -282,7 +290,7 @@ void World::renderEntity(GameObject &entity) {
         spriteControllers.insert({ entity.sprite.spiteSheetLocation, tmpSpriteController });
     }
     SpriteController entitySpriteController = spriteControllers.at(entity.sprite.spiteSheetLocation);
-    SDL_Surface *toTransform = entitySpriteController.getSpriteSurface();
+
     // Transformieren des Sprites
     int flipDirection = 0;
     if (entity.sprite.flipV)
@@ -290,9 +298,12 @@ void World::renderEntity(GameObject &entity) {
     if (entity.sprite.flipH)
         flipDirection += SDL_FLIP_HORIZONTAL;
 
+<<<<<<< HEAD
     //ALle 8ten wechseln zu 16 oder vom spritesheet laden.
 
     SDL_Texture *generatedTexture = SDL_CreateTextureFromSurface(renderer, toTransform);
+=======
+>>>>>>> 2ea9ec31f104c97783e45f46f0659b79e5e93848
     // Hardcoded 8,8 muss ausgewechselt werden!
     SDL_Rect spriteSheetLocation = { entity.getSprite().x, entity.getSprite().y , 16 ,16 };
     SDL_Rect actualPosition = {
@@ -301,13 +312,12 @@ void World::renderEntity(GameObject &entity) {
         16,16 };
     SDL_RenderCopyEx(
         renderer, 
-        generatedTexture, 
+        entitySpriteController.getTexture(),
         entitySpriteController.x(entity.sprite.x).y(entity.sprite.y).getSprite(),
         &actualPosition,
         0,
         NULL,
         (SDL_RendererFlip)(flipDirection));
-    SDL_DestroyTexture(generatedTexture);
 }
 /*
 SDL_Rect scaleEntityPosition(GameObject entity) {
@@ -345,10 +355,18 @@ vector<vector<int>> World::load_map(const char* filePath)
 
 void World::LoadGameAssets() {
     SpriteController tmpSpriteController;
+<<<<<<< HEAD
     if (!spriteControllers.contains(MAP_SPRITE_SHEET));
     {
         tmpSpriteController = SpriteController::generateController(MAP_SPRITE_SHEET, 8, 8);
 
         spriteControllers.insert({ string(MAP_SPRITE_SHEET), tmpSpriteController });
+=======
+    if (!spriteControllers.contains("../resources/Tilemap/monochrome_tilemap_transparent_packed.png"));
+    {
+        tmpSpriteController = SpriteController::generateController("../resources/Tilemap/monochrome_tilemap_transparent_packed.png", 16, 16);
+
+        spriteControllers.insert({ string("../resources/Tilemap/monochrome_tilemap_transparent_packed.png"), tmpSpriteController });
+>>>>>>> 2ea9ec31f104c97783e45f46f0659b79e5e93848
     }
 }

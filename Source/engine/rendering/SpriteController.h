@@ -23,6 +23,7 @@ private:
     int _spritesPerColumn;
 
     SDL_Surface* _spriteSurface;
+    SDL_Texture* _Texture;
 
     void setSprite(std::vector<SDL_Rect> sprite);
 
@@ -50,7 +51,7 @@ public:
      *
      */
     SpriteController();
-    SpriteController(int logicPixelsX, int logicPixelsY, int spritesPerRow, int spritesPerColumn, SDL_Surface *spriteSurface);
+    SpriteController(int logicPixelsX, int logicPixelsY, int spritesPerRow, int spritesPerColumn, SDL_Surface *spriteSurface,SDL_Texture *texture);
     SpriteController(std::vector<SDL_Rect> sprite, int logicPixelsX, int logicPixelsY, int spritesPerRow, int spritesPerColumn);
 
     ~SpriteController();
@@ -146,4 +147,5 @@ public:
      *
      */
     SDL_Surface* getSpriteSurface();
+    SDL_Texture* getTexture() {return _Texture;};
 };
