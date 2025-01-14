@@ -7,9 +7,8 @@
 #include <fstream>
 #include <iterator>
 #include <sstream>
-#include "../../Source/engine/Utility.h"
 #include "../../Source/engine/rendering/SpriteController.h"
-
+using namespace std;
 #define FILE_BUFFER_SIZE 200
 
 struct WorldState
@@ -83,10 +82,10 @@ int main(int argc, char **argv)
     PWSTR sprite_sheet_path = get_file_path();
     char* converted_sprite_sheet_path = converter_function(sprite_sheet_path);
     cout << "Datei: " << converted_sprite_sheet_path << endl << endl;
-    cout << "Sprite groesse X (Adve:8): ";
+    cout << "Sprite groesse X: ";
     int sizeX = 0;
     cin >> sizeX;
-    cout << "Sprite groesse Y (Adve:8): ";
+    cout << "Sprite groesse Y: ";
     int sizeY = 0;
     cin >> sizeY;
     cout << "\n1: Neue Map erstellen\n2: Laden von vorhandener Datei\n\n";
