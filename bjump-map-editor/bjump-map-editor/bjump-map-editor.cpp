@@ -383,7 +383,7 @@ void save_created_map()
 
 void init_sprite_controller(char* filePath, int sizeX, int sizeY)
 {
-    WS.sprite_controller = SpriteController::generateController(filePath, sizeX, sizeY);
+    WS.sprite_controller = SpriteController::generateController(filePath, sizeX, sizeY, WS.renderer);
 }
 
 char* converter_function(PWSTR convert_from) {

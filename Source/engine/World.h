@@ -18,6 +18,7 @@ using namespace std;
 class World
 {
 private:
+	bool debug = true;
 	SDL_Window* window;
 	SDL_Renderer* renderer;
 	bool running = true;

@@ -283,7 +283,7 @@ void World::renderEntity(GameObject &entity) {
 
     if (!spriteControllers.contains(entity.sprite.spiteSheetLocation))
     {
-        SpriteController tmpSpriteController = SpriteController::generateController(entity.sprite.spiteSheetLocation.c_str(), 16, 16);
+        SpriteController tmpSpriteController = SpriteController::generateController(entity.sprite.spiteSheetLocation.c_str(), 16, 16, renderer);
         spriteControllers.insert({ entity.sprite.spiteSheetLocation, tmpSpriteController });
     }
     SpriteController entitySpriteController = spriteControllers.at(entity.sprite.spiteSheetLocation);
@@ -316,6 +316,15 @@ void World::renderEntity(GameObject &entity) {
         0,
         NULL,
         (SDL_RendererFlip)(flipDirection));
+
+    if (debug) {
+        SDL_Rect collisionbox = { 0,0,16,16 };
+        collisionbox.x = entity.position.x;
+        collisionbox.y = entity.position.y;
+        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+        SDL_RenderDrawRect(renderer, &collisionbox);
+    }
+
     /*
     if (entity.sprite.animationSize == 0)
         return;
@@ -361,7 +370,7 @@ void World::LoadGameAssets() {
     SpriteController tmpSpriteController;
     if (!spriteControllers.contains(MAP_SPRITE_SHEET));
     {
-        tmpSpriteController = SpriteController::generateController(MAP_SPRITE_SHEET, 16,16);
+        tmpSpriteController = SpriteController::generateController(MAP_SPRITE_SHEET, 16,16, renderer);
 
         spriteControllers.insert({ string(MAP_SPRITE_SHEET), tmpSpriteController });
     }
