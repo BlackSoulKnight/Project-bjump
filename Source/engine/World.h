@@ -18,6 +18,7 @@ using namespace std;
 class World
 {
 private:
+	SDL_Rect camera;
 	bool debug = true;
 	SDL_Window* window;
 	SDL_Renderer* renderer;

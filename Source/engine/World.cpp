@@ -17,9 +17,7 @@ World::World(int _windowSizeX, int _windowSizeY) {
     World::Instance = this;
     LoadGameAssets();
     LoadFile(string("../Levels/map.bjump"));
-
-
-
+    camera = { 0,0,0,0 };
 }
 
 bool World::run() {
@@ -272,11 +270,13 @@ GameObject* World::generateDefaultBackground(SDL_Rect bgPos, int mapWidth, int m
 
 void World::renderEntity(GameObject &entity) {
 
+    if (entity.name == "Player") {
+        camera.x = (windowSizeX / 2) + (entity.sprite.x - entity.position.x);
+        camera.y = (windowSizeY / 2) + (entity.sprite.y - entity.position.y);
+    }
+
     if (!entity.isActive)
         return;
-    int a = 0;
-    if (entity.name == "Test Object") // Muss geändert werden!
-        a = 1;
 
     // Scaling nicht an
     //SDL_Rect entityPosition = scaleEntityPosition(entity);
@@ -298,8 +298,8 @@ void World::renderEntity(GameObject &entity) {
     // Hardcoded 8,8 muss ausgewechselt werden!
     SDL_Rect spriteSheetLocation = { entity.getSprite().x, entity.getSprite().y , 16 ,16 };
     SDL_Rect actualPosition = {
-        entity.position.x,
-        entity.position.y,
+        entity.position.x + camera.x,
+        entity.position.y + camera.y,
         16,16 };
 
     /*
@@ -319,8 +319,8 @@ void World::renderEntity(GameObject &entity) {
 
     if (debug) {
         SDL_Rect collisionbox = { 0,0,16,16 };
-        collisionbox.x = entity.position.x;
-        collisionbox.y = entity.position.y;
+        collisionbox.x = entity.position.x + camera.x;
+        collisionbox.y = entity.position.y + camera.y;
         SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
         SDL_RenderDrawRect(renderer, &collisionbox);
     }
@@ -330,6 +330,7 @@ void World::renderEntity(GameObject &entity) {
         return;
     entity.frameCount++;
     */
+
 }
 
 /*
