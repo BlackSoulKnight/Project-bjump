@@ -158,7 +158,7 @@ void World::LoadFile(string fileName) {
     //Load Default BG
     for (int i = 0; i < reducedDimensionMap.size(); i++)
     {
-        if (reducedDimensionMap[i] != '\0')
+        if (reducedDimensionMap[i] != '-1')
             background.push_back(generateDefaultBackground(
                 reducedDimensionTilePosition[i],
                 xMapMaxSize,
@@ -168,7 +168,7 @@ void World::LoadFile(string fileName) {
 
 
     for (int i = 0; i < reducedDimensionMap.size(); i++) {
-        if (reducedDimensionMap[i] != '\0')
+        if (reducedDimensionMap[i] != '-1')
         gameObjects.push_back(generateBlock(
             reducedDimensionMap[i],
             reducedDimensionTilePosition[i],
@@ -298,8 +298,8 @@ void World::renderEntity(GameObject &entity) {
     // Hardcoded 8,8 muss ausgewechselt werden!
     SDL_Rect spriteSheetLocation = { entity.getSprite().x, entity.getSprite().y , 16 ,16 };
     SDL_Rect actualPosition = {
-        (entity.position.x),
-        -(entity.position.y) + windowSizeY,
+        entity.position.x,
+        entity.position.y,
         16,16 };
 
     /*
@@ -360,7 +360,7 @@ vector<vector<int>> World::load_map(const char* filePath)
         }
         if (tmp.size() == 0)
             break;
-        mapData.insert(mapData.begin(), tmp);
+        mapData.push_back(tmp);
     }
     level.close();
     return mapData;
