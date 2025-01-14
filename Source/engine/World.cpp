@@ -351,7 +351,7 @@ vector<vector<int>> World::load_map(const char* filePath)
         }
         if (tmp.size() == 0)
             break;
-        mapData.push_back(tmp);
+        mapData.insert(mapData.begin(), tmp);
     }
     level.close();
     return mapData;
