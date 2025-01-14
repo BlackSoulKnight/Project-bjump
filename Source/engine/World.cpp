@@ -14,12 +14,6 @@ World::World(int _windowSizeX, int _windowSizeY) {
     //SDL_RenderSetLogicalSize(renderer, 16*20, 16*15);
     
     //Load map Sprites
-<<<<<<< HEAD
-    LoadGameAssets();
-    LoadFile(string("../Levels/map.bjump"));
-
-=======
->>>>>>> 2ea9ec31f104c97783e45f46f0659b79e5e93848
     World::Instance = this;
     LoadGameAssets();
     LoadFile(string("../Levels/map.bjump"));
@@ -298,12 +292,6 @@ void World::renderEntity(GameObject &entity) {
     if (entity.sprite.flipH)
         flipDirection += SDL_FLIP_HORIZONTAL;
 
-<<<<<<< HEAD
-    //ALle 8ten wechseln zu 16 oder vom spritesheet laden.
-
-    SDL_Texture *generatedTexture = SDL_CreateTextureFromSurface(renderer, toTransform);
-=======
->>>>>>> 2ea9ec31f104c97783e45f46f0659b79e5e93848
     // Hardcoded 8,8 muss ausgewechselt werden!
     SDL_Rect spriteSheetLocation = { entity.getSprite().x, entity.getSprite().y , 16 ,16 };
     SDL_Rect actualPosition = {
@@ -355,18 +343,10 @@ vector<vector<int>> World::load_map(const char* filePath)
 
 void World::LoadGameAssets() {
     SpriteController tmpSpriteController;
-<<<<<<< HEAD
     if (!spriteControllers.contains(MAP_SPRITE_SHEET));
     {
         tmpSpriteController = SpriteController::generateController(MAP_SPRITE_SHEET, 8, 8);
 
         spriteControllers.insert({ string(MAP_SPRITE_SHEET), tmpSpriteController });
-=======
-    if (!spriteControllers.contains("../resources/Tilemap/monochrome_tilemap_transparent_packed.png"));
-    {
-        tmpSpriteController = SpriteController::generateController("../resources/Tilemap/monochrome_tilemap_transparent_packed.png", 16, 16);
-
-        spriteControllers.insert({ string("../resources/Tilemap/monochrome_tilemap_transparent_packed.png"), tmpSpriteController });
->>>>>>> 2ea9ec31f104c97783e45f46f0659b79e5e93848
     }
 }
