@@ -18,7 +18,7 @@ Player::Player()
     name = "Quatsch";
     sprite.spiteSheetLocation = "../resources/Tilemap/monochrome_tilemap_transparent_packed.png";
     sprite.x = 0;
-    sprite.y = 11;
+    sprite.y = 12;
     sprite.animationSize = 4;
 }
 
