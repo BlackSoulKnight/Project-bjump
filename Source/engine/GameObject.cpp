@@ -12,6 +12,7 @@ GameObject::GameObject() {
 	isActive = true;
 	layer = 0;
 	tag = "";
+	frameCount = 0;
 }
 
 
