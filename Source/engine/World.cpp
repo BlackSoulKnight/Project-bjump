@@ -1,5 +1,5 @@
 #include "World.h"
-
+#define MAP_SPRITE_SHEET "../resources/Tilemap/monochrome_tilemap_transparent_packed.png"
 
 World* World::Instance = nullptr;
 
@@ -15,7 +15,7 @@ World::World(int _windowSizeX, int _windowSizeY) {
     
     //Load map Sprites
     LoadGameAssets();
-    //LoadFile(string("../Levels/map.bjump"));
+    LoadFile(string("../Levels/map.bjump"));
 
     World::Instance = this;
 
@@ -141,7 +141,7 @@ void World::LoadFile(string fileName) {
                 xMapMaxSize = xIndex;
 
             //    8,8 Muss angepasst werden wenn wir andere tiles nutzen
-            SDL_Rect posOfTile = { xIndex,yIndex, 8,8 };
+            SDL_Rect posOfTile = { xIndex * 16, yIndex * 16, 16, 16};
             reducedDimensionMap.push_back(tile);
             reducedDimensionTilePosition.push_back(posOfTile);
             xIndex++;
@@ -281,7 +281,6 @@ void World::renderEntity(GameObject &entity) {
         SpriteController tmpSpriteController = SpriteController::generateController(entity.sprite.spiteSheetLocation.c_str(), 16, 16);
         spriteControllers.insert({ entity.sprite.spiteSheetLocation, tmpSpriteController });
     }
-    
     SpriteController entitySpriteController = spriteControllers.at(entity.sprite.spiteSheetLocation);
     SDL_Surface *toTransform = entitySpriteController.getSpriteSurface();
     // Transformieren des Sprites
@@ -290,6 +289,8 @@ void World::renderEntity(GameObject &entity) {
         flipDirection += SDL_FLIP_VERTICAL;
     if (entity.sprite.flipH)
         flipDirection += SDL_FLIP_HORIZONTAL;
+
+    //ALle 8ten wechseln zu 16 oder vom spritesheet laden.
 
     SDL_Texture *generatedTexture = SDL_CreateTextureFromSurface(renderer, toTransform);
     // Hardcoded 8,8 muss ausgewechselt werden!
@@ -344,10 +345,10 @@ vector<vector<int>> World::load_map(const char* filePath)
 
 void World::LoadGameAssets() {
     SpriteController tmpSpriteController;
-    if (!spriteControllers.contains("../resources/adve/tiles.png"));
+    if (!spriteControllers.contains(MAP_SPRITE_SHEET));
     {
-        tmpSpriteController = SpriteController::generateController("../resources/adve/tiles.png", 8, 8);
+        tmpSpriteController = SpriteController::generateController(MAP_SPRITE_SHEET, 8, 8);
 
-        spriteControllers.insert({ string("../resources/adve/tiles.png"), tmpSpriteController });
+        spriteControllers.insert({ string(MAP_SPRITE_SHEET), tmpSpriteController });
     }
 }
