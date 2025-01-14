@@ -22,6 +22,7 @@ private:
     // Kollisionsflags
     bool touchingWall;
     bool spacePressed;
+    bool spaceJustPressed;
     bool canDash;
     bool dashing;
     float dashTime;

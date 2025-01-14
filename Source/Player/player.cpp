@@ -4,6 +4,7 @@
 Player::Player()
     : playerState(PlayerState::ON_GROUND),
     spacePressed(false),
+    spaceJustPressed(false),  // Neue Variable für einmalige Tastendrücke
     canDash(true),
     dashing(false),
     dashTime(0),
@@ -22,55 +23,6 @@ Player::Player()
     sprite.animationSize = 4;
 }
 
-// Eingaben behandeln
-void Player::handleInput() {
-    const Uint8* state = SDL_GetKeyboardState(NULL);
-
-    // Links/Rechts-Bewegung
-    if (state[SDL_SCANCODE_A]) {
-        vx = dashing ? -DASH_SPEED : -MOVE_SPEED;
-    }
-    else if (state[SDL_SCANCODE_D]) {
-        vx = dashing ? DASH_SPEED : MOVE_SPEED;
-    }
-    else {
-        vx = 0;
-    }
-
-    // Springen
-    if (state[SDL_SCANCODE_SPACE]) {
-        if (!spacePressed) {
-            spacePressed = true;
-            if (playerState == PlayerState::ON_GROUND) {
-                vy = JUMP_FORCE;
-                playerState = PlayerState::JUMPING;
-            }
-            else if (playerState == PlayerState::JUMPING) {
-                vy = JUMP_FORCE;
-                playerState = PlayerState::DOUBLE_JUMPING;
-            }
-            else if (touchingWall) {
-                vy = WALL_JUMP_FORCE_Y;
-                vx = (position.x < 320) ? WALL_JUMP_FORCE_X : -WALL_JUMP_FORCE_X;
-                playerState = PlayerState::WALL_JUMPING;
-            }
-        }
-    }
-    else {
-        spacePressed = false;
-    }
-
-    // Dash
-    if (state[SDL_SCANCODE_LSHIFT] && canDash && !dashing) {
-        if (playerState == PlayerState::JUMPING || playerState == PlayerState::DOUBLE_JUMPING) {
-            dashing = true;
-            canDash = false;
-            vy = 0;
-            dashTime = DASH_DURATION;
-            playerState = PlayerState::DASHING;
-        }
-    }
-}
 
 // Spielerzustand ausgeben
 void Player::printState() const {
@@ -132,12 +84,17 @@ void Player::moveAndCollide(Vector2 direction) {
 
 // Spielerzustand aktualisieren
 void Player::update(int deltaT) {
+    printState();
+
+    // Hole den aktuellen Zustand der Tasten
+    const Uint8* state = SDL_GetKeyboardState(NULL);
+
     // Bewegung nach links und rechts
-    if (getInputState("Left")) {
-        vx = -MOVE_SPEED;
+    if (state[SDL_SCANCODE_A]) {
+        vx = (dashing ? MOVE_SPEED * 1.5f : MOVE_SPEED) * -1;  // Wenn Dash, multiplizieren mit 1.5
     }
-    else if (getInputState("Right")) {
-        vx = MOVE_SPEED;
+    else if (state[SDL_SCANCODE_D]) {
+        vx = (dashing ? MOVE_SPEED * 1.5f : MOVE_SPEED);  // Wenn Dash, multiplizieren mit 1.5
     }
     else {
         vx = 0;
@@ -148,6 +105,18 @@ void Player::update(int deltaT) {
         vy = FALL_SPEED;
     }
 
+    // Prüfe, ob die Leertaste gerade gedrückt wurde
+    if (state[SDL_SCANCODE_SPACE]) {
+        if (!spacePressed) {  // Wenn die Leertaste gerade zum ersten Mal gedrückt wird
+            spacePressed = true;  // Setze den Flag
+            spaceJustPressed = true;  // Setze den Flag für "gerade gedrückt"
+        }
+    }
+    else {
+        spacePressed = false;  // Wenn die Leertaste nicht mehr gedrückt wird
+        spaceJustPressed = false;  // Setze den Flag zurück
+    }
+
     // Spieler-Zustände aktualisieren
     switch (playerState) {
     case PlayerState::ON_GROUND:
@@ -155,7 +124,7 @@ void Player::update(int deltaT) {
             // Vom Boden in den "FALLING"-Zustand wechseln
             playerState = PlayerState::FALLING;
         }
-        else if (getInputState("Jump")) {
+        else if (spaceJustPressed) {  // Wenn Leertaste gedrückt wird
             // Vom Boden springen
             vy = JUMP_FORCE;
             playerState = PlayerState::JUMPING;
@@ -171,17 +140,18 @@ void Player::update(int deltaT) {
             vy = 0;
             playerState = PlayerState::ON_GROUND;
         }
-        else if (getInputState("Jump")) {
+        else if (spaceJustPressed) {  // Wenn Leertaste erneut gedrückt wird
             // Doppelsprung
             vy = JUMP_FORCE;
             playerState = PlayerState::DOUBLE_JUMPING;
         }
-        else if (getInputState("Dash") && canDash) {
+        else if (state[SDL_SCANCODE_LSHIFT] && canDash && !dashing) {
             // Dash aktivieren
-            vx = (vx > 0) ? DASH_SPEED : -DASH_SPEED;
-            dashTime = DASH_DURATION;
-            canDash = false;
+            dashing = true;
+            dashTime = 500;  // Dash für eine halbe Sekunde (500ms)
             playerState = PlayerState::DASHING;
+            vy = 0;  // Verhindert das Absinken oder Aufsteigen während des Dashs
+            canDash = false;
         }
         break;
 
@@ -190,25 +160,27 @@ void Player::update(int deltaT) {
             // An der Wand springen
             playerState = PlayerState::WALL_JUMPING;
         }
-        else if (getInputState("Dash") && canDash) {
+        else if (state[SDL_SCANCODE_LSHIFT] && canDash && !dashing) {
             // Dash aktivieren
-            vx = (vx > 0) ? DASH_SPEED : -DASH_SPEED;
-            dashTime = DASH_DURATION;
-            canDash = false;
+            dashing = true;
+            dashTime = 500;  // Dash für eine halbe Sekunde (500ms)
             playerState = PlayerState::DASHING;
+            vy = 0;  // Verhindert das Absinken oder Aufsteigen während des Dashs
+            canDash = false;
         }
         break;
 
     case PlayerState::DASHING:
-        dashTime -= deltaT;
+        dashTime -= deltaT;  // Dash-Zeit abziehen
         if (dashTime <= 0) {
-            // Dash beendet: In den "FALLING"-Zustand wechseln
-            playerState = PlayerState::FALLING;
+            // Dash beendet: Zurück in den normalen Zustand
+            playerState = PlayerState::FALLING;  // Setze den Spieler zurück auf FALLING, wenn er in der Luft ist
+            dashing = false;
         }
         break;
 
     case PlayerState::WALL_JUMPING:
-        if (getInputState("Jump")) {
+        if (spaceJustPressed) {  // Wenn Leertaste gedrückt wird
             // Wand-Sprung ausführen
             vy = WALL_JUMP_FORCE_Y;
             vx = (x < 320) ? WALL_JUMP_FORCE_X : -WALL_JUMP_FORCE_X;
@@ -222,13 +194,6 @@ void Player::update(int deltaT) {
             y = 320 - height;
             vy = 0;
             playerState = PlayerState::ON_GROUND;
-        }
-        else if (getInputState("Dash") && canDash) {
-            // Dash aktivieren
-            vx = (vx > 0) ? DASH_SPEED : -DASH_SPEED;
-            dashTime = DASH_DURATION;
-            canDash = false;
-            playerState = PlayerState::DASHING;
         }
         break;
 
@@ -245,6 +210,14 @@ void Player::update(int deltaT) {
     // Bewegung und Kollision berechnen
     moveAndCollide(Vector2(vx, vy));
 }
+
+
+
+
+
+
+
+
 
 
 
