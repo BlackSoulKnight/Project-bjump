@@ -27,7 +27,6 @@ private:
 
 	vector<GameObject*> background;
 	vector<GameObject*> gameObjects;
-	GameObject* player;
 	vector<GameObject*> Enemies;
 
 	int targetFrameRate;
@@ -37,6 +36,7 @@ private:
 
 
 public:
+	GameObject* player;
 	void LoadGameAssets();
 	static World* Instance;
 	map<string, SpriteController> spriteControllers;
