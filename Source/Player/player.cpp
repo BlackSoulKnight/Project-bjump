@@ -77,8 +77,10 @@ void Player::moveAndCollide(Vector2 direction) {
 // Spielerzustand aktualisieren
 void Player::update(int deltaT) {
     printState();
+    int moveXSpeed = (dashing ? MOVE_SPEED * 1.5f : MOVE_SPEED);
+
     SDL_Rect linksNebenPlayer;
-    linksNebenPlayer.w = 1;
+    linksNebenPlayer.w = moveXSpeed;
     linksNebenPlayer.x = position.x - linksNebenPlayer.w;
     linksNebenPlayer.y = position.y;
     linksNebenPlayer.h = 16;
@@ -86,15 +88,15 @@ void Player::update(int deltaT) {
 
     linksNebenPlayer.x = position.x +position.w;
     linksNebenPlayer.y = position.y;
-    linksNebenPlayer.w = 1;
+    linksNebenPlayer.w = moveXSpeed;
     linksNebenPlayer.h = 16;
     vector<GameObject*> objs2 = World::Instance->getCollisions(linksNebenPlayer);
     // Bewegung nach links und rechts (normale Bewegung)
     if (InputManager::checkInput("Left") && objs.size() == 0) {
-        vx = (dashing ? MOVE_SPEED * 1.5f : MOVE_SPEED) * -1;  // Linksbewegung
+        vx = moveXSpeed * -1;  // Linksbewegung
     }
     else if (InputManager::checkInput("Right") && objs2.size()==0) {
-        vx = (dashing ? MOVE_SPEED * 1.5f : MOVE_SPEED);  // Rechtsbewegung
+        vx = moveXSpeed;  // Rechtsbewegung
     }
     else if (!dashing) {
         vx = 0;  // Keine Bewegung, wenn nicht gedasht wird
@@ -159,7 +161,7 @@ void Player::update(int deltaT) {
         break;
 
     case PlayerState::DOUBLE_JUMPING:
-        if (checkWallCollision()) {
+        if (checkWallCollision() && false) {
             playerState = PlayerState::WALL_JUMPING;  // Wand-Sprung
         }
         else if (InputManager::checkInput("Dash") && canDash) {
@@ -220,6 +222,25 @@ void Player::update(int deltaT) {
             vy = 0;
             playerState = PlayerState::ON_GROUND;  // Landen
         }
+        if (InputManager::checkInput("Dash") && canDash) {
+            // Prüfen, ob Bewegungsinput vorhanden ist
+            if (InputManager::checkInput("Left") || InputManager::checkInput("Right")) {
+                // Dash aktivieren
+                dashing = true;
+                dashTime = 60;
+                playerState = PlayerState::DASHING;
+
+                // Richtung des Dashs basierend auf Input
+                if (InputManager::checkInput("Left")) {
+                    vx = -DASH_SPEED;
+                }
+                else if (InputManager::checkInput("Right")) {
+                    vx = DASH_SPEED;
+                }
+                vy = 0;  // Keine vertikale Bewegung beim Dash
+                canDash = false;  // Dash deaktivieren
+            }
+        }
         break;
 
     default:
@@ -227,6 +248,16 @@ void Player::update(int deltaT) {
         break;
     }
 
+
+    linksNebenPlayer.x = position.x + 3;
+    linksNebenPlayer.h = max((float)1,abs(vy));
+    linksNebenPlayer.y = position.y - linksNebenPlayer.h;
+    linksNebenPlayer.w = 10;
+    
+    objs2 = World::Instance->getCollisions(linksNebenPlayer);
+    if (vy < 0 && objs2.size() > 0) {
+        vy = 0;
+    }
     // Bewegung und Kollision berechnen
     moveAndCollide(Vector2(vx, vy));
 }
