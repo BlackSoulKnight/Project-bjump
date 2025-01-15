@@ -38,6 +38,8 @@ int main(int, char**)
     obj->sprite.spiteSheetLocation = "../resources/Tilemap/monochrome_tilemap_transparent_packed.png";
     obj->sprite.x = 0;
     obj->sprite.y = 5;
+    obj->position.w = 16;
+    obj->position.h = 16;
     newWorld->createGameObject(obj);
     while (newWorld->run()) {
 

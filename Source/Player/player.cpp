@@ -77,8 +77,10 @@ void Player::moveAndCollide(Vector2 direction) {
 // Spielerzustand aktualisieren
 void Player::update(int deltaT) {
     printState();
+    int moveXSpeed = (dashing ? MOVE_SPEED * 1.5f : MOVE_SPEED);
+
     SDL_Rect linksNebenPlayer;
-    linksNebenPlayer.w = 1;
+    linksNebenPlayer.w = moveXSpeed;
     linksNebenPlayer.x = position.x - linksNebenPlayer.w;
     linksNebenPlayer.y = position.y;
     linksNebenPlayer.h = 16;
@@ -86,15 +88,15 @@ void Player::update(int deltaT) {
 
     linksNebenPlayer.x = position.x +position.w;
     linksNebenPlayer.y = position.y;
-    linksNebenPlayer.w = 1;
+    linksNebenPlayer.w = moveXSpeed;
     linksNebenPlayer.h = 16;
     vector<GameObject*> objs2 = World::Instance->getCollisions(linksNebenPlayer);
     // Bewegung nach links und rechts (normale Bewegung)
     if (InputManager::checkInput("Left") && objs.size() == 0) {
-        vx = (dashing ? MOVE_SPEED * 1.5f : MOVE_SPEED) * -1;  // Linksbewegung
+        vx = moveXSpeed * -1;  // Linksbewegung
     }
     else if (InputManager::checkInput("Right") && objs2.size()==0) {
-        vx = (dashing ? MOVE_SPEED * 1.5f : MOVE_SPEED);  // Rechtsbewegung
+        vx = moveXSpeed;  // Rechtsbewegung
     }
     else if (!dashing) {
         vx = 0;  // Keine Bewegung, wenn nicht gedasht wird
