@@ -159,7 +159,7 @@ void Player::update(int deltaT) {
         break;
 
     case PlayerState::DOUBLE_JUMPING:
-        if (checkWallCollision()) {
+        if (checkWallCollision() && false) {
             playerState = PlayerState::WALL_JUMPING;  // Wand-Sprung
         }
         else if (InputManager::checkInput("Dash") && canDash) {
@@ -220,6 +220,25 @@ void Player::update(int deltaT) {
             vy = 0;
             playerState = PlayerState::ON_GROUND;  // Landen
         }
+        if (InputManager::checkInput("Dash") && canDash) {
+            // Prüfen, ob Bewegungsinput vorhanden ist
+            if (InputManager::checkInput("Left") || InputManager::checkInput("Right")) {
+                // Dash aktivieren
+                dashing = true;
+                dashTime = 60;
+                playerState = PlayerState::DASHING;
+
+                // Richtung des Dashs basierend auf Input
+                if (InputManager::checkInput("Left")) {
+                    vx = -DASH_SPEED;
+                }
+                else if (InputManager::checkInput("Right")) {
+                    vx = DASH_SPEED;
+                }
+                vy = 0;  // Keine vertikale Bewegung beim Dash
+                canDash = false;  // Dash deaktivieren
+            }
+        }
         break;
 
     default:
@@ -227,6 +246,16 @@ void Player::update(int deltaT) {
         break;
     }
 
+
+    linksNebenPlayer.x = position.x + 3;
+    linksNebenPlayer.h = max((float)1,abs(vy));
+    linksNebenPlayer.y = position.y - linksNebenPlayer.h;
+    linksNebenPlayer.w = 10;
+    
+    objs2 = World::Instance->getCollisions(linksNebenPlayer);
+    if (vy < 0 && objs2.size() > 0) {
+        vy = 0;
+    }
     // Bewegung und Kollision berechnen
     moveAndCollide(Vector2(vx, vy));
 }
