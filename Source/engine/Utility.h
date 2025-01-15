@@ -10,6 +10,8 @@
 #include <sstream>
 using namespace std;
 
+const int SCALE = 5;
+
 struct Vector3f {
 	float x, y, z;
 	Vector3f(float x, float y, float z) {
