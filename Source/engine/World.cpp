@@ -180,6 +180,10 @@ void World::renderGraphics() {
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
 
+    if (player->name == "Player") {
+        camera.x = (windowSizeX / 2) + (player->sprite.x - player->position.x);
+        camera.y = (windowSizeY / 2) + (player->sprite.y - player->position.y);
+    }
     
     // Render Default Background
     for (auto bg : background)
@@ -269,11 +273,6 @@ GameObject* World::generateDefaultBackground(SDL_Rect bgPos, int mapWidth, int m
 }
 
 void World::renderEntity(GameObject &entity) {
-
-    if (entity.name == "Player") {
-        camera.x = (windowSizeX / 2) + (entity.sprite.x - entity.position.x);
-        camera.y = (windowSizeY / 2) + (entity.sprite.y - entity.position.y);
-    }
 
     if (!entity.isActive)
         return;
