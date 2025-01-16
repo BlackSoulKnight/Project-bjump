@@ -11,8 +11,8 @@ World::World(int _windowSizeX, int _windowSizeY) {
     targetFrameRate = 60;
     SDL_Init(SDL_INIT_EVERYTHING);
     SDL_CreateWindowAndRenderer(_windowSizeX, _windowSizeY, SDL_WINDOW_RESIZABLE, &window, &renderer);
-    //SDL_RenderSetLogicalSize(renderer, 16*20, 16*15);
-    
+    SDL_RenderSetLogicalSize(renderer, 16*40 * SCALE, 16*30 * SCALE);
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
     //Load map Sprites
     World::Instance = this;
     LoadGameAssets();
@@ -144,7 +144,7 @@ void World::LoadFile(string fileName) {
                 continue;
             }
             //    8,8 Muss angepasst werden wenn wir andere tiles nutzen
-            SDL_Rect posOfTile = { xIndex * 16, yIndex * 16, 16, 16};
+            SDL_Rect posOfTile = { xIndex * 16 * SCALE, yIndex * 16 * SCALE, 16 * SCALE, 16 * SCALE };
             reducedDimensionMap.push_back(tile);
             reducedDimensionTilePosition.push_back(posOfTile);
             xIndex++;
@@ -179,9 +179,10 @@ void World::LoadFile(string fileName) {
 void World::renderGraphics() {
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
-
-    camera.x = (windowSizeX / 2) + (player->sprite.x - player->position.x);
-    camera.y = (windowSizeY / 2) + (player->sprite.y - player->position.y);
+    int w = 0, h = 0;
+    SDL_RenderGetLogicalSize(renderer,& w, &h);
+    camera.x = (w / 2) + (player->sprite.x - player->position.x);
+    camera.y = (h / 2) + (player->sprite.y - player->position.y);
 
     // Render Default Background
     for (auto bg : background)
@@ -298,7 +299,7 @@ void World::renderEntity(GameObject &entity) {
     SDL_Rect actualPosition = {
         entity.position.x + camera.x,
         entity.position.y + camera.y,
-        16,16 };
+        16 * SCALE,16  * SCALE };
 
     /*
     int rowOverflow = 0;
@@ -316,9 +317,11 @@ void World::renderEntity(GameObject &entity) {
         (SDL_RendererFlip)(flipDirection));
 
     if (debug) {
-        SDL_Rect collisionbox = { 0,0,16,16 };
+        SDL_Rect collisionbox = { 0,0,16 * SCALE,16 * SCALE };
         collisionbox.x = entity.position.x + camera.x;
         collisionbox.y = entity.position.y + camera.y;
+        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 100);
+        SDL_RenderFillRect(renderer, &collisionbox);
         SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
         SDL_RenderDrawRect(renderer, &collisionbox);
     }

@@ -13,7 +13,6 @@
 #include "rendering/SpriteController.h"
 using namespace std;
 
-
 class World
 {
 private:
