@@ -17,6 +17,7 @@
 #include <SDL.h>
 #include "engine/World.h"
 #include "Player/player.h"
+#include "Enemy/Enemy.h"
 
 
 #if !SDL_VERSION_ATLEAST(2,0,17)
@@ -31,7 +32,7 @@ int main(int, char**)
     Player* player = new Player();
     newWorld->createGameObject(player);
     newWorld->player = player;
-    GameObject* obj = new GameObject();
+    GameObject* obj = new Enemy();
     obj->position.x = 150;
     obj->position.y = 150;
     obj->name = "Test Object";   

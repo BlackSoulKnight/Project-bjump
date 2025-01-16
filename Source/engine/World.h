@@ -11,7 +11,6 @@
 #include "InputManager.h"
 #include "Utility.h"
 #include "rendering/SpriteController.h"
-
 using namespace std;
 
 
@@ -62,7 +61,7 @@ public:
 enum ElementType {
 	Background,
 	Object,
-	Enemy,
+	EnemyE,
 };
 
 struct SceneElement {
