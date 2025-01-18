@@ -38,7 +38,9 @@ void InputManager::pump() {
                 break;
             case SDL_SCANCODE_S:
                 actionState["Drop"] = pressed;
-            }
+            case SDL_SCANCODE_F1:
+                // Hier debugConsole wert flippen true/false
+                break;
             break;
         }
     }
