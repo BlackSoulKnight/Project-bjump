@@ -2,8 +2,15 @@
 #include "Utility.h"
 #include "GameObject.h"
 
-class Bullet:GameObject
+class Bullet:public GameObject
 {
+public:
+	Vector2f direction;
+	int speed;
+	Bullet();
+	void initialize(Vector2 position,Vector2f startDirection,int startSpeed);
+	void update(int deltaT);
+	//Projectile trajactory inside ea bullet scrip invidual
 	//Direction
 	//Special movement function
 	//Hit detection auf dem spieler realizieren

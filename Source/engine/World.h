@@ -63,7 +63,7 @@ public:
 enum ElementType {
 	Background,
 	Object,
-	Enemy,
+	EnemyE,
 };
 
 struct SceneElement {
