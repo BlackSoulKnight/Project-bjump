@@ -138,6 +138,7 @@
   <ItemGroup>
     <ClCompile Include="Enemy\Bullet.cpp" />
     <ClCompile Include="Enemy\Enemy.cpp" />
+    <ClCompile Include="engine\debug\src\DebugMenu.cpp" />
     <ClCompile Include="engine\GameObject.cpp" />
     <ClCompile Include="engine\rendering\src\SpriteController.cpp" />
     <ClCompile Include="external-lib\imgui\backends\imgui_impl_sdl2.cpp" />
@@ -161,6 +162,7 @@
   <ItemGroup>
     <ClInclude Include="Enemy\Bullet.h" />
     <ClInclude Include="Enemy\Enemy.h" />
+    <ClInclude Include="engine\debug\DebugMenu.h" />
     <ClInclude Include="engine\GameObject.h" />
     <ClInclude Include="engine\rendering\SpriteController.h" />
     <ClInclude Include="engine\Utility.h" />

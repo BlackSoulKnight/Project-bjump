@@ -15,6 +15,7 @@ World::World(int _windowSizeX, int _windowSizeY) {
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
     //Load map Sprites
     World::Instance = this;
+    debugConsole = DebugMenu(window, renderer);
     LoadGameAssets();
     LoadFile(string("../Levels/dev-sandbox.bjump"));
     camera = { 0,0,0,0 };
