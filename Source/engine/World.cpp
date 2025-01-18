@@ -15,10 +15,11 @@ World::World(int _windowSizeX, int _windowSizeY) {
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
     //Load map Sprites
     World::Instance = this;
-    debugConsole = DebugMenu(window, renderer);
+    debugConsole = DebugMenu();
     LoadGameAssets();
     LoadFile(string("../Levels/dev-sandbox.bjump"));
     camera = { 0,0,0,0 };
+    debugConsole.DebugInit(window, renderer);
 }
 
 bool World::run() {
@@ -180,25 +181,22 @@ void World::LoadFile(string fileName) {
 void World::renderGraphics() {
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
-    int w = 0, h = 0;
-    SDL_RenderGetLogicalSize(renderer,& w, &h);
+    int w = windowSizeX, h = windowSizeY;
+    SDL_RenderGetLogicalSize(renderer,&w, &h);
     camera.x = (w / 2) + (player->sprite.x - player->position.x);
     camera.y = (h / 2) + (player->sprite.y - player->position.y);
-
+    debugConsole.DebugStart();
     // Render Default Background
     for (auto bg : background)
         renderEntity(*bg);
 
-    
     // Render World elements
     for (auto block : gameObjects) {
         renderEntity(*block);
     }
-    
-    /*SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-    for (int i = 0; i < gameObjects.size(); i++) {
-        SDL_RenderFillRect(renderer, &gameObjects[i]->position);
-    }*/
+
+    debugConsole.Menu();
+    debugConsole.DebugEnd(renderer);
     SDL_RenderPresent(renderer);
 }
 

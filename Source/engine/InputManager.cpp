@@ -19,6 +19,7 @@ void InputManager::pump() {
     SDL_Event event;
     bool pressed = false;
     while (SDL_PollEvent(&event)) {
+        ImGui_ImplSDL2_ProcessEvent(&event);
         switch (event.type) {
         case SDL_KEYUP:
         case SDL_KEYDOWN:
@@ -41,8 +42,7 @@ void InputManager::pump() {
             case SDL_SCANCODE_F1:
                 // Hier debugConsole wert flippen true/false
                 break;
-            break;
+            }
         }
     }
-
 }

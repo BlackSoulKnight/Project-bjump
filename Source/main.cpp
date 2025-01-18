@@ -28,7 +28,7 @@
 
 int main(int, char**)
 {
-    World* newWorld = new World(1200,800);
+    World* newWorld = new World(800,600);
     Player* player = new Player();
     newWorld->createGameObject(player);
     newWorld->player = player;
@@ -45,6 +45,10 @@ int main(int, char**)
     while (newWorld->run()) {
 
     }
+    // Cleanup
+    ImGui_ImplSDLRenderer2_Shutdown();
+    ImGui_ImplSDL2_Shutdown();
+    ImGui::DestroyContext();
     return 0;
 }
 
