@@ -5,15 +5,15 @@
 
 
 Enemy::Enemy() :GameObject() {
-	name = "Enemy";
+	tag = "Enemy";
 }
 
 void Enemy::update(int deltaT) {
 	activeTime += (float)deltaT / 1000;
 	if (activeTime > begin) {
-		if (lastShot < activeTime / delay) {
-			lastShot += delay;
-			BulletManager::createBullet(0, { position.x,position.y }, { 0,1 }, 10);
+		if (lastShot + delay < activeTime) {
+			lastShot = activeTime;
+			BulletManager::createBullet(0, { position.x,position.y }, { 1,1 }, 10);
 		}
 	}
 }
