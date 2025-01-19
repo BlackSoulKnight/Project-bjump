@@ -9,7 +9,7 @@
 #include "../engine/GameObject.h" 
 
 class Player : public GameObject {
-private:
+public:
     // Position und Geschwindigkeit
     float x, y;        // **Position des Spielers**
     float vx, vy;      // Geschwindigkeit
