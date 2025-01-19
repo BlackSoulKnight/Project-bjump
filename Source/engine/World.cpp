@@ -2,25 +2,29 @@
 #define MAP_SPRITE_SHEET "../resources/Tilemap/monochrome_tilemap_transparent_packed.png"
 
 World* World::Instance = nullptr;
-
-
+const int WINDOW_WIDTH = 16 * 40 * SCALE;
+const int WINDOW_HEIGHT = 16 * 40 * SCALE;
 World::World(int _windowSizeX, int _windowSizeY) {
     windowSizeX = _windowSizeX;
     windowSizeY = _windowSizeY;
+    debug = true;
     deltaT = 0;
     targetFrameRate = 60;
     SDL_Init(SDL_INIT_EVERYTHING);
     SDL_CreateWindowAndRenderer(_windowSizeX, _windowSizeY, SDL_WINDOW_RESIZABLE, &window, &renderer);
-    SDL_RenderSetLogicalSize(renderer, 16*40 * SCALE, 16*30 * SCALE);
+    SDL_RenderSetLogicalSize(renderer, WINDOW_WIDTH, WINDOW_HEIGHT);
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
     //Load map Sprites
     World::Instance = this;
-    debugConsole = DebugMenu();
+    debugWindow = DebugMenu();
     LoadGameAssets();
     LoadFile(string("../Levels/dev-sandbox.bjump"));
-    camera = { 0,0,0,0 };
-    debugConsole.DebugInit(window, renderer);
+    camera = { 0,0,WINDOW_WIDTH,WINDOW_HEIGHT };
+    debugWindow.DebugInit(window, renderer);
 }
+
+
+
 
 bool World::run() {
     chrono::time_point<chrono::system_clock> start = chrono::system_clock::now();
@@ -185,7 +189,7 @@ void World::renderGraphics() {
     SDL_RenderGetLogicalSize(renderer,&w, &h);
     camera.x = (w / 2) + (player->sprite.x - player->position.x);
     camera.y = (h / 2) + (player->sprite.y - player->position.y);
-    debugConsole.DebugStart();
+    debugWindow.DebugStart();
     // Render Default Background
     for (auto bg : background)
         renderEntity(*bg);
@@ -195,8 +199,23 @@ void World::renderGraphics() {
         renderEntity(*block);
     }
 
-    debugConsole.Menu();
-    debugConsole.DebugEnd(renderer);
+    debugWindow.Menu();
+
+  
+    if (debugWindow.showRendererMenu) {
+        debugWindow.RenderMenu(debug);
+    }
+    if (debugWindow.showGameMenu)
+    {
+        debugWindow.GameMenu();
+    }
+    if (debugWindow.showPlayer)
+    {
+        debugWindow.PlayerMenu(player);
+    }
+    if (debugWindow.showExamples)
+        debugWindow.ShowExampleAddsToMenu();
+    debugWindow.DebugEnd(renderer);
     SDL_RenderPresent(renderer);
 }
 

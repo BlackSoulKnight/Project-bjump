@@ -27,21 +27,21 @@ private:
     bool dashing;
     float dashTime;
 
-    // Konstanten
-    static constexpr float GRAVITY = 0.5f * SCALE;
-    static constexpr float JUMP_FORCE = -10.0f * SCALE;
-    static constexpr float FALL_SPEED = 10.0f * SCALE;
-    static constexpr float MOVE_SPEED = 5.0f * SCALE;
-    static constexpr float DASH_SPEED = 200.0f * SCALE;
-    static constexpr float DASH_DURATION = 0.5 * SCALE;
-    static constexpr float WALL_JUMP_FORCE_Y = -8.0f * SCALE;
-    static constexpr float WALL_JUMP_FORCE_X = 5.0f * SCALE;
+public:
+    // Player Variablen
+    float GRAVITY = 0.5f * SCALE;
+    float JUMP_FORCE = -10.0f * SCALE;
+    float FALL_SPEED = 10.0f * SCALE;
+    float MOVE_SPEED = 5.0f * SCALE;
+    float DASH_SPEED = 200.0f * SCALE;
+    float DASH_DURATION = 0.5 * SCALE;
+    float WALL_JUMP_FORCE_Y = -8.0f * SCALE;
+    float WALL_JUMP_FORCE_X = 5.0f * SCALE;
 
     // Hilfsfunktionen
     bool checkGroundCollision(int screenHeight);
     bool checkWallCollision();
 
-public:
     // Konstruktor
     Player();
 

@@ -19,7 +19,7 @@ class World
 {
 private:
 	SDL_Rect camera;
-	bool debug = true;
+	bool debug;
 	SDL_Window* window;
 	SDL_Renderer* renderer;
 	bool running = true;
@@ -37,14 +37,15 @@ private:
 
 
 public:
-	DebugMenu debugConsole;
-	GameObject* player;
+	
+	Player* player;
 	void LoadGameAssets();
 	static World* Instance;
+	DebugMenu debugWindow;
 	map<string, SpriteController> spriteControllers;
 	void LoadFile(string);
 	vector<vector<int>> load_map(const char* filePath);
-
+	int test = 0;
 	World(int _windowSizeX, int _windowSizeY);
 
 	bool run();
