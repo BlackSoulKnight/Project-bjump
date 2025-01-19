@@ -30,6 +30,7 @@ private:
     bool dashing;
     float dashTime;
     bool canDoubleJump = true; // Erlaubt den Doppelsprung nur einmal pro Bodenberührung
+    int dashDirection;
 
     // Konstanten
     static constexpr float GRAVITY = 0.5f * SCALE;
