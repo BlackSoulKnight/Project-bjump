@@ -17,6 +17,7 @@
 #include <SDL.h>
 #include "engine/World.h"
 #include "Player/player.h"
+#include "Enemy/Enemy.h"
 
 
 #if !SDL_VERSION_ATLEAST(2,0,17)
@@ -27,11 +28,11 @@
 
 int main(int, char**)
 {
-    World* newWorld = new World(1200,800);
+    World* newWorld = new World(800,600);
     Player* player = new Player();
     newWorld->createGameObject(player);
     newWorld->player = player;
-    GameObject* obj = new GameObject();
+    GameObject* obj = new Enemy();
     obj->position.x = 150;
     obj->position.y = 150;
     obj->name = "Test Object";   
@@ -40,10 +41,14 @@ int main(int, char**)
     obj->sprite.y = 5;
     obj->position.w = 16;
     obj->position.h = 16;
-    newWorld->createGameObject(obj);
+   // newWorld->createGameObject(obj);
     while (newWorld->run()) {
 
     }
+    // Cleanup
+    ImGui_ImplSDLRenderer2_Shutdown();
+    ImGui_ImplSDL2_Shutdown();
+    ImGui::DestroyContext();
     return 0;
 }
 

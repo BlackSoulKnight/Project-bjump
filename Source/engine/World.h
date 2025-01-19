@@ -11,9 +11,9 @@
 #include "InputManager.h"
 #include "Utility.h"
 #include "rendering/SpriteController.h"
+#include "debug/DebugMenu.h"
 
 using namespace std;
-
 
 class World
 {
@@ -37,6 +37,7 @@ private:
 
 
 public:
+	DebugMenu debugConsole;
 	GameObject* player;
 	void LoadGameAssets();
 	static World* Instance;
@@ -62,7 +63,7 @@ public:
 enum ElementType {
 	Background,
 	Object,
-	Enemy,
+	EnemyE,
 };
 
 struct SceneElement {

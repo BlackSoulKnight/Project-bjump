@@ -1,8 +1,38 @@
 #pragma once
 #include "GameObject.h"
 #include "Utility.h"
+#include "Bullet.h"
 
-class Enemy :GameObject {
+
+/*
+Bullet Manager
+-> creates or reuse bullets
+-> destroy not used bullets
+-> used by enemys
+-> init bullets for reuse
+-> Static class?
+*/
+
+class BulletManager {
+public:
+	static map<int, vector<Bullet*>> bulletList;
+	static map<int, vector<Bullet*>> unusedBulletList;
+
+	static void createBullet(int Type, Vector2 position,Vector2f direction,int speed);
+	static void disableBullet(int Type, int position);
+
+
+};
+
+
+class Enemy :public GameObject {
+public:
+	float begin = 1;
+	float delay = 0.01;
+	float lastShot = 0;
+	float activeTime = 0;
+	void update(int deltaT);
+	Enemy();
 	//bullet types (array)
 	//bullet amounts (array)
 	//bullet direction (array(vector2))

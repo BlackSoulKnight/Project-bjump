@@ -32,15 +32,14 @@ private:
     bool canDoubleJump = true; // Erlaubt den Doppelsprung nur einmal pro Bodenberührung
 
     // Konstanten
-    static constexpr float GRAVITY = 0.5f;
-    static constexpr float JUMP_FORCE = -10.0f;
-    static constexpr float FALL_SPEED = 10.0f;
-    static constexpr float MOVE_SPEED = 5.0f;
-    static constexpr float DASH_SPEED = 200.0f;
-    static constexpr float DASH_DURATION = 0.5;
-    static constexpr float WALL_JUMP_FORCE_Y = -8.0f;
-    static constexpr float WALL_JUMP_FORCE_X = 5.0f;
-    int dashDirection = 0;     // Speichert die Dash-Richtung (-1 = links, 1 = rechts)
+    static constexpr float GRAVITY = 0.5f * SCALE;
+    static constexpr float JUMP_FORCE = -10.0f * SCALE;
+    static constexpr float FALL_SPEED = 10.0f * SCALE;
+    static constexpr float MOVE_SPEED = 5.0f * SCALE;
+    static constexpr float DASH_SPEED = 200.0f * SCALE;
+    static constexpr float DASH_DURATION = 0.5 * SCALE;
+    static constexpr float WALL_JUMP_FORCE_Y = -8.0f * SCALE;
+    static constexpr float WALL_JUMP_FORCE_X = 5.0f * SCALE;
 
     // Hilfsfunktionen
     bool checkGroundCollision(int screenHeight);
