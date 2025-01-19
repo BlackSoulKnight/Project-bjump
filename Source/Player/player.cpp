@@ -104,43 +104,12 @@ void Player::moveAndCollide(Vector2 direction) {
     }
     else {
         for (int i = 0; i < objs.size(); i++) {
-            if (newPos.y > objs[i]->position.y) {
-                newPos.y = objs[i]->position.y;
+            if (newPos.y+position.h > objs[i]->position.y) {
+                newPos.y = objs[i]->position.y - position.h;
             }
         }
     }
     position.y = newPos.y;
-    /*
-    vector<tuple<GameObject*, SDL_Rect>> t = World::Instance->getCollisions(this);
-    for (int i = 0; i < t.size(); i++) {
-
-         Vector2 playerPos = { position.x + position.w / 2,position.y + position.h / 2 };
-        SDL_Rect target = get<1>(t[i]);
-
-        if (true) {
-            auto renderer = World::Instance->getRenderer();
-            auto camera = World::Instance->camera;
-            SDL_Rect collisionbox = target;
-            collisionbox.x = target.x + camera.x;
-            collisionbox.y = target.y + camera.y;
-            SDL_SetRenderDrawColor(renderer, 0, 255, 0, 100);
-            SDL_RenderFillRect(renderer, &collisionbox);
-            SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
-            SDL_RenderDrawRect(renderer, &collisionbox);
-            SDL_RenderPresent(renderer);
-        };
-
-        Vector2 targetPos = { target.x + target.w / 2,target.y + target.h / 2 };
-        if (abs(playerPos.x - target.x) > abs(playerPos.y - targetPos.y)) {
-            playerPos.x -= targetPos.x - playerPos.x;
-        }
-        else {
-            playerPos.y += targetPos.y - playerPos.y;
-        }
-        position.x = playerPos.x - position.w / 2;
-        position.y = playerPos.y - position.h / 2;
-    }
-    */
 }
 
 // Spielerzustand aktualisieren
@@ -164,7 +133,7 @@ void Player::update(int deltaT) {
 
     // Schwerkraft anwenden, wenn nicht im Dash
     if (playerState != PlayerState::DASHING) {
-        vy += GRAVITY;
+        //vy += GRAVITY;
     }
 
     // Maximale Fallgeschwindigkeit begrenzen
@@ -192,7 +161,6 @@ void Player::update(int deltaT) {
 
     case PlayerState::JUMPING:
         if (checkGroundCollision(320)) {
-            position.y = 320 - height;
             vy = 0;
             playerState = PlayerState::ON_GROUND;  // Zurück auf den Boden
         }
@@ -212,7 +180,6 @@ void Player::update(int deltaT) {
 
     case PlayerState::DOUBLE_JUMPING:
         if (checkGroundCollision(320)) {
-            position.y = 320 - height;
             vy = 0;
             playerState = PlayerState::ON_GROUND;  // Zurück auf den Boden
         /*if (checkWallCollision() && false) {
@@ -231,7 +198,6 @@ void Player::update(int deltaT) {
 
     case PlayerState::FALLING:
         if (checkGroundCollision(320)) {
-            position.y = 320 - height;
             vy = 0;
             playerState = PlayerState::ON_GROUND;  // Zurück auf den Boden
         }
