@@ -13,22 +13,13 @@ Bullet Manager
 -> Static class?
 */
 
-class BulletManager {
-public:
-	static map<int, vector<Bullet*>> bulletList;
-	static map<int, vector<Bullet*>> unusedBulletList;
 
-	static void createBullet(int Type, Vector2 position,Vector2f direction,int speed);
-	static void disableBullet(int Type, int position);
-
-
-};
 
 
 class Enemy :public GameObject {
 public:
 	float begin = 1;
-	float delay = 0.01;
+	float delay = 0.1;
 	float lastShot = 0;
 	float activeTime = 0;
 	void update(int deltaT);

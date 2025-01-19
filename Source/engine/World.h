@@ -18,8 +18,8 @@ using namespace std;
 class World
 {
 private:
-	SDL_Rect camera;
-	bool debug;
+	//SDL_Rect camera;
+	bool debug = true;
 	SDL_Window* window;
 	SDL_Renderer* renderer;
 	bool running = true;
@@ -37,8 +37,9 @@ private:
 
 
 public:
-	
-	Player* player;
+	SDL_Rect camera;
+	DebugMenu debugConsole;
+	GameObject* player;
 	void LoadGameAssets();
 	static World* Instance;
 	DebugMenu debugWindow;

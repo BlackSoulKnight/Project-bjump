@@ -41,7 +41,7 @@ int main(int, char**)
     obj->sprite.y = 5;
     obj->position.w = 16;
     obj->position.h = 16;
-   // newWorld->createGameObject(obj);
+    newWorld->createGameObject(obj);
     while (newWorld->run()) {
 
     }

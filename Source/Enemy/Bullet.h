@@ -7,9 +7,12 @@ class Bullet:public GameObject
 public:
 	Vector2f direction;
 	int speed;
+	int activeTime = 0;
 	Bullet();
 	void initialize(Vector2 position,Vector2f startDirection,int startSpeed);
 	void update(int deltaT);
+	bool outOfScreen();
+	int Type;
 	//Projectile trajactory inside ea bullet scrip invidual
 	//Direction
 	//Special movement function

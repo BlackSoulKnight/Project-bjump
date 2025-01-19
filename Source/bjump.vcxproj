@@ -136,6 +136,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Enemy\BulletManager.cpp" />
     <ClCompile Include="Enemy\Bullet.cpp" />
     <ClCompile Include="Enemy\Enemy.cpp" />
     <ClCompile Include="engine\debug\src\DebugMenu.cpp" />
@@ -160,6 +161,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Enemy\BulletManager.h" />
     <ClInclude Include="Enemy\Bullet.h" />
     <ClInclude Include="Enemy\Enemy.h" />
     <ClInclude Include="engine\debug\DebugMenu.h" />
