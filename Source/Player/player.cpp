@@ -215,6 +215,13 @@ void Player::update(int deltaT) {
             dashing = false;
             dashDirection = 0;  // Richtung zurücksetzen
             playerState = PlayerState::FALLING;  // Setze Zustand auf FALLING
+
+        }
+        else {
+            // Während des Dashens die Bewegung kontinuierlich fortsetzen
+            float dashSpeedFactor = (float)dashTime / DASH_DURATION; // Reduziert die Geschwindigkeit im Dash
+            vx = DASH_SPEED * dashDirection * dashSpeedFactor;
+            vy = 0;  // Keine vertikale Bewegung
         }
         if (InputManager::checkInput("Dash") && canDash) {
             // Prüfen, ob Bewegungsinput vorhanden ist
@@ -238,28 +245,28 @@ void Player::update(int deltaT) {
         break;
 
     case PlayerState::WALL_JUMPING:
-   /*     wallStickTime += deltaT;  // Wand-Klebezeit erhöhen
-        if (wallStickTime > MAX_WALL_STICK_TIME || !touchingWall) {
+        wallStickTime += deltaT;  // Wand-Haftzeit erhöhen
+        if (wallStickTime > MAX_WALL_STICK_TIME || !checkWallCollision()) {
             playerState = PlayerState::FALLING;  // Von der Wand fallen
+            break;
         }
+
         // Bewegung nach links/rechts, um sich von der Wand zu lösen
-        if (InputManager::checkInput("Left") && objsLeft.empty()) {
-            vx = -moveXSpeed;
-            playerState = PlayerState::FALLING;
-        }
-        else if (InputManager::checkInput("Right") && objsRight.empty()) {
-            vx = moveXSpeed;
-            playerState = PlayerState::FALLING;
-        }
-        // Walljump ausführen
-        if (InputManager::checkInput("Jump") && canWallJump) {
-            vy = JUMP_FORCE;
-            vx = objsLeft.empty() ? -JUMP_FORCE / 2 : JUMP_FORCE / 2;  // Abstoßrichtung
-            canWallJump = false;  // Walljump blockieren
+        if (InputManager::checkInput("Left") && checkWallCollision()) {
+            vx = -WALL_JUMP_FORCE_X;
+            vy = WALL_JUMP_FORCE_Y;
             playerState = PlayerState::JUMPING;
         }
+        else if (InputManager::checkInput("Right") && checkWallCollision()) {
+            vx = WALL_JUMP_FORCE_X;
+            vy = WALL_JUMP_FORCE_Y;
+            playerState = PlayerState::JUMPING;
+        }
+
+        // Kein Input, bleiben an der Wand haften
+        vx = 0;
+        vy = 0;
         break;
-        */
 
     default:
         std::cerr << "Unbekannter Spielerzustand!\n";

@@ -37,8 +37,8 @@ private:
     static constexpr float JUMP_FORCE = -10.0f * SCALE;
     static constexpr float FALL_SPEED = 10.0f * SCALE;
     static constexpr float MOVE_SPEED = 5.0f * SCALE;
-    static constexpr float DASH_SPEED = 200.0f * SCALE;
-    static constexpr float DASH_DURATION = 0.5 * SCALE;
+    static constexpr float DASH_SPEED = 50.0f * SCALE;
+    static constexpr float DASH_DURATION = 15.0 * SCALE;
     static constexpr float WALL_JUMP_FORCE_Y = -8.0f * SCALE;
     static constexpr float WALL_JUMP_FORCE_X = 5.0f * SCALE;
 
