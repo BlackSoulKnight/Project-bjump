@@ -10,6 +10,7 @@ map<string, bool> init() {
     t["Drop"] = false;
     return t;
 }
+
 map<string, bool> InputManager::actionState = init();
 
 

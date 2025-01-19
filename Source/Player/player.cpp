@@ -40,9 +40,13 @@ void Player::printState() const {
 
 // Kollisionsprüfung (Boden)
 bool Player::checkGroundCollision(int screenHeight) {
-    if (position.y + height >= screenHeight) {
-        position.y = screenHeight - height;
-        vy = 0;
+    SDL_Rect linksNebenPlayer;
+    linksNebenPlayer.x = position.x+3;
+    linksNebenPlayer.y = position.y+position.h;
+    linksNebenPlayer.w = 10;
+    linksNebenPlayer.h = max((float)1,vy);
+    vector<GameObject*> objs = World::Instance->getCollisions(linksNebenPlayer);
+    if (objs.size() > 0) {
         return true;
     }
     return false;
@@ -51,8 +55,8 @@ bool Player::checkGroundCollision(int screenHeight) {
 // Kollisionsprüfung (Wände)
 bool Player::checkWallCollision() {
     if (position.x <= 0 || position.x + width >= 640) {
-        touchingWall = true;
-        return true;
+        touchingWall = false;
+        return false;
     }
     touchingWall = false;
     return false;
@@ -67,39 +71,42 @@ void Player::moveAndCollide(Vector2 direction) {
 
 
     position.y += direction.y;
-   
     
 }
 
 // Spielerzustand aktualisieren
 void Player::update(int deltaT) {
     printState();
+    int moveXSpeed = (dashing ? MOVE_SPEED * 1.5f : MOVE_SPEED);
 
     SDL_Rect linksNebenPlayer;
-    linksNebenPlayer.x = position.x - 1;
+    linksNebenPlayer.w = moveXSpeed;
+    linksNebenPlayer.x = position.x - linksNebenPlayer.w;
     linksNebenPlayer.y = position.y;
-    linksNebenPlayer.w = 1;
-    linksNebenPlayer.h = position.h;
+    linksNebenPlayer.h = 16;
     vector<GameObject*> objs = World::Instance->getCollisions(linksNebenPlayer);
 
-    SDL_Rect rechtsNebenPlayer;
-    rechtsNebenPlayer.x = position.x + position.w;
-    rechtsNebenPlayer.y = position.y;
-    rechtsNebenPlayer.w = 1;
-    rechtsNebenPlayer.h = position.h;
-    vector<GameObject*> objr = World::Instance->getCollisions(rechtsNebenPlayer);
-
+    linksNebenPlayer.x = position.x +position.w;
+    linksNebenPlayer.y = position.y;
+    linksNebenPlayer.w = moveXSpeed;
+    linksNebenPlayer.h = 16;
+    vector<GameObject*> objs2 = World::Instance->getCollisions(linksNebenPlayer);
     // Bewegung nach links und rechts (normale Bewegung)
-    if (!dashing) { // Während des Dashs keine Richtungsänderung erlauben
-        if (InputManager::checkInput("Left") && objs.size() == 0) {
-            vx = MOVE_SPEED * -1;  // Linksbewegung
-        }
-        else if (InputManager::checkInput("Right")) {
-            vx = MOVE_SPEED;  // Rechtsbewegung
-        }
-        else {
-            vx = 0;  // Keine Bewegung
-        }
+    if (InputManager::checkInput("Left") && objs.size() == 0) {
+        vx = moveXSpeed * -1;  // Linksbewegung
+    }
+    else if (InputManager::checkInput("Right") && objs2.size()==0) {
+        vx = moveXSpeed;  // Rechtsbewegung
+    }
+    else if (!dashing) {
+        vx = 0;  // Keine Bewegung, wenn nicht gedasht wird
+    }
+
+
+
+    // Schwerkraft anwenden, wenn nicht im Dash
+    if (playerState != PlayerState::DASHING) {
+        vy += GRAVITY;
     }
 
     // Maximale Fallgeschwindigkeit begrenzen
@@ -110,12 +117,13 @@ void Player::update(int deltaT) {
     // Spieler-Zustände aktualisieren
     switch (playerState) {
     case PlayerState::ON_GROUND:
-        canDoubleJump = true;  // Doppelsprung wieder erlauben
-        canDash = true;        // Dash wieder erlauben
-        if (!checkGroundCollision(320)) {
+        if (!checkGroundCollision(0)) {
             playerState = PlayerState::FALLING;  // Vom Boden in "FALLING"
         }
-        else if (InputManager::checkInput("Jump")) {
+        else {
+            vy = 0;
+        }
+        if (InputManager::checkInput("Jump")) {
             vy = JUMP_FORCE;  // Vom Boden springen
             playerState = PlayerState::JUMPING;
         }
@@ -142,10 +150,8 @@ void Player::update(int deltaT) {
         break;
 
     case PlayerState::DOUBLE_JUMPING:
-        if (checkGroundCollision(320)) {
-            position.y = 320 - height;
-            vy = 0;
-            playerState = PlayerState::ON_GROUND;  // Zurück auf den Boden
+        if (checkWallCollision() && false) {
+            playerState = PlayerState::WALL_JUMPING;  // Wand-Sprung
         }
         else if (InputManager::checkInput("Dash") && canDash) {
             dashing = true;
@@ -179,6 +185,25 @@ void Player::update(int deltaT) {
             dashDirection = 0;  // Richtung zurücksetzen
             playerState = PlayerState::FALLING;  // Setze Zustand auf FALLING
         }
+        if (InputManager::checkInput("Dash") && canDash) {
+            // Prüfen, ob Bewegungsinput vorhanden ist
+            if (InputManager::checkInput("Left") || InputManager::checkInput("Right")) {
+                // Dash aktivieren
+                dashing = true;
+                dashTime = 60;
+                playerState = PlayerState::DASHING;
+
+                // Richtung des Dashs basierend auf Input
+                if (InputManager::checkInput("Left")) {
+                    vx = -DASH_SPEED;
+                }
+                else if (InputManager::checkInput("Right")) {
+                    vx = DASH_SPEED;
+                }
+                vy = 0;  // Keine vertikale Bewegung beim Dash
+                canDash = false;  // Dash deaktivieren
+            }
+        }
         break;
 
     default:
@@ -186,11 +211,16 @@ void Player::update(int deltaT) {
         break;
     }
 
-    // Schwerkraft anwenden, wenn nicht im Dash
-    if (!dashing) {
-        vy += GRAVITY;
-    }
 
+    linksNebenPlayer.x = position.x + 3;
+    linksNebenPlayer.h = max((float)1,abs(vy));
+    linksNebenPlayer.y = position.y - linksNebenPlayer.h;
+    linksNebenPlayer.w = 10;
+    
+    objs2 = World::Instance->getCollisions(linksNebenPlayer);
+    if (vy < 0 && objs2.size() > 0) {
+        vy = 0;
+    }
     // Bewegung und Kollision berechnen
     moveAndCollide(Vector2(vx, vy));
 }

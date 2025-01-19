@@ -27,7 +27,7 @@
 
 int main(int, char**)
 {
-    World* newWorld = new World(800,400);
+    World* newWorld = new World(1200,800);
     Player* player = new Player();
     newWorld->createGameObject(player);
     newWorld->player = player;
@@ -36,8 +36,10 @@ int main(int, char**)
     obj->position.y = 150;
     obj->name = "Test Object";   
     obj->sprite.spiteSheetLocation = "../resources/Tilemap/monochrome_tilemap_transparent_packed.png";
-    obj->sprite.x = 0;
+    obj->sprite.x = 3;
     obj->sprite.y = 5;
+    obj->position.w = 16;
+    obj->position.h = 16;
     newWorld->createGameObject(obj);
     while (newWorld->run()) {
 

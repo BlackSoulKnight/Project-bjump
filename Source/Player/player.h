@@ -33,8 +33,8 @@ private:
     static constexpr float JUMP_FORCE = -10.0f;
     static constexpr float FALL_SPEED = 10.0f;
     static constexpr float MOVE_SPEED = 5.0f;
-    static constexpr float DASH_SPEED = 20.0f;
-    static constexpr float DASH_DURATION = 82.0f;
+    static constexpr float DASH_SPEED = 200.0f;
+    static constexpr float DASH_DURATION = 0.5;
     static constexpr float WALL_JUMP_FORCE_Y = -8.0f;
     static constexpr float WALL_JUMP_FORCE_X = 5.0f;
     int dashDirection = 0;     // Speichert die Dash-Richtung (-1 = links, 1 = rechts)
