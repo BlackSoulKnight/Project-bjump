@@ -20,7 +20,10 @@ private:
     PlayerState playerState;
 
     // Kollisionsflags
-    bool touchingWall;
+    bool touchingWall = false;       // Gibt an, ob der Spieler eine Wand berührt
+    bool canWallJump = true;         // Gibt an, ob ein Walljump erlaubt ist
+    float wallStickTime = 0.0f;      // Zeit, die der Spieler an der Wand bleibt
+    const float MAX_WALL_STICK_TIME = 1000.0f;  // Maximalzeit in Millisekunden
     bool spacePressed;
     bool spaceJustPressed;
     bool canDash;

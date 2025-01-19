@@ -117,7 +117,10 @@ void Player::update(int deltaT) {
     // Spieler-Zustände aktualisieren
     switch (playerState) {
     case PlayerState::ON_GROUND:
-        if (!checkGroundCollision(0)) {
+        canDoubleJump = true;  // Doppelsprung wieder erlauben
+        canDash = true;        // Dash wieder erlauben
+        if (!checkGroundCollision(320)) { // früher 0 (test)
+
             playerState = PlayerState::FALLING;  // Vom Boden in "FALLING"
         }
         else {
@@ -150,9 +153,13 @@ void Player::update(int deltaT) {
         break;
 
     case PlayerState::DOUBLE_JUMPING:
-        if (checkWallCollision() && false) {
-            playerState = PlayerState::WALL_JUMPING;  // Wand-Sprung
-        }
+        if (checkGroundCollision(320)) {
+            position.y = 320 - height;
+            vy = 0;
+            playerState = PlayerState::ON_GROUND;  // Zurück auf den Boden
+        /*if (checkWallCollision() && false) {
+            playerState = PlayerState::WALL_JUMPING;  // Wand-Sprung */
+        } 
         else if (InputManager::checkInput("Dash") && canDash) {
             dashing = true;
             dashTime = DASH_DURATION;  // Einheitliche Dauer
@@ -206,9 +213,37 @@ void Player::update(int deltaT) {
         }
         break;
 
+    case PlayerState::WALL_JUMPING:
+   /*     wallStickTime += deltaT;  // Wand-Klebezeit erhöhen
+        if (wallStickTime > MAX_WALL_STICK_TIME || !touchingWall) {
+            playerState = PlayerState::FALLING;  // Von der Wand fallen
+        }
+        // Bewegung nach links/rechts, um sich von der Wand zu lösen
+        if (InputManager::checkInput("Left") && objsLeft.empty()) {
+            vx = -moveXSpeed;
+            playerState = PlayerState::FALLING;
+        }
+        else if (InputManager::checkInput("Right") && objsRight.empty()) {
+            vx = moveXSpeed;
+            playerState = PlayerState::FALLING;
+        }
+        // Walljump ausführen
+        if (InputManager::checkInput("Jump") && canWallJump) {
+            vy = JUMP_FORCE;
+            vx = objsLeft.empty() ? -JUMP_FORCE / 2 : JUMP_FORCE / 2;  // Abstoßrichtung
+            canWallJump = false;  // Walljump blockieren
+            playerState = PlayerState::JUMPING;
+        }
+        break;
+        */
+
     default:
         std::cerr << "Unbekannter Spielerzustand!\n";
         break;
+    }
+    // Schwerkraft anwenden, wenn nicht im Dash
+    if (!dashing) {
+        vy += GRAVITY;
     }
 
 
