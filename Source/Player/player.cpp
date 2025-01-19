@@ -168,14 +168,17 @@ void Player::update(int deltaT) {
     }
 
     // Maximale Fallgeschwindigkeit begrenzen
-    if (vy > FALL_SPEED) {
+    if (vy > FALL_SPEED && !dashing) {
         vy = FALL_SPEED;
     }
 
     // Spieler-Zustände aktualisieren
     switch (playerState) {
     case PlayerState::ON_GROUND:
-        if (!checkGroundCollision(0)) {
+        canDoubleJump = true;  // Doppelsprung wieder erlauben
+        canDash = true;        // Dash wieder erlauben
+        if (!checkGroundCollision(320)) { // früher 0 (test)
+
             playerState = PlayerState::FALLING;  // Vom Boden in "FALLING"
         }
         else {
@@ -185,100 +188,67 @@ void Player::update(int deltaT) {
             vy = JUMP_FORCE;  // Vom Boden springen
             playerState = PlayerState::JUMPING;
         }
-        canDash = true;  // Dash wieder verfügbar
         break;
 
     case PlayerState::JUMPING:
         if (checkGroundCollision(320)) {
-            y = 320 - height;
+            position.y = 320 - height;
             vy = 0;
             playerState = PlayerState::ON_GROUND;  // Zurück auf den Boden
         }
         else if (InputManager::checkInput("Dash") && canDash) {
-            // Prüfen, ob Bewegungsinput vorhanden ist
-            if (InputManager::checkInput("Left") || InputManager::checkInput("Right")) {
-                // Dash aktivieren
-                dashing = true;
-                dashTime = 60;  
-                playerState = PlayerState::DASHING;
-
-                // Richtung des Dashs basierend auf Input
-                if (InputManager::checkInput("Left")) {
-                    vx = -DASH_SPEED;
-                }
-                else if (InputManager::checkInput("Right")) {
-                    vx = DASH_SPEED;
-                }
-                vy = 0;  // Keine vertikale Bewegung beim Dash
-                canDash = false;  // Dash deaktivieren
-            }
+            dashing = true;
+            dashTime = DASH_DURATION;  // Einheitliche Dauer
+            dashDirection = InputManager::checkInput("Left") ? -1 : 1; // Richtung festlegen
+            vx = DASH_SPEED * dashDirection;
+            vy = 0;  // Vertikale Bewegung pausieren
+            canDash = false;
+            playerState = PlayerState::DASHING;
         }
-        if (vy > 0) {
-            playerState = PlayerState::FALLING;  // In "FALLING", wenn nach unten
+        else if (vy > 0) {
+            playerState = PlayerState::FALLING;  // Wechsel zu "FALLING", wenn nach unten
         }
         break;
 
     case PlayerState::DOUBLE_JUMPING:
-        if (checkWallCollision() && false) {
-            playerState = PlayerState::WALL_JUMPING;  // Wand-Sprung
-        }
+        if (checkGroundCollision(320)) {
+            position.y = 320 - height;
+            vy = 0;
+            playerState = PlayerState::ON_GROUND;  // Zurück auf den Boden
+        /*if (checkWallCollision() && false) {
+            playerState = PlayerState::WALL_JUMPING;  // Wand-Sprung */
+        } 
         else if (InputManager::checkInput("Dash") && canDash) {
-            // Prüfen, ob Bewegungsinput vorhanden ist
-            if (InputManager::checkInput("Left") || InputManager::checkInput("Right")) {
-                // Dash aktivieren
-                dashing = true;
-                dashTime = 30;  
-                playerState = PlayerState::DASHING;
-
-                // Richtung des Dashs basierend auf Input
-                if (InputManager::checkInput("Left")) {
-                    vx = -DASH_SPEED;
-                }
-                else if (InputManager::checkInput("Right")) {
-                    vx = DASH_SPEED;
-                }
-                vy = 0;  // Keine vertikale Bewegung beim Dash
-                canDash = false;  // Dash deaktivieren
-            }
-        }
-        if (vy > 0) {
-            playerState = PlayerState::FALLING;  // In "FALLING", wenn nach unten
-        }
-
-        break;
-
-    case PlayerState::DASHING:
-        dashTime -= deltaT;  // Dash-Zeit abziehen
-
-       
-
-        if (dashTime <= 0) {
-            // Dash beendet
-            playerState = PlayerState::FALLING;  // Setze Zustand auf FALLING
-            dashing = false;
-        }
-        break;
-
-    case PlayerState::WALL_JUMPING:
-        if (InputManager::checkInput("Jump")) {
-            vy = WALL_JUMP_FORCE_Y;  // Wand-Sprung ausführen
-            vx = (x < 320) ? WALL_JUMP_FORCE_X : -WALL_JUMP_FORCE_X;
-            playerState = PlayerState::FALLING;  // Nach Wand-Sprung in FALLING
-        }
-        if (vy > 0) {
-            playerState = PlayerState::FALLING;  // In "FALLING", wenn nach unten
+            dashing = true;
+            dashTime = DASH_DURATION;  // Einheitliche Dauer
+            dashDirection = InputManager::checkInput("Left") ? -1 : 1; // Richtung festlegen
+            vx = DASH_SPEED * dashDirection;
+            vy = 0;  // Vertikale Bewegung pausieren
+            canDash = false;
+            playerState = PlayerState::DASHING;
         }
         break;
 
     case PlayerState::FALLING:
-        if (InputManager::checkInput("Jump")) {
-            vy = JUMP_FORCE;
-            playerState = PlayerState::DOUBLE_JUMPING;  // Doppelsprung
-        }
         if (checkGroundCollision(320)) {
-            y = 320 - height;
+            position.y = 320 - height;
             vy = 0;
-            playerState = PlayerState::ON_GROUND;  // Landen
+            playerState = PlayerState::ON_GROUND;  // Zurück auf den Boden
+        }
+        else if (InputManager::checkInput("Jump") && canDoubleJump) {
+            vy = JUMP_FORCE;
+            playerState = PlayerState::DOUBLE_JUMPING;
+            canDoubleJump = false;  // Kein weiterer Doppelsprung möglich
+        }
+        break;
+
+    case PlayerState::DASHING:
+        dashTime -= deltaT;  // Dash-Zeit abziehen
+        if (dashTime <= 0) {
+            // Dash beendet
+            dashing = false;
+            dashDirection = 0;  // Richtung zurücksetzen
+            playerState = PlayerState::FALLING;  // Setze Zustand auf FALLING
         }
         if (InputManager::checkInput("Dash") && canDash) {
             // Prüfen, ob Bewegungsinput vorhanden ist
@@ -301,16 +271,43 @@ void Player::update(int deltaT) {
         }
         break;
 
+    case PlayerState::WALL_JUMPING:
+   /*     wallStickTime += deltaT;  // Wand-Klebezeit erhöhen
+        if (wallStickTime > MAX_WALL_STICK_TIME || !touchingWall) {
+            playerState = PlayerState::FALLING;  // Von der Wand fallen
+        }
+        // Bewegung nach links/rechts, um sich von der Wand zu lösen
+        if (InputManager::checkInput("Left") && objsLeft.empty()) {
+            vx = -moveXSpeed;
+            playerState = PlayerState::FALLING;
+        }
+        else if (InputManager::checkInput("Right") && objsRight.empty()) {
+            vx = moveXSpeed;
+            playerState = PlayerState::FALLING;
+        }
+        // Walljump ausführen
+        if (InputManager::checkInput("Jump") && canWallJump) {
+            vy = JUMP_FORCE;
+            vx = objsLeft.empty() ? -JUMP_FORCE / 2 : JUMP_FORCE / 2;  // Abstoßrichtung
+            canWallJump = false;  // Walljump blockieren
+            playerState = PlayerState::JUMPING;
+        }
+        break;
+        */
+
     default:
         std::cerr << "Unbekannter Spielerzustand!\n";
         break;
+    }
+    // Schwerkraft anwenden, wenn nicht im Dash
+    if (!dashing) {
+        vy += GRAVITY;
     }
 
 
     // Bewegung und Kollision berechnen
     moveAndCollide(Vector2(vx, vy));
 }
-
 
 
 
