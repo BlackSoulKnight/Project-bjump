@@ -41,9 +41,9 @@ void Player::printState() const {
 // Kollisionsprüfung (Boden)
 bool Player::checkGroundCollision(int screenHeight) {
     SDL_Rect linksNebenPlayer;
-    linksNebenPlayer.x = position.x+3;
+    linksNebenPlayer.x = position.x;
     linksNebenPlayer.y = position.y+position.h;
-    linksNebenPlayer.w = 10;
+    linksNebenPlayer.w = 16*SCALE;
     linksNebenPlayer.h = max((float)1,vy);
     vector<GameObject*> objs = World::Instance->getCollisions(linksNebenPlayer);
     if (objs.size() > 0) {
@@ -97,7 +97,7 @@ void Player::moveAndCollide(Vector2 direction) {
     CollisionCheck.w = max((int)1, abs(direction.x));
     CollisionCheck.x = (direction.x<0)? position.x - CollisionCheck.w : position.x + position.w;
     CollisionCheck.y = position.y;
-    CollisionCheck.h = 16;
+    CollisionCheck.h = 16*SCALE;
     vector<GameObject*> objs = World::Instance->getCollisions(CollisionCheck);
     if (direction.x < 0) {
         for (int i = 0; i < objs.size(); i++) {
@@ -119,7 +119,7 @@ void Player::moveAndCollide(Vector2 direction) {
     CollisionCheck.x = position.x;
     CollisionCheck.h = max(1, abs(direction.y));
     CollisionCheck.y = (direction.y <0 )? position.y - CollisionCheck.h : position.y + position.h;
-    CollisionCheck.w = 16;
+    CollisionCheck.w = 16*SCALE;
     objs = World::Instance->getCollisions(CollisionCheck);
     if (direction.y < 0) {
         for (int i = 0; i < objs.size(); i++) {
