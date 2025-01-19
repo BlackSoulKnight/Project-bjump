@@ -39,7 +39,7 @@ private:
 public:
 	SDL_Rect camera;
 	DebugMenu debugConsole;
-	GameObject* player;
+	Player* player;
 	void LoadGameAssets();
 	static World* Instance;
 	DebugMenu debugWindow;
