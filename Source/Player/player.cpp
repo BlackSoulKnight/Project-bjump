@@ -40,12 +40,13 @@ void Player::printState() const {
 
 // Kollisionsprüfung (Boden)
 bool Player::checkGroundCollision(int screenHeight) {
+    vector<string> ignoreTags = { "Enemy","Bullet" };
     SDL_Rect linksNebenPlayer;
     linksNebenPlayer.x = position.x;
     linksNebenPlayer.y = position.y+position.h;
     linksNebenPlayer.w = 16*SCALE;
     linksNebenPlayer.h = max((float)1,vy);
-    vector<GameObject*> objs = World::Instance->getCollisions(linksNebenPlayer);
+    vector<GameObject*> objs = World::Instance->getCollisions(linksNebenPlayer,ignoreTags);
     if (objs.size() > 0) {
         return true;
     }
@@ -54,6 +55,8 @@ bool Player::checkGroundCollision(int screenHeight) {
 
 // Kollisionsprüfung (Wände)
 bool Player::checkWallCollision() {
+    vector<string> ignoreTags = { "Enemy","Bullet" };
+
     // Links von der Spielfigur
     SDL_Rect leftSide;
     leftSide.x = position.x - 1;  // Ein kleines Stück links vom Spieler
@@ -69,8 +72,8 @@ bool Player::checkWallCollision() {
     rightSide.h = position.h - 6;          // Nur der mittlere Bereich des Spielers
 
     // Prüfen, ob es eine Wand links oder rechts gibt
-    std::vector<GameObject*> leftCollisions = World::Instance->getCollisions(leftSide);
-    std::vector<GameObject*> rightCollisions = World::Instance->getCollisions(rightSide);
+    std::vector<GameObject*> leftCollisions = World::Instance->getCollisions(leftSide, ignoreTags);
+    std::vector<GameObject*> rightCollisions = World::Instance->getCollisions(rightSide, ignoreTags);
 
     // Status setzen
     if (!leftCollisions.empty()) {
@@ -91,6 +94,7 @@ bool Player::checkWallCollision() {
 // Bewegung und Kollision berechnen
 void Player::moveAndCollide(Vector2 direction) {
     std::vector<std::tuple<GameObject*, SDL_Rect>> collisions;
+    vector<string> ignoreTags = { "Enemy","Bullet"};
     Vector2 newPos = { position.x + direction.x,position.y + direction.y};
     SDL_Rect CollisionCheck;
     CollisionCheck.w = abs(direction.x);
@@ -98,7 +102,7 @@ void Player::moveAndCollide(Vector2 direction) {
     CollisionCheck.x = (direction.x<0)? position.x - CollisionCheck.w : position.x + position.w;
     CollisionCheck.y = position.y;
     CollisionCheck.h = 16*SCALE;
-    vector<GameObject*> objs = World::Instance->getCollisions(CollisionCheck);
+    vector<GameObject*> objs = World::Instance->getCollisions(CollisionCheck,ignoreTags);
     if (direction.x < 0) {
         for (int i = 0; i < objs.size(); i++) {
             if (newPos.x < objs[i]->position.x + objs[i]->position.w) {
@@ -120,7 +124,7 @@ void Player::moveAndCollide(Vector2 direction) {
     CollisionCheck.h = max(1, abs(direction.y));
     CollisionCheck.y = (direction.y <0 )? position.y - CollisionCheck.h : position.y + position.h;
     CollisionCheck.w = 16*SCALE;
-    objs = World::Instance->getCollisions(CollisionCheck);
+    objs = World::Instance->getCollisions(CollisionCheck, ignoreTags);
     if (direction.y < 0) {
         for (int i = 0; i < objs.size(); i++) {
             if (newPos.y < objs[i]->position.y + objs[i]->position.h) {

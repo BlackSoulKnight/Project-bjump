@@ -57,8 +57,8 @@ public:
 	bool destroyGameObject(GameObject* obj);
 	bool destroyGameObject(int pos);
 	SDL_Renderer* getRenderer();
-	vector<tuple<GameObject*,SDL_Rect>> getCollisions(GameObject *origin);
-	vector<GameObject*> getCollisions(SDL_Rect area);
+	vector<tuple<GameObject*,SDL_Rect>> getCollisions(GameObject *origin, string IgnoreTags[] = nullptr);
+	vector<GameObject*> getCollisions(SDL_Rect area, vector<string> IgnoreTags = vector<string>());
 	vector<GameObject*> getTraceCollisions(Vector2 &start,Vector2 &end, vector<GameObject*> ignoreList = vector<GameObject*>(), bool closest = false);
 };
 
