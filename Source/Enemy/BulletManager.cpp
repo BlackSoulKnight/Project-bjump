@@ -37,3 +37,11 @@ void BulletManager::disableBullet(int Type, int position) {
 		}
 	}
 }
+void BulletManager::disableBullet(Bullet* target) {
+	int Type = target->Type;
+	if (bulletList.contains(Type)) {
+		target->position.y = -999;
+		target->isActive = false;
+		unusedBulletList[Type].push_back(target);
+	}
+}
