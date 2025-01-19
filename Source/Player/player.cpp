@@ -147,7 +147,7 @@ void Player::update(int deltaT) {
         canDoubleJump = true;  // Doppelsprung wieder erlauben
         canDash = true;        // Dash wieder erlauben
         if (!checkGroundCollision(320)) { // früher 0 (test)
-
+            
             playerState = PlayerState::FALLING;  // Vom Boden in "FALLING"
         }
         else {
@@ -200,6 +200,15 @@ void Player::update(int deltaT) {
         if (checkGroundCollision(320)) {
             vy = 0;
             playerState = PlayerState::ON_GROUND;  // Zurück auf den Boden
+        }
+        else if (InputManager::checkInput("Dash") && canDash) {
+            dashing = true;
+            dashTime = DASH_DURATION;  // Einheitliche Dauer
+            dashDirection = InputManager::checkInput("Left") ? -1 : 1; // Richtung festlegen
+            vx = DASH_SPEED * dashDirection;
+            vy = 0;  // Vertikale Bewegung pausieren
+            canDash = false;  // Dash einmalig deaktivieren
+            playerState = PlayerState::DASHING;  // Wechsel zu DASHING
         }
         else if (InputManager::checkInput("Jump") && canDoubleJump) {
             vy = JUMP_FORCE;
