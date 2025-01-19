@@ -54,13 +54,39 @@ bool Player::checkGroundCollision(int screenHeight) {
 
 // Kollisionsprüfung (Wände)
 bool Player::checkWallCollision() {
-    if (position.x <= 0 || position.x + width >= 640) {
-        touchingWall = false;
-        return false;
+    // Links von der Spielfigur
+    SDL_Rect leftSide;
+    leftSide.x = position.x - 1;  // Ein kleines Stück links vom Spieler
+    leftSide.y = position.y + 3; // Um nicht die oberen oder unteren Pixel zu berücksichtigen
+    leftSide.w = 1;              // Sehr schmale Breite
+    leftSide.h = position.h - 6; // Nur der mittlere Bereich des Spielers
+
+    // Rechts von der Spielfigur
+    SDL_Rect rightSide;
+    rightSide.x = position.x + position.w;  // Direkt rechts vom Spieler
+    rightSide.y = position.y + 3;          // Um nicht die oberen oder unteren Pixel zu berücksichtigen
+    rightSide.w = 1;                       // Sehr schmale Breite
+    rightSide.h = position.h - 6;          // Nur der mittlere Bereich des Spielers
+
+    // Prüfen, ob es eine Wand links oder rechts gibt
+    std::vector<GameObject*> leftCollisions = World::Instance->getCollisions(leftSide);
+    std::vector<GameObject*> rightCollisions = World::Instance->getCollisions(rightSide);
+
+    // Status setzen
+    if (!leftCollisions.empty()) {
+        touchingWall = true;
+        return true; // Wand links gefunden
     }
+    if (!rightCollisions.empty()) {
+        touchingWall = true;
+        return true; // Wand rechts gefunden
+    }
+
+    // Keine Wand berührt
     touchingWall = false;
     return false;
 }
+
 
 // Bewegung und Kollision berechnen
 void Player::moveAndCollide(Vector2 direction) {
@@ -210,6 +236,14 @@ void Player::update(int deltaT) {
             canDash = false;  // Dash einmalig deaktivieren
             playerState = PlayerState::DASHING;  // Wechsel zu DASHING
         }
+        // Prüfen, ob Spieler eine Wand berührt
+        // Wechsel in WALL_JUMPING, wenn Wandkontakt hergestellt wird
+        else if (checkWallCollision()) {
+            vx = 0;            // Horizontaler Stopp beim Wandkontakt
+            vy = 0;            // Vertikaler Stopp beim Wandkontakt
+            wallStickTime = 0; // Haftzeit zurücksetzen
+            playerState = PlayerState::WALL_JUMPING;
+        }
         else if (InputManager::checkInput("Jump") && canDoubleJump) {
             vy = JUMP_FORCE;
             playerState = PlayerState::DOUBLE_JUMPING;
@@ -254,28 +288,32 @@ void Player::update(int deltaT) {
         break;
 
     case PlayerState::WALL_JUMPING:
-        wallStickTime += deltaT;  // Wand-Haftzeit erhöhen
-        if (wallStickTime > MAX_WALL_STICK_TIME || !checkWallCollision()) {
-            playerState = PlayerState::FALLING;  // Von der Wand fallen
+        // Bleibt im WALL_JUMPING, solange die Wand berührt wird
+        if (!checkWallCollision()) {
+            playerState = PlayerState::FALLING;  // Verlasse Wandkontakt
             break;
         }
 
-        // Bewegung nach links/rechts, um sich von der Wand zu lösen
-        if (InputManager::checkInput("Left") && checkWallCollision()) {
+        // Wand-Haftzeit erhöhen, aber keine Bewegung zulassen
+        wallStickTime += deltaT;
+
+        // Wand-Sprung nach links oder rechts
+        if (InputManager::checkInput("Left")) {
             vx = -WALL_JUMP_FORCE_X;
             vy = WALL_JUMP_FORCE_Y;
-            playerState = PlayerState::JUMPING;
+            playerState = PlayerState::JUMPING;  // Wechsel zu JUMPING
         }
-        else if (InputManager::checkInput("Right") && checkWallCollision()) {
+        else if (InputManager::checkInput("Right")) {
             vx = WALL_JUMP_FORCE_X;
             vy = WALL_JUMP_FORCE_Y;
-            playerState = PlayerState::JUMPING;
+            playerState = PlayerState::JUMPING;  // Wechsel zu JUMPING
         }
 
-        // Kein Input, bleiben an der Wand haften
+        // Keine Bewegung, solange der Spieler an der Wand bleibt
         vx = 0;
         vy = 0;
         break;
+
 
     default:
         std::cerr << "Unbekannter Spielerzustand!\n";
