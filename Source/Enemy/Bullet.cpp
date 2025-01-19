@@ -8,14 +8,27 @@ void Bullet::initialize(Vector2 position, Vector2f startDirection, int startSpee
 	this->position.y = position.y;
 	direction = startDirection;
 	speed = startSpeed;
+	activeTime = 0;
 }
 
 void Bullet::update(int deltaT) {
+	vector<tuple<GameObject*, SDL_Rect>> collisions = World::Instance->getCollisions(this);
+	if (World::Instance->getCollisions(this).size() > 0) {
+		for (int i = 0; i < collisions.size(); i++) {
+			if (get<0>(collisions[i])->tag != "Enemy") {
+				BulletManager::disableBullet(this);
+				return;
+			}
+		}
+
+	}
 	position.x += speed  * direction.x;
 	position.y += speed  * direction.y;
+	activeTime += deltaT;
 	if (outOfScreen()) {
 		BulletManager::disableBullet(this);
 	}
+
 }
 
 Bullet::Bullet() :GameObject() {
@@ -30,8 +43,15 @@ Bullet::Bullet() :GameObject() {
 
 bool Bullet::outOfScreen() {
 	SDL_Rect camera = World::Instance->camera;
-	if (!(camera.x + camera.w < position.x && position.x > camera.x - position.w)) {
-			return true;
+	if (activeTime > 20 * 1000)
+		return true;
+	else 
+		return false;
+	int w, h; // this needs to be reworked
+	SDL_RenderGetLogicalSize(World::Instance->getRenderer(), &w, &h);
+	if (!(camera.x + camera.w + w/2 < position.x && position.x < camera.x - position.w + w/2) ||
+		(!(-camera.y + camera.h + h/2  < position.y && position.y < -camera.y - position.h + h))) {
+		return true;
 	}
 	return false;
 }
