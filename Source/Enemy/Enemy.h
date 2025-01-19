@@ -19,7 +19,7 @@ Bullet Manager
 class Enemy :public GameObject {
 public:
 	float begin = 1;
-	float delay = 0.01;
+	float delay = 1;
 	float lastShot = 0;
 	float activeTime = 0;
 	void update(int deltaT);
