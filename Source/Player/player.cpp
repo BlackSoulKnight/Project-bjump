@@ -65,13 +65,82 @@ bool Player::checkWallCollision() {
 // Bewegung und Kollision berechnen
 void Player::moveAndCollide(Vector2 direction) {
     std::vector<std::tuple<GameObject*, SDL_Rect>> collisions;
+    Vector2 newPos = { position.x + direction.x,position.y + direction.y};
+    SDL_Rect CollisionCheck;
+    CollisionCheck.w = abs(direction.x);
+    CollisionCheck.w = max((int)1, abs(direction.x));
+    CollisionCheck.x = (direction.x<0)? position.x - CollisionCheck.w : position.x + position.w;
+    CollisionCheck.y = position.y;
+    CollisionCheck.h = 16;
+    vector<GameObject*> objs = World::Instance->getCollisions(CollisionCheck);
+    if (direction.x < 0) {
+        for (int i = 0; i < objs.size(); i++) {
+            if (newPos.x < objs[i]->position.x + objs[i]->position.w) {
+                newPos.x = objs[i]->position.x + objs[i]->position.w;
+            }
+        }
+    }
+    else {
+        for (int i = 0; i < objs.size(); i++) {
+            if (newPos.x + position.w > objs[i]->position.x) {
+                newPos.x = objs[i]->position.x - position.w;
+            }
+        }
+    }
+    position.x = newPos.x;
 
-    position.x += direction.x;
-   
 
+    CollisionCheck.x = position.x;
+    CollisionCheck.h = max(1, abs(direction.y));
+    CollisionCheck.y = (direction.y <0 )? position.y - CollisionCheck.h : position.y + position.h;
+    CollisionCheck.w = 16;
+    objs = World::Instance->getCollisions(CollisionCheck);
+    if (direction.y < 0) {
+        for (int i = 0; i < objs.size(); i++) {
+            if (newPos.y < objs[i]->position.y + objs[i]->position.h) {
+                newPos.y = objs[i]->position.y + objs[i]->position.h;
+            }
+        }
+    }
+    else {
+        for (int i = 0; i < objs.size(); i++) {
+            if (newPos.y > objs[i]->position.y) {
+                newPos.y = objs[i]->position.y;
+            }
+        }
+    }
+    position.y = newPos.y;
+    /*
+    vector<tuple<GameObject*, SDL_Rect>> t = World::Instance->getCollisions(this);
+    for (int i = 0; i < t.size(); i++) {
 
-    position.y += direction.y;
-    
+         Vector2 playerPos = { position.x + position.w / 2,position.y + position.h / 2 };
+        SDL_Rect target = get<1>(t[i]);
+
+        if (true) {
+            auto renderer = World::Instance->getRenderer();
+            auto camera = World::Instance->camera;
+            SDL_Rect collisionbox = target;
+            collisionbox.x = target.x + camera.x;
+            collisionbox.y = target.y + camera.y;
+            SDL_SetRenderDrawColor(renderer, 0, 255, 0, 100);
+            SDL_RenderFillRect(renderer, &collisionbox);
+            SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+            SDL_RenderDrawRect(renderer, &collisionbox);
+            SDL_RenderPresent(renderer);
+        };
+
+        Vector2 targetPos = { target.x + target.w / 2,target.y + target.h / 2 };
+        if (abs(playerPos.x - target.x) > abs(playerPos.y - targetPos.y)) {
+            playerPos.x -= targetPos.x - playerPos.x;
+        }
+        else {
+            playerPos.y += targetPos.y - playerPos.y;
+        }
+        position.x = playerPos.x - position.w / 2;
+        position.y = playerPos.y - position.h / 2;
+    }
+    */
 }
 
 // Spielerzustand aktualisieren
@@ -79,23 +148,12 @@ void Player::update(int deltaT) {
     printState();
     int moveXSpeed = (dashing ? MOVE_SPEED * 1.5f : MOVE_SPEED);
 
-    SDL_Rect linksNebenPlayer;
-    linksNebenPlayer.w = moveXSpeed;
-    linksNebenPlayer.x = position.x - linksNebenPlayer.w;
-    linksNebenPlayer.y = position.y;
-    linksNebenPlayer.h = 16;
-    vector<GameObject*> objs = World::Instance->getCollisions(linksNebenPlayer);
 
-    linksNebenPlayer.x = position.x +position.w;
-    linksNebenPlayer.y = position.y;
-    linksNebenPlayer.w = moveXSpeed;
-    linksNebenPlayer.h = 16;
-    vector<GameObject*> objs2 = World::Instance->getCollisions(linksNebenPlayer);
     // Bewegung nach links und rechts (normale Bewegung)
-    if (InputManager::checkInput("Left") && objs.size() == 0) {
+    if (InputManager::checkInput("Left")) {
         vx = moveXSpeed * -1;  // Linksbewegung
     }
-    else if (InputManager::checkInput("Right") && objs2.size()==0) {
+    else if (InputManager::checkInput("Right")) {
         vx = moveXSpeed;  // Rechtsbewegung
     }
     else if (!dashing) {
@@ -249,15 +307,6 @@ void Player::update(int deltaT) {
     }
 
 
-    linksNebenPlayer.x = position.x + 3;
-    linksNebenPlayer.h = max((float)1,abs(vy));
-    linksNebenPlayer.y = position.y - linksNebenPlayer.h;
-    linksNebenPlayer.w = 10;
-    
-    objs2 = World::Instance->getCollisions(linksNebenPlayer);
-    if (vy < 0 && objs2.size() > 0) {
-        vy = 0;
-    }
     // Bewegung und Kollision berechnen
     moveAndCollide(Vector2(vx, vy));
 }

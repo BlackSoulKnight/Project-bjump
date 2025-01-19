@@ -18,7 +18,7 @@ using namespace std;
 class World
 {
 private:
-	SDL_Rect camera;
+	//SDL_Rect camera;
 	bool debug = true;
 	SDL_Window* window;
 	SDL_Renderer* renderer;
@@ -37,6 +37,7 @@ private:
 
 
 public:
+	SDL_Rect camera;
 	DebugMenu debugConsole;
 	GameObject* player;
 	void LoadGameAssets();
