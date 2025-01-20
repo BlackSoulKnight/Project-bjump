@@ -11,8 +11,16 @@
 using namespace std;
 #define FILE_BUFFER_SIZE 200
 
+enum Layer
+{
+    FOREGROUND = 0,
+    BACKGROUND = 1,
+    SHOW_ALL = 2,
+};
+
 struct WorldState
 {
+    char* workingDirectory;
     int vertical_size = 30;
     int horizontal_size = 30;
 
@@ -26,6 +34,7 @@ struct WorldState
     SDL_Window* window;
     SDL_Renderer* renderer;
     SDL_Texture* texture;
+    SDL_Texture* transparent_texture;
     SpriteController sprite_controller;
 
     int selected_tile_x = 0;
@@ -34,7 +43,9 @@ struct WorldState
     bool repeat_placement = false;
     bool grid = false;
     bool delete_mode = false;
+    int current_layer = 0;
     std::vector<std::vector<int>> tiles;
+    std::vector<std::vector<int>> background;
 
     SDL_Rect camera = { 0, 0, 0, 0 };
     SDL_Rect mouse_position_to_highlight = { 0,0,0,0 };
@@ -46,6 +57,11 @@ struct WorldState
         L"R_Click:\t\tKamera bewegen\n"
         L"S:\t\tSpeichern\n"
         L"G:\t\tGrid aktivieren/deaktivieren\n"
+        L"X:\t\tToggle Löschen\n"
+        L"1,2,3:\t\tEbenen wechseln\n"
+        L"\t\t\t1: Vordergrund\n"
+        L"\t\t\t2: Hintergrund\n\n"
+        L"\t\t\t3: Alle Ebenen\n\n"
         L"MRad +/-:\tTileset kleiner/größer machen\n"
         L"UP/DOWN:\tZoom +/-\n";
     LPCWSTR editor_controlls_title = L"Editor Controlls";
@@ -72,7 +88,11 @@ void init_sprite_controller(char* filePath, int sizeX, int sizeY);
 #pragma region WindowsAPI Functions
 PWSTR WINAPI get_file_path();
 int WINAPI showMessage(LPCWSTR, LPCWSTR);
-char* converter_function(PWSTR);
+char* convert_PWSTR_to_char(PWSTR);
+#pragma endregion
+
+#pragma region Helper Functions
+void render_texture_auto(SDL_Renderer*, SDL_Rect*, SDL_Rect*, Layer);
 #pragma endregion
 
 
@@ -80,10 +100,11 @@ using namespace std;
 int main(int argc, char **argv)
 {
     SetConsoleTitle(TEXT("BJump Map Editor: v0.9.1"));
+    WS.workingDirectory = argv[0];
     cout << "BJump Map Editor\n";
     cout << "Waehle das SpriteSheet aus.\n";
     PWSTR sprite_sheet_path = get_file_path();
-    char* converted_sprite_sheet_path = converter_function(sprite_sheet_path);
+    char* converted_sprite_sheet_path = convert_PWSTR_to_char(sprite_sheet_path);
     cout << "Datei: " << converted_sprite_sheet_path << endl << endl;
     cout << "Sprite groesse X: ";
     int sizeX = 0;
@@ -112,14 +133,21 @@ int main(int argc, char **argv)
         start_editor(converted_sprite_sheet_path);
         break;
     case 2:
+        {
         cout << "Waehl die Map-Datei aus.";
         map_file_path = get_file_path();
-        converted_map_file_path = converter_function(map_file_path);
+        converted_map_file_path = convert_PWSTR_to_char(map_file_path);
         cout << converted_map_file_path;
         cin;
 
         WS.tiles = load_map(converted_map_file_path);
+        int len = strlen(converted_map_file_path);
+        char* tmp = new char[ len + 2 + 1];
+        strcpy_s(tmp, sizeof(tmp[0]) * (len + 3), converted_map_file_path);
+        tmp[len] = 'B', tmp[len + 1] = 'G', tmp[len + 2] = '\0';
+        WS.background = load_map(tmp);
         start_editor(converted_sprite_sheet_path);
+        }
         break;
     default:
         break;
@@ -148,10 +176,15 @@ void init_editor(char* sprite_sheet_path) {
     SDL_Init(SDL_INIT_EVERYTHING);
     SDL_Init(IMG_INIT_PNG);
     SDL_ShowCursor(true);
-
     WS.window = SDL_CreateWindow("Map Editor", 0, 20, 1280, 720, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
     WS.renderer = SDL_CreateRenderer(WS.window, -1, SDL_RENDERER_PRESENTVSYNC);
+    SDL_SetRenderDrawBlendMode(WS.renderer, SDL_BLENDMODE_BLEND);
+
     WS.texture = IMG_LoadTexture(WS.renderer, sprite_sheet_path);
+    SDL_Texture* tmp = IMG_LoadTexture(WS.renderer, sprite_sheet_path);
+    SDL_SetTextureAlphaMod(tmp, 0x7f);
+    SDL_SetTextureColorMod(tmp, 0x7f, 0x7f, 0x7f);
+    WS.transparent_texture = tmp;
     WS.camera = { 0,0,WS.sprite_controller.getSpriteSizeX(), WS.sprite_controller.getSpriteSizeY()};
     WS.mouse_position_to_highlight = WS.camera;
 
@@ -161,7 +194,8 @@ void init_editor(char* sprite_sheet_path) {
             WS.tiles.push_back(std::vector<int>(WS.horizontal_size));
             std::fill(WS.tiles[i].begin(), WS.tiles[i].end(), -1);
         }
-        
+    if(WS.background.size() == 0)
+        WS.background = WS.tiles;
     SDL_RenderSetLogicalSize(WS.renderer, 600, 400);
 
     if (WS.show_controlls)
@@ -208,6 +242,15 @@ void read_events() {
                 break;
             case SDL_SCANCODE_X:
                 WS.delete_mode = !WS.delete_mode;
+                break;
+            case SDL_SCANCODE_1:
+                WS.current_layer = 0; // Foreground
+                break;
+            case SDL_SCANCODE_2:
+                WS.current_layer = 1; // Background
+                break;
+            case SDL_SCANCODE_3:
+                WS.current_layer = 2; // Background
                 break;
             default:
                 break;
@@ -264,11 +307,25 @@ void render_graphics() {
 
     SDL_Rect initial_cam_pos = WS.camera;
     int origin = initial_cam_pos.x;
-    // Render Map
+
+    for (auto y : WS.background) {
+        for (auto x : y) {
+            if (x != -1) {
+                render_texture_auto(WS.renderer, WS.sprite_controller.getSprite(x), &initial_cam_pos, Layer::BACKGROUND);
+            }
+            initial_cam_pos.x += WS.sprite_controller.getSpriteSizeX();
+        }
+        initial_cam_pos.y += WS.sprite_controller.getSpriteSizeY();
+        initial_cam_pos.x = origin;
+    }
+
+    initial_cam_pos = WS.camera;
+    origin = initial_cam_pos.x;
+
     for (auto y : WS.tiles) {
         for (auto x : y) {
             if (x != -1) {
-                SDL_RenderCopy(WS.renderer, WS.texture, WS.sprite_controller.getSprite(x), &initial_cam_pos);
+                render_texture_auto(WS.renderer, WS.sprite_controller.getSprite(x), &initial_cam_pos, Layer::FOREGROUND);
             }
             initial_cam_pos.x += WS.sprite_controller.getSpriteSizeX();
         }
@@ -299,7 +356,12 @@ void render_graphics() {
     if (WS.delete_mode)
         SDL_SetRenderDrawColor(WS.renderer, 255, 0, 0, 127);
     else
-        SDL_SetRenderDrawColor(WS.renderer, 0, 255, 0, 127);
+        if(WS.current_layer == Layer::FOREGROUND)
+            SDL_SetRenderDrawColor(WS.renderer, 0, 255, 0, 127);
+        else if (WS.current_layer == Layer::BACKGROUND)
+            SDL_SetRenderDrawColor(WS.renderer, 0, 0, 255, 127);
+        else
+            SDL_SetRenderDrawColor(WS.renderer, 127, 127, 127, 127);
     SDL_RenderDrawRect(WS.renderer, &to_place_position);
 
 
@@ -349,9 +411,6 @@ void render_graphics() {
 #pragma endregion
 
 #pragma region Event Functions
-void set_at_position() {
-
-}
 
 void mouse_button_1(SDL_Event e) {
     SDL_MouseButtonEvent mbe = e.button;
@@ -363,20 +422,35 @@ void mouse_button_1(SDL_Event e) {
         WS.selected_tile_y = yPos;
     }
     else {
+        if (WS.current_layer == Layer::SHOW_ALL) 
+            return; //Kein ausgewählter layer
         //Kamera offset mit einbeziehen beim platzieren
         xPos = (mbe.x - WS.camera.x) / WS.sprite_controller.getSpriteSizeX();
         yPos = (mbe.y - WS.camera.y) / WS.sprite_controller.getSpriteSizeY();
         cout << "INFO: outside of selectMap" << endl;
+        
         if ((xPos < 0 || WS.tiles[0].size() <= xPos) || (yPos < 0 || WS.tiles.size() <= yPos))
             return;
+        vector<vector<int>>* layer = nullptr;
+        switch (WS.current_layer)
+        {
+        case 0:
+            layer = &WS.tiles;
+            break;
+        case 1:
+            layer = &WS.background;
+            break;
+        }
+
         if (WS.delete_mode) {
-            WS.tiles.at(yPos).at(xPos) = -1;
+            layer->at(yPos).at(xPos) = -1;
             return;
         }
 
-        if (WS.tiles.at(yPos).at(xPos) == WS.selected_tile_x + (WS.selected_tile_y * WS.sprite_controller.getSpritesPerX()))
+        if (layer->at(yPos).at(xPos) == WS.selected_tile_x + (WS.selected_tile_y * WS.sprite_controller.getSpritesPerX()))
             return;
-        WS.tiles.at(yPos).at(xPos) = WS.selected_tile_x + (WS.selected_tile_y * WS.sprite_controller.getSpritesPerX());
+        
+        layer->at(yPos).at(xPos) = WS.selected_tile_x + (WS.selected_tile_y * WS.sprite_controller.getSpritesPerX());
     }
 }
 
@@ -395,7 +469,15 @@ void save_created_map()
         copy(begin(row), end(row), o_iterator);
         saved_file << '\n';
     }
-    showMessage((LPCWSTR)L"File was saved successfully", (LPCWSTR)L"Success Dialogue");
+    ofstream saved_file_bg("./map.bjumpBG");
+    ostream_iterator<int> o_iterator_bg(saved_file_bg, ",");
+    for (auto row : WS.background) {
+        copy(begin(row), end(row), o_iterator_bg);
+        saved_file_bg << '\n';
+    }
+    saved_file.close();
+    saved_file_bg.close();
+    showMessage((LPWSTR)L"File was saved successfully\n\nFiles:\n\tmap.bjump\n\tmap.bjumpBG", (LPCWSTR)L"Success Dialogue");
 }
 
 void init_sprite_controller(char* filePath, int sizeX, int sizeY)
@@ -403,7 +485,7 @@ void init_sprite_controller(char* filePath, int sizeX, int sizeY)
     WS.sprite_controller = SpriteController::generateController(filePath, sizeX, sizeY, WS.renderer);
 }
 
-char* converter_function(PWSTR convert_from) {
+char* convert_PWSTR_to_char(PWSTR convert_from) {
     size_t i;
     char* converted_string = (char*)malloc(sizeof(char) * FILE_BUFFER_SIZE);
     wcstombs_s(&i, converted_string, (size_t)FILE_BUFFER_SIZE, convert_from, (size_t)(FILE_BUFFER_SIZE - 1));
@@ -467,4 +549,17 @@ vector<vector<int>> load_map(const char* filePath)
         mapData.push_back(tmp);
     }
     return mapData;
+}
+
+void render_texture_auto(SDL_Renderer* renderer, SDL_Rect* sprite, SDL_Rect* position, Layer mode) {
+    if (WS.current_layer == Layer::SHOW_ALL)
+    {
+        SDL_RenderCopy(WS.renderer, WS.texture, sprite, position);
+        return;
+    }
+    if (WS.current_layer != mode)
+        SDL_RenderCopy(WS.renderer, WS.transparent_texture, sprite, position);
+    else
+        SDL_RenderCopy(WS.renderer, WS.texture, sprite, position);
+
 }

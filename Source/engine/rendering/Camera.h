@@ -10,7 +10,7 @@ public:
 	Vector2 gridLocation;
 
 	Vector2 outOfScreen(const Player player) {
-		return { ((player.position.x) / (w))  , ((player.position.y) / (h)) };
+		return { ((player.position.x) / (w)), ((player.position.y) / (h)) };
 	}
 	bool entityOutOfScreen(const GameObject entity) {
 		return !(((entity.position.x / w)) == gridLocation.x && (entity.position.y / h) == gridLocation.y);

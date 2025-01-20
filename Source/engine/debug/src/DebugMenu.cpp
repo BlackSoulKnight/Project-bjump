@@ -83,6 +83,11 @@ void DebugMenu::PlayerMenu(Player* player) {
     ImGui::Text("X: (%d)\tY: (%d)", player->position.x, player->position.y);
     ImGui::Text("Is Active? (%s)", player->isActive ? "Yes" : "No");
     ImGui::Text("Layer: (%d)", player->layer);
+    int tmp = 0;
+    ImGui::InputInt("MoveMin", &tmp, 1, 10);
+    ImGui::SameLine();
+    ImGui::InputInt("MoveMax", &tmp, 1, 10);
+
     ImGui::SliderFloat("Move Speed", &player->MOVE_SPEED, 5, 100);
     ImGui::SliderFloat("Fall Speed", &player->FALL_SPEED, 10, 200);
     ImGui::SliderFloat("Dash Speed", &player->DASH_SPEED, 200, 2000);
