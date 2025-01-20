@@ -32,10 +32,15 @@ void Player::printState() const {
     case PlayerState::JUMPING: std::cout << "State: JUMPING\n"; break;
     case PlayerState::DOUBLE_JUMPING: std::cout << "State: DOUBLE_JUMPING\n"; break;
     case PlayerState::DASHING: std::cout << "State: DASHING\n"; break;
+    case PlayerState::WALL_SLIDING: std::cout << "State: WALL_SLIDING\n"; break;
     case PlayerState::WALL_JUMPING: std::cout << "State: WALL_JUMPING\n"; break;
     case PlayerState::FALLING: std::cout << "State: FALLING\n"; break;
     default: std::cout << "Unknown State\n"; break;
     }
+    // Wandkontaktinformationen ausgeben
+    std::cout << "Touching Left Wall: " << (touchingLeftWall ? "true" : "false") << "\n";
+    std::cout << "Touching Right Wall: " << (touchingRightWall ? "true" : "false") << "\n";
+
 }
 
 // Kollisionsprüfung (Boden)
@@ -78,15 +83,23 @@ bool Player::checkWallCollision() {
     // Status setzen
     if (!leftCollisions.empty()) {
         touchingWall = true;
+        touchingLeftWall = true;
+        lastTouchedWallWasRight = false;
+        
         return true; // Wand links gefunden
     }
     if (!rightCollisions.empty()) {
         touchingWall = true;
+        touchingRightWall = true;
+        lastTouchedWallWasRight = true;
+        
         return true; // Wand rechts gefunden
     }
 
     // Keine Wand berührt
     touchingWall = false;
+     touchingLeftWall = false;
+     touchingRightWall = false;
     return false;
 }
 
@@ -187,6 +200,7 @@ void Player::update(int deltaT) {
             vy = JUMP_FORCE;  // Vom Boden springen
             playerState = PlayerState::JUMPING;
         }
+        checkWallCollision();
         break;
 
     case PlayerState::JUMPING:
@@ -224,6 +238,9 @@ void Player::update(int deltaT) {
             canDash = false;
             playerState = PlayerState::DASHING;
         }
+        else if (vy > 0) {
+            playerState = PlayerState::FALLING;  // Wechsel zu "FALLING", wenn nach unten
+        }
         break;
 
     case PlayerState::FALLING:
@@ -243,10 +260,13 @@ void Player::update(int deltaT) {
         // Prüfen, ob Spieler eine Wand berührt
         // Wechsel in WALL_JUMPING, wenn Wandkontakt hergestellt wird
         else if (checkWallCollision()) {
-            vx = 0;            // Horizontaler Stopp beim Wandkontakt
-            vy = 0;            // Vertikaler Stopp beim Wandkontakt
-            wallStickTime = 0; // Haftzeit zurücksetzen
-            playerState = PlayerState::WALL_JUMPING;
+            if ((touchingLeftWall && InputManager::checkInput("Left")) ||
+                (touchingRightWall && InputManager::checkInput("Right"))) {
+                vx = 0;            // Horizontaler Stopp beim Wandkontakt
+                vy = 0;            // Vertikaler Stopp beim Wandkontakt
+                wallStickTime = 0; // Haftzeit zurücksetzen
+                playerState = PlayerState::WALL_SLIDING;
+            }
         }
         else if (InputManager::checkInput("Jump") && canDoubleJump) {
             vy = JUMP_FORCE;
@@ -290,27 +310,81 @@ void Player::update(int deltaT) {
             }
         }
         break;
-
+        
     case PlayerState::WALL_JUMPING:
-        // Bleibt im WALL_JUMPING, solange die Wand berührt wird
-        if (!checkWallCollision()) {
-            playerState = PlayerState::FALLING;  // Verlasse Wandkontakt
+    {
+        static float wallJumpTimer = 0.20f; // Timer für die halbe Sekunde
+        wallJumpTimer += deltaT / 1000.0f; // Delta-Zeit in Sekunden
+
+        // Während der halben Sekunde Bewegung blockieren
+        if (wallJumpTimer <= 0.20f) {
+            vx = 0; // Keine horizontale Bewegung erlauben
+        }
+        else {
+            // Nach 0.5 Sekunden automatisch in FALLING wechseln
+            playerState = PlayerState::FALLING;
+            wallJumpTimer = 0.0f; // Timer zurücksetzen
+            break;
+        }
+        // Wenn von der rechten Wand abgesprungen, langsamer nach links bewegen
+        if (lastTouchedWallWasRight) {
+            // Geschwindigkeit nach links mit der Zeit verringern (Verlangsamen)
+             
+                vx -= MOVE_SPEED;  
+            }
+            
+            else {
+                
+                    vx += MOVE_SPEED;
+                
+        }
+       
+
+        // Vertikale Bewegung bleibt aktiv
+        vy += GRAVITY * deltaT / 1000.0f;
+
+        // Spielerbewegung aktualisieren
+        position.x += vx * deltaT / 1000.0f;
+        position.y += vy * deltaT / 1000.0f;
+        break;
+    }
+
+    case PlayerState::WALL_SLIDING:
+         
+        // Verlasse WALL_JUMPING, wenn keine Wand mehr berührt wird
+        if (!touchingLeftWall && !touchingRightWall) {
+            playerState = PlayerState::FALLING;
             break;
         }
 
-        // Wand-Haftzeit erhöhen, aber keine Bewegung zulassen
-        wallStickTime += deltaT;
+        // Wand-Sprung auslösen
+        if (InputManager::checkInput("Jump")) {
+            const float initialForceX = WALL_JUMP_FORCE_X; // Anfangskraft horizontal
+            const float initialForceY = WALL_JUMP_FORCE_Y; // Anfangskraft vertikal
+            const float decelerationFactor = 0.82f;        // Abnahme der Geschwindigkeit pro Frame
 
-        // Wand-Sprung nach links oder rechts
-        if (InputManager::checkInput("Left")) {
-            vx = -WALL_JUMP_FORCE_X;
-            vy = WALL_JUMP_FORCE_Y;
-            playerState = PlayerState::JUMPING;  // Wechsel zu JUMPING
+            if (touchingLeftWall) {
+                vx += initialForceX; // Diagonal nach rechts starten
+            }
+            else if (touchingRightWall) {
+                vx -= initialForceX; // Diagonal nach links starten
+            }
+            // Vertikale Bewegung
+            vy = initialForceY;
+           
+            // Langsames Abklingen der Kräfte
+            vx *= decelerationFactor; // Horizontal langsamer
+            vy *= decelerationFactor; // Vertikal langsamer
+
+            playerState = PlayerState::WALL_JUMPING;  // Wechsel zu JUMPING
+            break;
         }
-        else if (InputManager::checkInput("Right")) {
-            vx = WALL_JUMP_FORCE_X;
-            vy = WALL_JUMP_FORCE_Y;
-            playerState = PlayerState::JUMPING;  // Wechsel zu JUMPING
+
+        // Verlasse WALL_JUMPING, wenn nicht mehr gegen die Wand gelaufen wird
+        if ((touchingLeftWall && !InputManager::checkInput("Left")) ||
+            (touchingRightWall && !InputManager::checkInput("Right"))) {
+            playerState = PlayerState::FALLING;
+            break;
         }
 
         // Keine Bewegung, solange der Spieler an der Wand bleibt
