@@ -216,7 +216,7 @@ void World::renderGraphics() {
     {
         debugWindow.GameMenu();
     }
-    if (debugWindow.showPlayer)
+    if (debugWindow.showPlayerMenu)
     {
         debugWindow.PlayerMenu(player);
     }

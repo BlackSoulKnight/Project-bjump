@@ -65,10 +65,10 @@ void DebugMenu::Menu() {
     ImGui::Text("Hello!");
     if (ImGui::Button("Render Menu"))
         showRendererMenu = !showRendererMenu;
-    if (ImGui::Button("Game Menu"))
-        showGameMenu = !showGameMenu;
+    //if (ImGui::Button("Game Menu"))
+    //    showGameMenu = !showGameMenu;
     if (ImGui::Button("Show Player"))
-        showPlayer = !showPlayer;
+        showPlayerMenu = !showPlayerMenu;
     if (ImGui::Button("Show Examples"))
         showExamples = !showExamples;
     ImGui::End();
@@ -76,7 +76,7 @@ void DebugMenu::Menu() {
 }
 
 void DebugMenu::PlayerMenu(Player* player) {
-    ImGui::Begin("Player Menu");
+    ImGui::Begin("Player Menu", &showPlayerMenu);
     ImGui::Text("Name: (%s)", player->name);
     ImGui::Text("X: (%d)\tY: (%d)", player->position.x, player->position.y);
     ImGui::Text("Is Active? (%s)", player->isActive ? "Yes" : "No");
@@ -98,9 +98,6 @@ void DebugMenu::PlayerMenu(Player* player) {
     ImGui::SliderFloat("Wall Jump Force X", &player->WALL_JUMP_FORCE_X, -80.0, -8.0);
     ImGui::SliderFloat("Wall Jump Force Y", &player->WALL_JUMP_FORCE_Y, 5.0, 100.0 );
 
-
-    
-
     ImGui::End();
 }
 
@@ -109,7 +106,7 @@ void DebugMenu::ShowExampleAddsToMenu() {
     std::function<void(void)> functionToCall = exampleButtonFunction;
     const char* windowName = "Example Window";
 
-    ImGui::Begin(windowName);
+    ImGui::Begin(windowName, &showExamples);
     ImGui::Text("So fügt man sachen ein!");
     ImGui::End(); // Hier wird das frame geschlossen
     addText(windowName, "PS: DIE MEISTEN SACHEN SETZTEN SICH WIEDER AUF NULL");

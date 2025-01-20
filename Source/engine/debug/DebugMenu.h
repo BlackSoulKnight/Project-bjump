@@ -25,7 +25,7 @@ public:
     bool showDebugMenu = true;
     bool showRendererMenu = false;
     bool showGameMenu = false;
-    bool showPlayer = false;
+    bool showPlayerMenu = false;
     const char* DEBUGMENU = "Debug menu";
     const char* GAMEMENU = "Game Menu";
     const char* RENDERMENU = "Render Menu";
