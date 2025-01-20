@@ -18,8 +18,10 @@ World::World(int _windowSizeX, int _windowSizeY) {
     World::Instance = this;
     debugWindow = DebugMenu();
     LoadGameAssets();
-    LoadFile(string("../Levels/dev-sandbox.bjump"));
+    //LoadFile(string("../Levels/dev-sandbox.bjump"));
+    LoadFile(string("../Levels/map.bjump"));
     camera = { 0,0, WINDOW_WIDTH,WINDOW_HEIGHT };
+    //camera.setCameraOffset(40, 40);
     debugWindow.DebugInit(window, renderer);
 }
 
@@ -218,14 +220,17 @@ void World::LoadFile(string fileName) {
         ));
     }
 }
-
 void World::renderGraphics() {
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
     int w = windowSizeX, h = windowSizeY;
     SDL_RenderGetLogicalSize(renderer,&w, &h);
-    camera.x = (w / 2) + (player->sprite.x - player->position.x);
-    camera.y = (h / 2) + (player->sprite.y - player->position.y);
+
+    //camera.xOffset = -(camera.w / 2);
+    //camera.yOffset = -(camera.h / 2);
+    
+    camera.calculatePositionBasedOnPlayer(*player);
+    //camera.setCameraPosition(1000, 300);
     debugWindow.DebugStart();
     // Render Default Background
     for (auto bg : background)
@@ -238,7 +243,6 @@ void World::renderGraphics() {
 
     debugWindow.Menu();
 
-  
     if (debugWindow.showRendererMenu) {
         debugWindow.RenderMenu(debug);
     }
@@ -246,14 +250,79 @@ void World::renderGraphics() {
     {
         debugWindow.GameMenu();
     }
-    if (debugWindow.showPlayer)
+    if (debugWindow.showPlayerMenu)
     {
         debugWindow.PlayerMenu(player);
     }
+    if (debugWindow.showCameraMenu)
+        debugWindow.CameraMenu(&camera);
     if (debugWindow.showExamples)
         debugWindow.ShowExampleAddsToMenu();
+
+
     debugWindow.DebugEnd(renderer);
     SDL_RenderPresent(renderer);
+}
+void World::renderEntity(GameObject &entity) {
+
+    if (!entity.isActive)
+        return;
+
+    // Scaling nicht an
+    //SDL_Rect entityPosition = scaleEntityPosition(entity);
+
+    if (!spriteControllers.contains(entity.sprite.spiteSheetLocation))
+    {
+        SpriteController tmpSpriteController = SpriteController::generateController(entity.sprite.spiteSheetLocation.c_str(), 16, 16, renderer);
+        spriteControllers.insert({ entity.sprite.spiteSheetLocation, tmpSpriteController });
+    }
+    SpriteController entitySpriteController = spriteControllers.at(entity.sprite.spiteSheetLocation);
+
+    // Transformieren des Sprites
+    int flipDirection = 0;
+    if (entity.sprite.flipV)
+        flipDirection += SDL_FLIP_VERTICAL;
+    if (entity.sprite.flipH)
+        flipDirection += SDL_FLIP_HORIZONTAL;
+
+    // Hardcoded 8,8 muss ausgewechselt werden!
+    SDL_Rect spriteSheetLocation = { entity.getSprite().x, entity.getSprite().y , 16 ,16 };
+    SDL_Rect actualPosition = {
+        entity.position.x + (camera.x + camera.xOffset),
+        entity.position.y + (camera.y + camera.yOffset),
+        16 * SCALE, 16  * SCALE };
+
+    /*
+    int rowOverflow = 0;
+    if (((entity.frameCount / 60) % entitySpriteController.getSpritesPerX()) + entity.sprite.x > entitySpriteController.getSpritesPerX())
+        rowOverflow++;
+    */
+    SDL_RenderCopyEx(
+        renderer,
+        entitySpriteController.getTexture(),
+        //Berechnung in XY in eigene funktion lagern
+        entitySpriteController.x(entity.sprite.x).y(entity.sprite.y).getSprite(),
+        &actualPosition,
+        0,
+        NULL,
+        (SDL_RendererFlip)(flipDirection));
+
+    if (debug) {
+        SDL_Rect collisionbox = { 0,0,16 * SCALE,16 * SCALE };
+        collisionbox.x = entity.position.x + (camera.x + camera.xOffset);
+        collisionbox.y = entity.position.y + (camera.y + camera.yOffset);
+        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 100);
+        SDL_RenderFillRect(renderer, &collisionbox);
+        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+        SDL_RenderDrawRect(renderer, &collisionbox);
+    }
+
+    /*
+    if (entity.sprite.animationSize == 0)
+        return;
+    entity.frameCount++;
+    */
+
 }
 
 GameObject* World::generateBlock(int tile, SDL_Rect tilePos, int mapWidth, int mapHeight) {
@@ -327,68 +396,6 @@ GameObject* World::generateDefaultBackground(SDL_Rect bgPos, int mapWidth, int m
     return block;
 }
 
-void World::renderEntity(GameObject &entity) {
-
-
-    if (!entity.isActive)
-        return;
-
-    // Scaling nicht an
-    //SDL_Rect entityPosition = scaleEntityPosition(entity);
-
-    if (!spriteControllers.contains(entity.sprite.spiteSheetLocation))
-    {
-        SpriteController tmpSpriteController = SpriteController::generateController(entity.sprite.spiteSheetLocation.c_str(), 16, 16, renderer);
-        spriteControllers.insert({ entity.sprite.spiteSheetLocation, tmpSpriteController });
-    }
-    SpriteController entitySpriteController = spriteControllers.at(entity.sprite.spiteSheetLocation);
-
-    // Transformieren des Sprites
-    int flipDirection = 0;
-    if (entity.sprite.flipV)
-        flipDirection += SDL_FLIP_VERTICAL;
-    if (entity.sprite.flipH)
-        flipDirection += SDL_FLIP_HORIZONTAL;
-
-    // Hardcoded 8,8 muss ausgewechselt werden!
-    SDL_Rect spriteSheetLocation = { entity.getSprite().x, entity.getSprite().y , 16 ,16 };
-    SDL_Rect actualPosition = {
-        entity.position.x + (camera.x + camera.xOffset),
-        entity.position.y + (camera.y + camera.yOffset),
-        16 * SCALE,16  * SCALE };
-
-    /*
-    int rowOverflow = 0;
-    if (((entity.frameCount / 60) % entitySpriteController.getSpritesPerX()) + entity.sprite.x > entitySpriteController.getSpritesPerX())
-        rowOverflow++;
-    */
-    SDL_RenderCopyEx(
-        renderer,
-        entitySpriteController.getTexture(),
-        //Berechnung in XY in eigene funktion lagern
-        entitySpriteController.x(entity.sprite.x).y(entity.sprite.y).getSprite(),
-        &actualPosition,
-        0,
-        NULL,
-        (SDL_RendererFlip)(flipDirection));
-
-    if (debug) {
-        SDL_Rect collisionbox = { 0,0,16 * SCALE,16 * SCALE };
-        collisionbox.x = entity.position.x + camera.x;
-        collisionbox.y = entity.position.y + camera.y;
-        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 100);
-        SDL_RenderFillRect(renderer, &collisionbox);
-        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-        SDL_RenderDrawRect(renderer, &collisionbox);
-    }
-
-    /*
-    if (entity.sprite.animationSize == 0)
-        return;
-    entity.frameCount++;
-    */
-
-}
 
 /*
 SDL_Rect scaleEntityPosition(GameObject entity) {

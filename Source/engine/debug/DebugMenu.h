@@ -8,6 +8,7 @@
 #include "Utility.h"
 #include "../GameObject.h"
 #include "../Player/player.h"
+#include "../rendering/Camera.h"
 
 #include <cstdarg>
 #include <functional>
@@ -25,7 +26,8 @@ public:
     bool showDebugMenu = true;
     bool showRendererMenu = false;
     bool showGameMenu = false;
-    bool showPlayer = false;
+    bool showPlayerMenu = false;
+    bool showCameraMenu = false;
     const char* DEBUGMENU = "Debug menu";
     const char* GAMEMENU = "Game Menu";
     const char* RENDERMENU = "Render Menu";
@@ -43,6 +45,7 @@ public:
     void RenderMenu(bool& debugOn);
     void GameMenu();
     void PlayerMenu(Player* player);
+    void CameraMenu(Camera* cam);
 
     void ShowExampleAddsToMenu();
     template <typename T>
