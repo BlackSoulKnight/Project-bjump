@@ -45,7 +45,8 @@ struct Sprite {
 };
 
 struct Camera {
-	int xPos, yPos;
+	int x, y;
+	int w, h;
 	int xOffset, yOffset;
 
 };

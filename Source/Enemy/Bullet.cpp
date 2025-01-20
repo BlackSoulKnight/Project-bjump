@@ -43,7 +43,7 @@ Bullet::Bullet() :GameObject() {
 };
 
 bool Bullet::outOfScreen() {
-	SDL_Rect camera = World::Instance->camera;
+	Camera camera = World::Instance->camera;
 	if (activeTime > 20 * 1000)
 		return true;
 	else 
