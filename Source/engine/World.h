@@ -11,6 +11,7 @@
 #include "InputManager.h"
 #include "Utility.h"
 #include "rendering/SpriteController.h"
+#include "rendering/Camera.h"
 #include "debug/DebugMenu.h"
 
 using namespace std;

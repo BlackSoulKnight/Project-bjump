@@ -136,6 +136,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="engine\rendering\src\Camera.cpp" />
     <ClCompile Include="Enemy\BulletManager.cpp" />
     <ClCompile Include="Enemy\Bullet.cpp" />
     <ClCompile Include="Enemy\Enemy.cpp" />
@@ -161,6 +162,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="engine\rendering\Camera.h" />
     <ClInclude Include="Enemy\BulletManager.h" />
     <ClInclude Include="Enemy\Bullet.h" />
     <ClInclude Include="Enemy\Enemy.h" />
