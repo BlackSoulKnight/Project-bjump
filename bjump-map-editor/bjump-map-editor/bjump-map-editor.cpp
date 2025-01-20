@@ -33,17 +33,20 @@ struct WorldState
     bool drag = false;
     bool repeat_placement = false;
     bool grid = false;
+    bool delete_mode = false;
     std::vector<std::vector<int>> tiles;
 
     SDL_Rect camera = { 0, 0, 0, 0 };
     SDL_Rect mouse_position_to_highlight = { 0,0,0,0 };
 
     LPCWSTR editor_controlls =
+        L"F1:\t\tZeige Tastaturbelegung\n\n"
         L"Hide controlls:\tSet WorldState.show_controlls=false\n\n"
         L"L_Click:\t\tTiles Platzieren\n"
         L"R_Click:\t\tKamera bewegen\n"
         L"S:\t\tSpeichern\n"
         L"G:\t\tGrid aktivieren/deaktivieren\n"
+        L"MRad +/-:\tTileset kleiner/größer machen\n"
         L"UP/DOWN:\tZoom +/-\n";
     LPCWSTR editor_controlls_title = L"Editor Controlls";
 } WS;
@@ -76,7 +79,7 @@ char* converter_function(PWSTR);
 using namespace std;
 int main(int argc, char **argv)
 {
-    SetConsoleTitle(TEXT("BJump Map Editor: v0.9.0"));
+    SetConsoleTitle(TEXT("BJump Map Editor: v0.9.1"));
     cout << "BJump Map Editor\n";
     cout << "Waehle das SpriteSheet aus.\n";
     PWSTR sprite_sheet_path = get_file_path();
@@ -145,6 +148,7 @@ void init_editor(char* sprite_sheet_path) {
     SDL_Init(SDL_INIT_EVERYTHING);
     SDL_Init(IMG_INIT_PNG);
     SDL_ShowCursor(true);
+
     WS.window = SDL_CreateWindow("Map Editor", 0, 20, 1280, 720, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
     WS.renderer = SDL_CreateRenderer(WS.window, -1, SDL_RENDERER_PRESENTVSYNC);
     WS.texture = IMG_LoadTexture(WS.renderer, sprite_sheet_path);
@@ -152,7 +156,7 @@ void init_editor(char* sprite_sheet_path) {
     WS.mouse_position_to_highlight = WS.camera;
 
     if (WS.tiles.size() == 0)
-        for (size_t i = 0; i <= WS.vertical_size ; i++)
+        for (size_t i = 0; i < WS.vertical_size ; i++)
         {
             WS.tiles.push_back(std::vector<int>(WS.horizontal_size));
             std::fill(WS.tiles[i].begin(), WS.tiles[i].end(), -1);
@@ -181,6 +185,9 @@ void read_events() {
             pressed = e.type & 1;
             switch (e.key.keysym.scancode)
             {
+            case SDL_SCANCODE_F1:
+                showMessage(WS.editor_controlls, WS.editor_controlls_title);
+                break;
             case SDL_SCANCODE_S:
                 save_created_map();
                 break;
@@ -198,6 +205,9 @@ void read_events() {
                 if (WS.zoom > 0.25)
                     WS.zoom -= 0.25;
                 //WS.camera = { WS.camera.x * WS.zoom, WS.camera.y * WS.zoom ,WS.camera.w ,WS.camera.h };
+                break;
+            case SDL_SCANCODE_X:
+                WS.delete_mode = !WS.delete_mode;
                 break;
             default:
                 break;
@@ -286,7 +296,10 @@ void render_graphics() {
     to_place_position.x += WS.camera.x;
     to_place_position.y += WS.camera.y;
     // Render highlight on Map
-    SDL_SetRenderDrawColor(WS.renderer, 0, 255, 0, 127);
+    if (WS.delete_mode)
+        SDL_SetRenderDrawColor(WS.renderer, 255, 0, 0, 127);
+    else
+        SDL_SetRenderDrawColor(WS.renderer, 0, 255, 0, 127);
     SDL_RenderDrawRect(WS.renderer, &to_place_position);
 
 
@@ -356,12 +369,17 @@ void mouse_button_1(SDL_Event e) {
         cout << "INFO: outside of selectMap" << endl;
         if ((xPos < 0 || WS.tiles[0].size() <= xPos) || (yPos < 0 || WS.tiles.size() <= yPos))
             return;
+        if (WS.delete_mode) {
+            WS.tiles.at(yPos).at(xPos) = -1;
+            return;
+        }
 
         if (WS.tiles.at(yPos).at(xPos) == WS.selected_tile_x + (WS.selected_tile_y * WS.sprite_controller.getSpritesPerX()))
             return;
         WS.tiles.at(yPos).at(xPos) = WS.selected_tile_x + (WS.selected_tile_y * WS.sprite_controller.getSpritesPerX());
     }
 }
+
 
 void set_tile_to_zero(SDL_Event e) {
 
