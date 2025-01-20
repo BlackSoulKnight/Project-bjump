@@ -69,6 +69,8 @@ void DebugMenu::Menu() {
     //    showGameMenu = !showGameMenu;
     if (ImGui::Button("Show Player"))
         showPlayerMenu = !showPlayerMenu;
+    if (ImGui::Button("Show Camera"))
+        showCameraMenu = !showCameraMenu;
     if (ImGui::Button("Show Examples"))
         showExamples = !showExamples;
     ImGui::End();
@@ -81,14 +83,6 @@ void DebugMenu::PlayerMenu(Player* player) {
     ImGui::Text("X: (%d)\tY: (%d)", player->position.x, player->position.y);
     ImGui::Text("Is Active? (%s)", player->isActive ? "Yes" : "No");
     ImGui::Text("Layer: (%d)", player->layer);
-    float GRAVITY = 0.5f * SCALE;
-    float JUMP_FORCE = -10.0f * SCALE;
-    float FALL_SPEED = 10.0f * SCALE;
-    float MOVE_SPEED = 5.0f * SCALE;
-    float DASH_SPEED = 200.0f * SCALE;
-    float DASH_DURATION = 0.5 * SCALE;
-    float WALL_JUMP_FORCE_Y = -8.0f * SCALE;
-    float WALL_JUMP_FORCE_X = 5.0f * SCALE;
     ImGui::SliderFloat("Move Speed", &player->MOVE_SPEED, 5, 100);
     ImGui::SliderFloat("Fall Speed", &player->FALL_SPEED, 10, 200);
     ImGui::SliderFloat("Dash Speed", &player->DASH_SPEED, 200, 2000);
@@ -97,6 +91,19 @@ void DebugMenu::PlayerMenu(Player* player) {
     ImGui::SliderFloat("Jump Force", &player->JUMP_FORCE,-100.0, -10.0);
     ImGui::SliderFloat("Wall Jump Force X", &player->WALL_JUMP_FORCE_X, -80.0, -8.0);
     ImGui::SliderFloat("Wall Jump Force Y", &player->WALL_JUMP_FORCE_Y, 5.0, 100.0 );
+
+    ImGui::End();
+}
+
+void DebugMenu::CameraMenu(Camera* cam) {
+    ImGui::Begin("Camera Menu", &showCameraMenu);
+    ImGui::Text("X: (%d)\tY: (%d)", cam->x, cam->y);
+    ImGui::Text("X Offset: (%d)\tY Offset: (%d)", cam->xOffset, cam->yOffset);
+    ImGui::Text("Width: (%d)\tY Height: (%d)", cam->w, cam->h);
+    ImGui::Text("GridPosX: (%d)\tY GridPosY: (%d)", cam->gridLocation.x, cam->gridLocation.y);
+
+    //ImGui::SliderInt("X OffsetSlider", &cam->xOffset, -1000, 1000);
+    //ImGui::SliderInt("Y OffsetSlider", &cam->yOffset, -1000, 1000);
 
     ImGui::End();
 }

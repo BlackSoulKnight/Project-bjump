@@ -43,10 +43,3 @@ struct Sprite {
 	int animationSize; // Minimum 0; Maximum X
 	bool flipH, flipV;
 };
-
-struct Camera {
-	int x, y;
-	int w, h;
-	int xOffset, yOffset;
-
-};
