@@ -60,7 +60,7 @@ bool Player::checkGroundCollision(int screenHeight) {
 
 // Kollisionsprüfung (Wände)
 bool Player::checkWallCollision() {
-    vector<string> ignoreTags = { "Enemy","Bullet" };
+    vector<string> tags = { "World" };
 
     // Links von der Spielfigur
     SDL_Rect leftSide;
@@ -77,8 +77,8 @@ bool Player::checkWallCollision() {
     rightSide.h = position.h - 6;          // Nur der mittlere Bereich des Spielers
 
     // Prüfen, ob es eine Wand links oder rechts gibt
-    std::vector<GameObject*> leftCollisions = World::Instance->getCollisions(leftSide, ignoreTags);
-    std::vector<GameObject*> rightCollisions = World::Instance->getCollisions(rightSide, ignoreTags);
+    std::vector<GameObject*> leftCollisions = World::Instance->getCollisions(leftSide, tags);
+    std::vector<GameObject*> rightCollisions = World::Instance->getCollisions(rightSide, tags);
 
     // Status setzen
     if (!leftCollisions.empty()) {
