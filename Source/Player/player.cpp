@@ -60,7 +60,7 @@ bool Player::checkGroundCollision(int screenHeight) {
 
 // Kollisionsprüfung (Wände)
 bool Player::checkWallCollision() {
-    vector<string> ignoreTags = { "Enemy","Bullet" };
+    vector<string> tags = { "World" };
 
     // Links von der Spielfigur
     SDL_Rect leftSide;
@@ -77,8 +77,8 @@ bool Player::checkWallCollision() {
     rightSide.h = position.h - 6;          // Nur der mittlere Bereich des Spielers
 
     // Prüfen, ob es eine Wand links oder rechts gibt
-    std::vector<GameObject*> leftCollisions = World::Instance->getCollisions(leftSide, ignoreTags);
-    std::vector<GameObject*> rightCollisions = World::Instance->getCollisions(rightSide, ignoreTags);
+    std::vector<GameObject*> leftCollisions = World::Instance->getCollisions(leftSide, tags);
+    std::vector<GameObject*> rightCollisions = World::Instance->getCollisions(rightSide, tags);
 
     // Status setzen
     if (!leftCollisions.empty()) {
@@ -172,6 +172,9 @@ void Player::update(int deltaT) {
         vx = 0;  // Keine Bewegung, wenn nicht gedasht wird
     }
 
+    if (spaceJustPressed && !InputManager::checkInput("Jump")) {
+        spaceJustPressed = false;
+    }
 
 
     // Schwerkraft anwenden, wenn nicht im Dash
@@ -196,14 +199,16 @@ void Player::update(int deltaT) {
         else {
             vy = 0;
         }
-        if (InputManager::checkInput("Jump")) {
+        if (InputManager::checkInput("Jump") && !spaceJustPressed) {
             vy = JUMP_FORCE;  // Vom Boden springen
+            spaceJustPressed = true;
             playerState = PlayerState::JUMPING;
         }
         checkWallCollision();
         break;
 
     case PlayerState::JUMPING:
+
         if (checkGroundCollision(320)) {
             vy = 0;
             playerState = PlayerState::ON_GROUND;  // Zurück auf den Boden
@@ -220,9 +225,17 @@ void Player::update(int deltaT) {
         else if (vy > 0) {
             playerState = PlayerState::FALLING;  // Wechsel zu "FALLING", wenn nach unten
         }
+        else if (InputManager::checkInput("Jump") && canDoubleJump && !spaceJustPressed) {
+            vy = JUMP_FORCE;
+            playerState = PlayerState::DOUBLE_JUMPING;
+            canDoubleJump = false;  // Kein weiterer Doppelsprung möglich
+        }
+
         break;
 
     case PlayerState::DOUBLE_JUMPING:
+        spaceJustPressed = true;
+
         if (checkGroundCollision(320)) {
             vy = 0;
             playerState = PlayerState::ON_GROUND;  // Zurück auf den Boden
@@ -268,7 +281,7 @@ void Player::update(int deltaT) {
                 playerState = PlayerState::WALL_SLIDING;
             }
         }
-        else if (InputManager::checkInput("Jump") && canDoubleJump) {
+        else if (InputManager::checkInput("Jump") && canDoubleJump && !spaceJustPressed) {
             vy = JUMP_FORCE;
             playerState = PlayerState::DOUBLE_JUMPING;
             canDoubleJump = false;  // Kein weiterer Doppelsprung möglich
@@ -313,8 +326,16 @@ void Player::update(int deltaT) {
         
     case PlayerState::WALL_JUMPING:
     {
+
         static float wallJumpTimer = 0.20f; // Timer für die halbe Sekunde
         wallJumpTimer += deltaT / 1000.0f; // Delta-Zeit in Sekunden
+
+        if (InputManager::checkInput("Jump") && canDoubleJump && !spaceJustPressed) {
+            vy = JUMP_FORCE;
+            playerState = PlayerState::DOUBLE_JUMPING;
+            canDoubleJump = false;  // Kein weiterer Doppelsprung möglich
+        }
+     
 
         // Während der halben Sekunde Bewegung blockieren
         if (wallJumpTimer <= 0.20f) {
@@ -358,10 +379,11 @@ void Player::update(int deltaT) {
         }
 
         // Wand-Sprung auslösen
-        if (InputManager::checkInput("Jump")) {
+        if (InputManager::checkInput("Jump") && !spaceJustPressed) {
             const float initialForceX = WALL_JUMP_FORCE_X; // Anfangskraft horizontal
             const float initialForceY = WALL_JUMP_FORCE_Y; // Anfangskraft vertikal
             const float decelerationFactor = 0.82f;        // Abnahme der Geschwindigkeit pro Frame
+            spaceJustPressed = true;
 
             if (touchingLeftWall) {
                 vx += initialForceX; // Diagonal nach rechts starten
