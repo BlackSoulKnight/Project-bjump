@@ -12,21 +12,10 @@ void Bullet::initialize(Vector2 position, Vector2f startDirection, int startSpee
 }
 
 void Bullet::update(int deltaT) {
-	vector<tuple<GameObject*, SDL_Rect>> collisions = World::Instance->getCollisions(this);
-	if (World::Instance->getCollisions(this).size() > 0) {
-		for (int i = 0; i < collisions.size(); i++) {
-			if (get<0>(collisions[i])->tag != "Enemy") {
-				BulletManager::disableBullet(this);
-				return;
-			}
-		}
-
-	}
-	position.x += speed  * direction.x;
-	position.y += speed  * direction.y;
-	activeTime += deltaT;
+	hitCollision();
+	moveBullet(deltaT);
 	if (outOfScreen()) {
-		BulletManager::disableBullet(this);
+		//BulletManager::disableBullet(this);
 	}
 
 }
@@ -39,7 +28,7 @@ Bullet::Bullet() :GameObject() {
 	position.h = 16;
 	position.w = 16;
 	sprite.spiteSheetLocation = "../resources/Tilemap/monochrome_tilemap_transparent_packed.png";
-	World::Instance->createGameObject(this);
+	//World::Instance->createGameObject(this);
 };
 
 bool Bullet::outOfScreen() {
@@ -57,3 +46,35 @@ bool Bullet::outOfScreen() {
 	return false;
 }
 
+Bullet* Bullet::createBullet() {
+	return new Bullet();
+}
+
+bool Bullet::hitCollision()
+{
+	//if(World::Instance->collideWithPlayer(this))
+		//BulletManager::disableBullet(this);
+
+
+	//return false;
+
+
+	vector<string> tags = { "Player"};
+	vector<tuple<GameObject*, SDL_Rect>> collisions = World::Instance->getCollisions(this,tags);
+	if (World::Instance->getCollisions(this).size() > 0) {
+		for (int i = 0; i < collisions.size(); i++) {
+			if (get<0>(collisions[i])->tag != "Enemy") {
+				BulletManager::disableBullet(this);
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+void Bullet::moveBullet(int deltaT)
+{
+	position.x += (float)(speed * direction.x)/deltaT;
+	position.y += (float)(speed * direction.y)/deltaT;
+	activeTime += deltaT;
+}

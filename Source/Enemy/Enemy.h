@@ -19,15 +19,17 @@ Bullet Manager
 class Enemy :public GameObject {
 public:
 	float begin = 1;
-	float delay = 0.1;
-	float lastShot = 0;
-	float activeTime = 0;
+	vector<Bullet> bullets;
+	vector<Vector2f> bulletDirection;
+	vector<int> bulletSpeed;
+	vector<int> bulletDelay; // In milliseconds
+	vector<int> bulletLastShot;
+	int activeTime = 0;
+
 	void update(int deltaT);
+	void addBulletToList(Bullet bullet,Vector2f _direction,int delay,int speed);
+
 	Enemy();
-	//bullet types (array)
-	//bullet amounts (array)
-	//bullet direction (array(vector2))
-	//shoot delay
-	//start delay
+
 
 };

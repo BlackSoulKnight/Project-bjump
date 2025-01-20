@@ -9,6 +9,9 @@ public:
 	int speed;
 	int activeTime = 0;
 	Bullet();
+	virtual Bullet* createBullet();
+	virtual bool hitCollision();
+	virtual void moveBullet(int deltaT);
 	void initialize(Vector2 position,Vector2f startDirection,int startSpeed);
 	void update(int deltaT);
 	bool outOfScreen();
