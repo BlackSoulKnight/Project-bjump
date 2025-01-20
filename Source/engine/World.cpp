@@ -37,8 +37,13 @@ bool World::run() {
 
 
     //Change WorldState
-    for (int i = 0; i < gameObjects.size(); i++) {
-        gameObjects[i]->update(deltaT);
+
+    
+    for (auto& kv : gameObjectsNew) {
+        for (int i = 0; i < kv.second.size(); i++) {
+            if (kv.second[i]->isActive)
+                kv.second[i]->update(deltaT);
+        }
     }
     
     //Collide WorldState
@@ -66,35 +71,71 @@ bool World::run() {
     return running;
 }
 
-vector<tuple<GameObject*,SDL_Rect>> World::getCollisions(GameObject *origin, string IgnoreTags[]) {
+vector<tuple<GameObject*,SDL_Rect>> World::getCollisions(GameObject *origin, vector<string> tags) {
     vector<tuple<GameObject*, SDL_Rect>> collisions;
-    int arraySize = sizeof(IgnoreTags) / sizeof(string);
-    for (int i = 0; i < gameObjects.size();i++) {
-        SDL_Rect a;
-        if (!gameObjects[i]->isActive || gameObjects[i] == origin)
-            continue;
-        if (find(IgnoreTags, IgnoreTags + arraySize, gameObjects[i]->tag) != IgnoreTags + arraySize) {
-            continue;
+    for (int i = 0; i < tags.size(); i++) {
+        if (gameObjectsNew.contains(tags[i])) {
+            for (int n = 0; n < gameObjectsNew[tags[i]].size(); n++) {
+                GameObject* obj = gameObjectsNew[tags[i]][n];
+                SDL_Rect a;
+                if (origin == obj)
+                    continue;
+                if (SDL_IntersectRect(&obj->position, &origin->position, &a))
+                    collisions.push_back({ gameObjects[i],a });
+            }
         }
-        if (SDL_IntersectRect(&gameObjects[i]->position, &origin->position,&a))
-            collisions.push_back({ gameObjects[i],a });
-
     }
     return collisions;
 }
+vector<GameObject*> World::getCollisions(SDL_Rect area, vector<string> tags) {
+    vector<GameObject*> result;
+
+    for (int i = 0; i < tags.size(); i++) {
+        if (gameObjectsNew.contains(tags[i])) {
+            for (int n = 0; n < gameObjectsNew[tags[i]].size(); n++) {
+                GameObject* obj = gameObjectsNew[tags[i]][n];
+                if (SDL_HasIntersection(&obj->position, &area))
+                    result.push_back(obj);
+            }
+        }
+    }
+    return result;
+}
+
+bool World::collideWithPlayer(GameObject* obj) {
+    if (SDL_HasIntersection(&obj->position, &player->position))
+        return true;
+    return false;
+}
 
 bool World::createGameObject(GameObject* obj) {
+    if (gameObjectsNew.contains(obj->tag)) {
+        gameObjectsNew[obj->tag].push_back(obj);
+    }
+    else {
+        gameObjectsNew[obj->tag] = vector<GameObject*>();
+        gameObjectsNew[obj->tag].push_back(obj);
+    }
+
     gameObjects.push_back(obj);
     return true;
 }
 
 bool World::destroyGameObject(GameObject* obj) {
+
+    for (int i = 0; i < gameObjectsNew[obj->tag].size(); i++) {
+        if (gameObjectsNew[obj->tag][i] == obj) {
+            gameObjectsNew[obj->tag].erase(gameObjects.begin() + i - 1);
+            return true;
+        }
+    }
+    /*
     for (int i = 0; i < gameObjects.size(); i++) {
         if (gameObjects[i] == obj) {
             gameObjects.erase(gameObjects.begin()+i-1);
             return true;
         }
-    }
+    }*/
     return false;
 }
 
@@ -122,18 +163,7 @@ vector<GameObject*> World::getTraceCollisions(Vector2 &start, Vector2 &end,vecto
     return result;
 }
 
-vector<GameObject*> World::getCollisions(SDL_Rect area, vector<string> IgnoreTags) {
-    int arraySize = sizeof(IgnoreTags) / sizeof(string);
-    vector<GameObject*> result;
-    for (int i = 0; i < gameObjects.size(); i++) {
-        if (find(IgnoreTags.begin(), IgnoreTags.end(), gameObjects[i]->tag) != IgnoreTags.end()) {
-            continue;
-        }
-        if (SDL_HasIntersection(&gameObjects[i]->position, &area))
-            result.push_back(gameObjects[i]);
-    }
-    return result;
-}
+
 void World::LoadFile(string fileName) {
     string file = fileName;
     if (file.size() == 0)
@@ -182,7 +212,7 @@ void World::LoadFile(string fileName) {
 
     for (int i = 0; i < reducedDimensionMap.size(); i++) {
         if (reducedDimensionMap[i] != '-1')
-        gameObjects.push_back(generateBlock(
+        createGameObject(generateBlock(
             reducedDimensionMap[i],
             reducedDimensionTilePosition[i],
             xMapMaxSize,
@@ -323,6 +353,7 @@ GameObject* World::generateBlock(int tile, SDL_Rect tilePos, int mapWidth, int m
     block->scale.x = 1, block->scale.y = 1;
     block->position = tilePos;
     block->name = "Block";   // ??
+    block->tag = "World";
     block->sprite = spriteData;
     if (tile == -1) {
         block->isActive = false;

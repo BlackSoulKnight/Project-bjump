@@ -16,7 +16,7 @@ public:
     float width, height;
 
     // Spielerzustände
-    enum class PlayerState { ON_GROUND, JUMPING, DOUBLE_JUMPING, DASHING, WALL_JUMPING, FALLING };
+    enum class PlayerState { ON_GROUND, JUMPING, DOUBLE_JUMPING, DASHING, WALL_SLIDING,WALL_JUMPING, FALLING };
     PlayerState playerState;
 
     // Kollisionsflags
@@ -31,6 +31,10 @@ public:
     float dashTime;
     bool canDoubleJump = true; // Erlaubt den Doppelsprung nur einmal pro Bodenberührung
     int dashDirection;
+    bool touchingLeftWall = false;
+    bool touchingRightWall = false;
+    bool lastTouchedWallWasRight = false;
+
 
     // Konstanten
     float GRAVITY = 0.5f * SCALE;
@@ -39,8 +43,8 @@ public:
     float MOVE_SPEED = 5.0f * SCALE;
     float DASH_SPEED = 30.0f * SCALE;
     float DASH_DURATION = 22.0 * SCALE;
-    float WALL_JUMP_FORCE_Y = -8.0f * SCALE;
-    float WALL_JUMP_FORCE_X = 5.0f * SCALE;
+    float WALL_JUMP_FORCE_Y = -5.0f * SCALE;
+    float WALL_JUMP_FORCE_X = 25.0f * SCALE;
 
     // Hilfsfunktionen
     bool checkGroundCollision(int screenHeight);
