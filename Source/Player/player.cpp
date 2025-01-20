@@ -316,6 +316,13 @@ void Player::update(int deltaT) {
         static float wallJumpTimer = 0.20f; // Timer für die halbe Sekunde
         wallJumpTimer += deltaT / 1000.0f; // Delta-Zeit in Sekunden
 
+        if (InputManager::checkInput("Jump") && canDoubleJump && wallJumpTimer >= 0.10f) {
+            vy = JUMP_FORCE;
+            playerState = PlayerState::DOUBLE_JUMPING;
+            canDoubleJump = false;  // Kein weiterer Doppelsprung möglich
+        }
+     
+
         // Während der halben Sekunde Bewegung blockieren
         if (wallJumpTimer <= 0.20f) {
             vx = 0; // Keine horizontale Bewegung erlauben
