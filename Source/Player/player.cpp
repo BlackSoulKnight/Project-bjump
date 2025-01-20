@@ -258,7 +258,7 @@ void Player::update(int deltaT) {
             playerState = PlayerState::DASHING;  // Wechsel zu DASHING
         }
         // Prüfen, ob Spieler eine Wand berührt
-        // Wechsel in WALL_JUMPING, wenn Wandkontakt hergestellt wird
+        // Wechsel in WALL_SLIDING, wenn Wandkontakt hergestellt wird
         else if (checkWallCollision()) {
             if ((touchingLeftWall && InputManager::checkInput("Left")) ||
                 (touchingRightWall && InputManager::checkInput("Right"))) {
@@ -351,7 +351,7 @@ void Player::update(int deltaT) {
 
     case PlayerState::WALL_SLIDING:
          
-        // Verlasse WALL_JUMPING, wenn keine Wand mehr berührt wird
+        // Verlasse WALL_SLIDING, wenn keine Wand mehr berührt wird
         if (!touchingLeftWall && !touchingRightWall) {
             playerState = PlayerState::FALLING;
             break;
@@ -380,7 +380,7 @@ void Player::update(int deltaT) {
             break;
         }
 
-        // Verlasse WALL_JUMPING, wenn nicht mehr gegen die Wand gelaufen wird
+        // Verlasse WALL_SLIDING, wenn nicht mehr gegen die Wand gelaufen wird
         if ((touchingLeftWall && !InputManager::checkInput("Left")) ||
             (touchingRightWall && !InputManager::checkInput("Right"))) {
             playerState = PlayerState::FALLING;
