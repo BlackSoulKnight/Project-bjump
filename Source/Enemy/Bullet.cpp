@@ -33,6 +33,7 @@ void Bullet::update(int deltaT) {
 
 Bullet::Bullet() :GameObject() {
 	name = "Bullet";
+	tag = "Bullet";
 	sprite.x = 3;
 	sprite.y = 0;
 	position.h = 16;

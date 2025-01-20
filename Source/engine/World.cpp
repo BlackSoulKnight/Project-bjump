@@ -64,13 +64,16 @@ bool World::run() {
     return running;
 }
 
-vector<tuple<GameObject*,SDL_Rect>> World::getCollisions(GameObject *origin) {
+vector<tuple<GameObject*,SDL_Rect>> World::getCollisions(GameObject *origin, string IgnoreTags[]) {
     vector<tuple<GameObject*, SDL_Rect>> collisions;
-    
+    int arraySize = sizeof(IgnoreTags) / sizeof(string);
     for (int i = 0; i < gameObjects.size();i++) {
         SDL_Rect a;
         if (!gameObjects[i]->isActive || gameObjects[i] == origin)
             continue;
+        if (find(IgnoreTags, IgnoreTags + arraySize, gameObjects[i]->tag) != IgnoreTags + arraySize) {
+            continue;
+        }
         if (SDL_IntersectRect(&gameObjects[i]->position, &origin->position,&a))
             collisions.push_back({ gameObjects[i],a });
 
@@ -117,9 +120,13 @@ vector<GameObject*> World::getTraceCollisions(Vector2 &start, Vector2 &end,vecto
     return result;
 }
 
-vector<GameObject*> World::getCollisions(SDL_Rect area) {
+vector<GameObject*> World::getCollisions(SDL_Rect area, vector<string> IgnoreTags) {
+    int arraySize = sizeof(IgnoreTags) / sizeof(string);
     vector<GameObject*> result;
     for (int i = 0; i < gameObjects.size(); i++) {
+        if (find(IgnoreTags.begin(), IgnoreTags.end(), gameObjects[i]->tag) != IgnoreTags.end()) {
+            continue;
+        }
         if (SDL_HasIntersection(&gameObjects[i]->position, &area))
             result.push_back(gameObjects[i]);
     }
