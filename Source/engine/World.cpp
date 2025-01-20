@@ -19,7 +19,7 @@ World::World(int _windowSizeX, int _windowSizeY) {
     debugWindow = DebugMenu();
     LoadGameAssets();
     LoadFile(string("../Levels/dev-sandbox.bjump"));
-    camera = { 0,0,WINDOW_WIDTH,WINDOW_HEIGHT };
+    camera = { 0,0, WINDOW_WIDTH,WINDOW_HEIGHT };
     debugWindow.DebugInit(window, renderer);
 }
 
@@ -315,8 +315,8 @@ void World::renderEntity(GameObject &entity) {
     // Hardcoded 8,8 muss ausgewechselt werden!
     SDL_Rect spriteSheetLocation = { entity.getSprite().x, entity.getSprite().y , 16 ,16 };
     SDL_Rect actualPosition = {
-        entity.position.x + camera.x,
-        entity.position.y + camera.y,
+        entity.position.x + (camera.x + camera.xOffset),
+        entity.position.y + (camera.y + camera.yOffset),
         16 * SCALE,16  * SCALE };
 
     /*

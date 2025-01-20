@@ -44,3 +44,8 @@ struct Sprite {
 	bool flipH, flipV;
 };
 
+struct Camera {
+	int xPos, yPos;
+	int xOffset, yOffset;
+
+};
