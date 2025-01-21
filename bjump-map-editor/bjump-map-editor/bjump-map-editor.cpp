@@ -1,9 +1,10 @@
-#include <iostream>
+﻿#include <iostream>
 #include <stdlib.h>
 #include <windows.h>
 #include <vector>
 #include <ShObjIdl.h>
 #include <SDL.h>
+#include <SDL_ttf.h>
 #include <fstream>
 #include <iterator>
 #include <sstream>
@@ -16,10 +17,15 @@ enum Layer
     FOREGROUND = 0,
     BACKGROUND = 1,
     SHOW_ALL = 2,
+    PLACE_ENEMY = 3,
 };
 
 struct WorldState
 {
+    int FONT_SIZE = 16;
+    TTF_Font* font;
+    SDL_Surface* layer_msg;
+    SDL_Surface* enemy_msg;
     char* workingDirectory;
     int vertical_size = 30;
     int horizontal_size = 30;
@@ -43,7 +49,9 @@ struct WorldState
     bool repeat_placement = false;
     bool grid = false;
     bool delete_mode = false;
+    bool hide_hover_position = false;
     int current_layer = 0;
+    int current_enemy = -2;
     std::vector<std::vector<int>> tiles;
     std::vector<std::vector<int>> background;
 
@@ -57,12 +65,14 @@ struct WorldState
         L"R_Click:\t\tKamera bewegen\n"
         L"S:\t\tSpeichern\n"
         L"G:\t\tGrid aktivieren/deaktivieren\n"
-        L"X:\t\tToggle L�schen\n"
-        L"1,2,3:\t\tEbenen wechseln\n"
-        L"\t\t\t1: Vordergrund\n"
-        L"\t\t\t2: Hintergrund\n\n"
-        L"\t\t\t3: Alle Ebenen\n\n"
-        L"MRad +/-:\tTileset kleiner/gr��er machen\n"
+        L"X:\t\tToggle Löschen\n"
+        L"1 - 4:\t\tEbenen wechseln\n"
+        L"\t\t┣ 1: Vordergrund\n"
+        L"\t\t┣ 2: Hintergrund\n"
+        L"\t\t┣ 3: Alle Ebenen\n"
+        L"\t\t┗ 4: Enemy Placement\n\n"
+        L"TAB:\t\tToggle Enemy Type\n\n"
+        L"MRad +/-:\tTileset kleiner/größer machen\n"
         L"UP/DOWN:\tZoom +/-\n";
     LPCWSTR editor_controlls_title = L"Editor Controlls";
 } WS;
@@ -75,7 +85,7 @@ void render_graphics();
 
 #pragma region Event Function Declaration
 void mouse_button_1(SDL_Event);
-void set_tile_to_zero(SDL_Event);
+void increment_current_enemy();
 #pragma endregion
 
 #pragma region File Function Declaration
@@ -93,6 +103,7 @@ char* convert_PWSTR_to_char(PWSTR);
 
 #pragma region Helper Functions
 void render_texture_auto(SDL_Renderer*, SDL_Rect*, SDL_Rect*, Layer);
+void out_of_spritesheet(SDL_Event e);
 #pragma endregion
 
 
@@ -174,16 +185,19 @@ void start_editor(char* sprite_sheet_path)
 
 void init_editor(char* sprite_sheet_path) {
     SDL_Init(SDL_INIT_EVERYTHING);
+    TTF_Init();
     SDL_Init(IMG_INIT_PNG);
     SDL_ShowCursor(true);
     WS.window = SDL_CreateWindow("Map Editor", 0, 20, 1280, 720, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
     WS.renderer = SDL_CreateRenderer(WS.window, -1, SDL_RENDERER_PRESENTVSYNC);
+    WS.font = TTF_OpenFont("fonts/monogram-extended.ttf", WS.FONT_SIZE);
     SDL_SetRenderDrawBlendMode(WS.renderer, SDL_BLENDMODE_BLEND);
 
     WS.texture = IMG_LoadTexture(WS.renderer, sprite_sheet_path);
     SDL_Texture* tmp = IMG_LoadTexture(WS.renderer, sprite_sheet_path);
     SDL_SetTextureAlphaMod(tmp, 0x7f);
     SDL_SetTextureColorMod(tmp, 0x7f, 0x7f, 0x7f);
+
     WS.transparent_texture = tmp;
     WS.camera = { 0,0,WS.sprite_controller.getSpriteSizeX(), WS.sprite_controller.getSpriteSizeY()};
     WS.mouse_position_to_highlight = WS.camera;
@@ -252,6 +266,12 @@ void read_events() {
             case SDL_SCANCODE_3:
                 WS.current_layer = 2; // Background
                 break;
+            case SDL_SCANCODE_4:
+                WS.current_layer = 3; // Background
+                break;
+            case SDL_SCANCODE_TAB:
+                increment_current_enemy();
+                break;
             default:
                 break;
             }
@@ -282,6 +302,7 @@ void read_events() {
             WS.selected_tile_set_factor += e.wheel.y * 0.25;
             break;
         case SDL_MOUSEMOTION:
+            out_of_spritesheet(e);
             if (WS.drag) {
                 cout << e.motion.xrel << " " << e.motion.yrel << endl;
                 WS.camera.x += e.motion.xrel;
@@ -322,9 +343,18 @@ void render_graphics() {
     initial_cam_pos = WS.camera;
     origin = initial_cam_pos.x;
 
+    Uint8 r = 0, g = 0, b = 0, a = 0;
     for (auto y : WS.tiles) {
         for (auto x : y) {
             if (x != -1) {
+                if (x < 0) {
+                    SDL_GetRenderDrawColor(WS.renderer, &r, &g, &b, &a);
+                    SDL_SetRenderDrawColor(WS.renderer, 255, 127, 255, 255);
+                    SDL_RenderDrawRect(WS.renderer, &initial_cam_pos);
+                    SDL_RenderCopy(WS.renderer, SDL_CreateTextureFromSurface(WS.renderer, TTF_RenderText_Solid(WS.font, ('E' + to_string(-(x + 1))).c_str(), { 255,127,255 })), NULL, &initial_cam_pos);
+                    SDL_SetRenderDrawColor(WS.renderer, r, g, b, a);
+                }
+                else
                 render_texture_auto(WS.renderer, WS.sprite_controller.getSprite(x), &initial_cam_pos, Layer::FOREGROUND);
             }
             initial_cam_pos.x += WS.sprite_controller.getSpriteSizeX();
@@ -353,13 +383,16 @@ void render_graphics() {
     to_place_position.x += WS.camera.x;
     to_place_position.y += WS.camera.y;
     // Render highlight on Map
+    if (!WS.hide_hover_position)
     if (WS.delete_mode)
-        SDL_SetRenderDrawColor(WS.renderer, 255, 0, 0, 127);
+        SDL_SetRenderDrawColor(WS.renderer, 255, 127, 127, 255);
     else
         if(WS.current_layer == Layer::FOREGROUND)
-            SDL_SetRenderDrawColor(WS.renderer, 0, 255, 0, 127);
+            SDL_SetRenderDrawColor(WS.renderer, 127, 255, 127, 127);
         else if (WS.current_layer == Layer::BACKGROUND)
-            SDL_SetRenderDrawColor(WS.renderer, 0, 0, 255, 127);
+            SDL_SetRenderDrawColor(WS.renderer, 127, 127, 255, 127);
+        else if (WS.current_layer == Layer::PLACE_ENEMY)
+            SDL_SetRenderDrawColor(WS.renderer, 255, 127, 255, 127);
         else
             SDL_SetRenderDrawColor(WS.renderer, 127, 127, 127, 127);
     SDL_RenderDrawRect(WS.renderer, &to_place_position);
@@ -403,8 +436,49 @@ void render_graphics() {
     SDL_SetRenderDrawColor(WS.renderer, 155, 0, 0, 255);
     
     SDL_RenderDrawRectF(WS.renderer, &selected_tile);
+    SDL_FRect text_background = {
+        (600 * 1.70 - WS.FONT_SIZE) / (WS.zoom) ,
+        (10 / WS.zoom),
+        (WS.FONT_SIZE + 16) / (WS.zoom * WS.selected_tile_set_factor),
+        (WS.FONT_SIZE + 16) / (WS.zoom * WS.selected_tile_set_factor) };
+    SDL_SetRenderDrawColor(WS.renderer, 0, 0, 0, 255);
+    SDL_RenderFillRectF(WS.renderer, &text_background);
+    SDL_SetRenderDrawColor(WS.renderer, 255, 255, 255, 255);
+    SDL_RenderDrawRectF(WS.renderer, &text_background);
+    //Render Layer Text
+    SDL_FRect layer_text_pos = {
+        (600 * 1.73- WS.FONT_SIZE) / (WS.zoom) ,
+        (10 / WS.zoom),
+        (WS.FONT_SIZE) / (WS.zoom * WS.selected_tile_set_factor), WS.FONT_SIZE / (WS.zoom * WS.selected_tile_set_factor) };
+    switch (WS.current_layer)
+    {
+    case Layer::BACKGROUND:
+        WS.layer_msg = TTF_RenderText_Solid(WS.font, "BG", { 127,127,255 });
+        break;
+    case Layer::SHOW_ALL:
+        //layer_text_pos.x = (600 * 1.75 - WS.FONT_SIZE * 3) / (WS.zoom);
+        WS.layer_msg = TTF_RenderText_Solid(WS.font, "ALL", { 127,127,127 });
+        break;
+    case Layer::PLACE_ENEMY:
+        //layer_text_pos.x = (600 * 1.75 - WS.FONT_SIZE * 3) / (WS.zoom);
+        WS.layer_msg = TTF_RenderText_Solid(WS.font, "PE", { 255,127,255 });
+        break;
+    default:
+        WS.layer_msg = TTF_RenderText_Solid(WS.font, "FG", { 127,255,127 });
+        break;
+    }
+    SDL_RenderCopyF(WS.renderer, SDL_CreateTextureFromSurface(WS.renderer, WS.layer_msg), NULL, &layer_text_pos);
+    //Render Enemy Text
+    SDL_FRect enemy_type_text_pos = {
+        (600 * 1.73 - WS.FONT_SIZE) / (WS.zoom) ,
+        (36 / WS.zoom),
+        (WS.FONT_SIZE) / (WS.zoom * WS.selected_tile_set_factor), WS.FONT_SIZE / (WS.zoom * WS.selected_tile_set_factor) };
+    if( WS.current_layer == Layer::PLACE_ENEMY)
+        WS.enemy_msg = TTF_RenderText_Solid(WS.font, ('E' + to_string(-(WS.current_enemy + 1))).c_str(), { 245,245,245 });
+    else
+        WS.enemy_msg = TTF_RenderText_Solid(WS.font, ('E' + to_string(-(WS.current_enemy + 1))).c_str(), { 245 / 2,245 / 2,245 / 2 });
+    SDL_RenderCopyF(WS.renderer, SDL_CreateTextureFromSurface(WS.renderer, WS.enemy_msg), NULL, &enemy_type_text_pos);
 
-    
     SDL_RenderPresent(WS.renderer);
 }
 
@@ -423,7 +497,7 @@ void mouse_button_1(SDL_Event e) {
     }
     else {
         if (WS.current_layer == Layer::SHOW_ALL) 
-            return; //Kein ausgew�hlter layer
+            return; //Kein ausgewählter layer
         //Kamera offset mit einbeziehen beim platzieren
         xPos = (mbe.x - WS.camera.x) / WS.sprite_controller.getSpriteSizeX();
         yPos = (mbe.y - WS.camera.y) / WS.sprite_controller.getSpriteSizeY();
@@ -434,10 +508,11 @@ void mouse_button_1(SDL_Event e) {
         vector<vector<int>>* layer = nullptr;
         switch (WS.current_layer)
         {
-        case 0:
+        case Layer::PLACE_ENEMY:
+        case Layer::FOREGROUND:
             layer = &WS.tiles;
             break;
-        case 1:
+        case Layer::BACKGROUND:
             layer = &WS.background;
             break;
         }
@@ -449,14 +524,21 @@ void mouse_button_1(SDL_Event e) {
 
         if (layer->at(yPos).at(xPos) == WS.selected_tile_x + (WS.selected_tile_y * WS.sprite_controller.getSpritesPerX()))
             return;
-        
+        if (WS.current_layer == Layer::PLACE_ENEMY) {
+            layer->at(yPos).at(xPos) = WS.current_enemy;
+            return;
+        }
         layer->at(yPos).at(xPos) = WS.selected_tile_x + (WS.selected_tile_y * WS.sprite_controller.getSpritesPerX());
     }
 }
 
+void increment_current_enemy() {
+    if (WS.current_enemy == -10) {
 
-void set_tile_to_zero(SDL_Event e) {
-
+        WS.current_enemy = -2;
+        return;
+    }
+    WS.current_enemy--;
 }
 #pragma endregion
 
@@ -501,7 +583,6 @@ PWSTR WINAPI get_file_path()
         hr = CoCreateInstance(CLSID_FileOpenDialog, NULL, CLSCTX_ALL, IID_IFileOpenDialog, reinterpret_cast<void**>(&pFileOpen));
         if (SUCCEEDED(hr)) {
             hr = pFileOpen->Show(NULL);
-
             if (SUCCEEDED(hr)) {
                 IShellItem* pItem;
                 hr = pFileOpen->GetResult(&pItem);
@@ -509,7 +590,6 @@ PWSTR WINAPI get_file_path()
                     hr = pItem->GetDisplayName(SIGDN_FILESYSPATH, &toWriteTo);
                     pItem->Release();
                 }
-                
             }
         }
         pFileOpen->Release();
@@ -557,9 +637,25 @@ void render_texture_auto(SDL_Renderer* renderer, SDL_Rect* sprite, SDL_Rect* pos
         SDL_RenderCopy(WS.renderer, WS.texture, sprite, position);
         return;
     }
+    if (WS.current_layer == Layer::PLACE_ENEMY)
+    {
+        SDL_RenderCopy(WS.renderer, WS.texture, sprite, position);
+        return;
+    }
     if (WS.current_layer != mode)
         SDL_RenderCopy(WS.renderer, WS.transparent_texture, sprite, position);
     else
         SDL_RenderCopy(WS.renderer, WS.texture, sprite, position);
 
+}
+
+void out_of_spritesheet(SDL_Event e) {
+    SDL_MouseButtonEvent mbe = e.button;
+    int xPos = mbe.x / (WS.sprite_controller.getSpriteSizeX() / (WS.zoom * WS.selected_tile_set_factor));
+    int yPos = mbe.y / (WS.sprite_controller.getSpriteSizeY() / (WS.zoom * WS.selected_tile_set_factor));
+    cout << "LMB x:" << xPos << " y: " << yPos << endl;
+    if (xPos < WS.sprite_controller.getSpritesPerX() && xPos >= 0 && yPos < WS.sprite_controller.getSpritesPerY() && yPos >= 0)
+        WS.hide_hover_position = true;
+    else
+        WS.hide_hover_position = false;
 }
