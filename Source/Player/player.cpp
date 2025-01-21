@@ -18,6 +18,7 @@ Player::Player()
     position.w = width * SCALE;
     position.h = height * SCALE;
     name = "Player";
+    tag = "Player";
     sprite.spiteSheetLocation = "../resources/Tilemap/monochrome_tilemap_transparent_packed.png";
     sprite.x = 0;
     sprite.y = 12;
@@ -35,6 +36,7 @@ void Player::printState() const {
     case PlayerState::WALL_SLIDING: std::cout << "State: WALL_SLIDING\n"; break;
     case PlayerState::WALL_JUMPING: std::cout << "State: WALL_JUMPING\n"; break;
     case PlayerState::FALLING: std::cout << "State: FALLING\n"; break;
+    case PlayerState::KNOCKBACK: std::cout << "State: KNOCKBACK\n"; break;
     default: std::cout << "Unknown State\n"; break;
     }
     // Wandkontaktinformationen ausgeben
@@ -159,7 +161,8 @@ void Player::moveAndCollide(Vector2 direction) {
 void Player::update(int deltaT) {
     printState();
     int moveXSpeed = (dashing ? MOVE_SPEED * 1.5f : MOVE_SPEED);
-
+    if (gotHit)
+       playerState = PlayerState::KNOCKBACK;
 
     // Bewegung nach links und rechts (normale Bewegung)
     if (InputManager::checkInput("Left")) {
@@ -414,6 +417,18 @@ void Player::update(int deltaT) {
         vy = 0;
         break;
 
+    case PlayerState::KNOCKBACK:
+        if (checkWallCollision())
+            fallDirection *= -1;
+        if (checkGroundCollision(0))
+            if (vy > 20)
+                vy *= -0.5;
+            else {
+                playerState = PlayerState::ON_GROUND;
+                gotHit = false;
+            }
+        vx = 20 * fallDirection;
+        break;
 
     default:
         std::cerr << "Unbekannter Spielerzustand!\n";
