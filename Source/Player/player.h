@@ -38,15 +38,16 @@ public:
     float fallDirection = 0;
 
     // Konstanten
-    float GRAVITY = 0.7f * SCALE;
-    float JUMP_FORCE = -10.0f * SCALE;
-    float FALL_SPEED = 10.0f * SCALE;
-    float MOVE_SPEED = 5.0f * SCALE;
-    float DASH_SPEED = 30.0f * SCALE;
+    float GRAVITY = 0.7 * SCALE;
+    float JUMP_FORCE = -10.0 * SCALE;
+    float FALL_SPEED = 10.0 * SCALE;
+    float MOVE_SPEED = 400 * SCALE;
+    float MOVE_SLOWER = 200 * SCALE; // Not Higher than Move_Speed
+    float DASH_SPEED = 30.0 * SCALE;
     float DASH_DURATION = 22.0 * SCALE;
-    float WALL_JUMP_FORCE_Y = -8.0f * SCALE;
-    float WALL_JUMP_FORCE_X = 25.0f * SCALE;
-
+    float WALL_JUMP_FORCE_Y = -8.0 * SCALE;
+    float WALL_JUMP_FORCE_X = 25.0 * SCALE;
+    
     // Hilfsfunktionen
     bool checkGroundCollision(int screenHeight);
     bool checkWallCollision();

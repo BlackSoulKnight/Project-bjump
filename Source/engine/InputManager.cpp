@@ -8,6 +8,7 @@ map<string, bool> init() {
     t["Jump"] = false;
     t["Dash"] = false;
     t["Drop"] = false;
+    t["Slow"] = false;
     return t;
 }
 
@@ -39,6 +40,10 @@ void InputManager::pump() {
                 break;
             case SDL_SCANCODE_S:
                 actionState["Drop"] = pressed;
+                break;
+            case SDL_SCANCODE_LCTRL:
+                actionState["Slow"] = pressed;
+                break;
             case SDL_SCANCODE_F1:
                 // Hier debugConsole wert flippen true/false
                 break;

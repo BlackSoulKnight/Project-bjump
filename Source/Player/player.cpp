@@ -161,15 +161,20 @@ void Player::moveAndCollide(Vector2 direction) {
 void Player::update(int deltaT) {
     printState();
     int moveXSpeed = (dashing ? MOVE_SPEED * 1.5f : MOVE_SPEED);
-    if (gotHit)
-       playerState = PlayerState::KNOCKBACK;
-
+    if (gotHit) {
+        if (dashing || playerState == PlayerState::ON_GROUND) {
+            gotHit = false;
+        }
+        else
+        playerState = PlayerState::KNOCKBACK;
+    }
+    float dt = (float)deltaT / 1000;
     // Bewegung nach links und rechts (normale Bewegung)
     if (InputManager::checkInput("Left")) {
-        vx = moveXSpeed * -1;  // Linksbewegung
+        vx = (moveXSpeed - MOVE_SLOWER * InputManager::checkInput("Slow")) * -1 * dt;  // Linksbewegung
     }
     else if (InputManager::checkInput("Right")) {
-        vx = moveXSpeed;  // Rechtsbewegung
+        vx =  (moveXSpeed - MOVE_SLOWER * InputManager::checkInput("Slow")) * dt;  // Rechtsbewegung
     }
     else if (!dashing) {
         vx = 0;  // Keine Bewegung, wenn nicht gedasht wird
@@ -216,7 +221,7 @@ void Player::update(int deltaT) {
             vy = 0;
             playerState = PlayerState::ON_GROUND;  // Zurück auf den Boden
         }
-        else if (InputManager::checkInput("Dash") && canDash) {
+        else if (InputManager::checkInput("Dash") && canDash && (InputManager::checkInput("Right") || InputManager::checkInput("Left"))) {
             dashing = true;
             dashTime = DASH_DURATION;  // Einheitliche Dauer
             dashDirection = InputManager::checkInput("Left") ? -1 : 1; // Richtung festlegen
@@ -245,7 +250,7 @@ void Player::update(int deltaT) {
         /*if (checkWallCollision() && false) {
             playerState = PlayerState::WALL_JUMPING;  // Wand-Sprung */
         } 
-        else if (InputManager::checkInput("Dash") && canDash) {
+        else if (InputManager::checkInput("Dash") && canDash && (InputManager::checkInput("Right") || InputManager::checkInput("Left"))) {
             dashing = true;
             dashTime = DASH_DURATION;  // Einheitliche Dauer
             dashDirection = InputManager::checkInput("Left") ? -1 : 1; // Richtung festlegen
@@ -264,7 +269,7 @@ void Player::update(int deltaT) {
             vy = 0;
             playerState = PlayerState::ON_GROUND;  // Zurück auf den Boden
         }
-        else if (InputManager::checkInput("Dash") && canDash) {
+        else if (InputManager::checkInput("Dash") && canDash && (InputManager::checkInput("Right") || InputManager::checkInput("Left"))) {
             dashing = true;
             dashTime = DASH_DURATION;  // Einheitliche Dauer
             dashDirection = InputManager::checkInput("Left") ? -1 : 1; // Richtung festlegen
@@ -306,25 +311,7 @@ void Player::update(int deltaT) {
             vx = DASH_SPEED * dashDirection * dashSpeedFactor;
             vy = 0;  // Keine vertikale Bewegung
         }
-        if (InputManager::checkInput("Dash") && canDash) {
-            // Prüfen, ob Bewegungsinput vorhanden ist
-            if (InputManager::checkInput("Left") || InputManager::checkInput("Right")) {
-                // Dash aktivieren
-                dashing = true;
-                dashTime = 60;
-                playerState = PlayerState::DASHING;
 
-                // Richtung des Dashs basierend auf Input
-                if (InputManager::checkInput("Left")) {
-                    vx = -DASH_SPEED;
-                }
-                else if (InputManager::checkInput("Right")) {
-                    vx = DASH_SPEED;
-                }
-                vy = 0;  // Keine vertikale Bewegung beim Dash
-                canDash = false;  // Dash deaktivieren
-            }
-        }
         break;
         
     case PlayerState::WALL_JUMPING:
@@ -354,12 +341,12 @@ void Player::update(int deltaT) {
         if (lastTouchedWallWasRight) {
             // Geschwindigkeit nach links mit der Zeit verringern (Verlangsamen)
              
-                vx -= MOVE_SPEED;  
+                vx -= MOVE_SPEED * dt;  
             }
             
             else {
                 
-                    vx += MOVE_SPEED;
+                    vx += MOVE_SPEED * dt;
                 
         }
        
@@ -376,6 +363,7 @@ void Player::update(int deltaT) {
     case PlayerState::WALL_SLIDING:
          
         // Verlasse WALL_SLIDING, wenn keine Wand mehr berührt wird
+        checkWallCollision();
         if (!touchingLeftWall && !touchingRightWall) {
             playerState = PlayerState::FALLING;
             break;

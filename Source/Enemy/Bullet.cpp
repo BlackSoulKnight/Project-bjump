@@ -15,7 +15,7 @@ void Bullet::update(int deltaT) {
 	hitCollision();
 	moveBullet(deltaT);
 	if (outOfScreen()) {
-		//BulletManager::disableBullet(this);
+		BulletManager::disableBullet(this);
 	}
 
 }
@@ -33,14 +33,7 @@ Bullet::Bullet() :GameObject() {
 
 bool Bullet::outOfScreen() {
 	Camera camera = World::Instance->camera;
-	if (activeTime > 20 * 1000)
-		return true;
-	else 
-		return false;
-	int w, h; // this needs to be reworked
-	SDL_RenderGetLogicalSize(World::Instance->getRenderer(), &w, &h);
-	if (!(camera.x + camera.w + w/2 < position.x && position.x < camera.x - position.w + w/2) ||
-		(!(-camera.y + camera.h + h/2  < position.y && position.y < -camera.y - position.h + h))) {
+	if (camera.entityOutOfScreen(*this)) {
 		return true;
 	}
 	return false;

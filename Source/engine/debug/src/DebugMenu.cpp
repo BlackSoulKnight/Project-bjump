@@ -88,7 +88,7 @@ void DebugMenu::PlayerMenu(Player* player) {
     ImGui::SameLine();
     ImGui::InputInt("MoveMax", &tmp, 1, 10);
 
-    ImGui::SliderFloat("Move Speed", &player->MOVE_SPEED, 5, 100);
+    ImGui::SliderFloat("Move Speed", &player->MOVE_SPEED, 0, 900);
     ImGui::SliderFloat("Fall Speed", &player->FALL_SPEED, 10, 200);
     ImGui::SliderFloat("Dash Speed", &player->DASH_SPEED, 200, 2000);
     ImGui::SliderFloat("Dash Duration", &player->DASH_DURATION, 0.5, 10.0);
