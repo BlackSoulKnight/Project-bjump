@@ -14,6 +14,7 @@ World::World(int _windowSizeX, int _windowSizeY) {
     SDL_CreateWindowAndRenderer(_windowSizeX, _windowSizeY, SDL_WINDOW_RESIZABLE, &window, &renderer);
     SDL_RenderSetLogicalSize(renderer, WINDOW_WIDTH, WINDOW_HEIGHT);
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+
     //Load map Sprites
     World::Instance = this;
     debugWindow = DebugMenu();
@@ -67,7 +68,7 @@ bool World::run() {
         SDL_Delay(frameRate-deltaT);
     deltaT = chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now() - start).count();
     cout << deltaT << "\n";
-    //SDL_SetWindowTitle(window, to_string(deltaT).c_str());
+    SDL_SetWindowTitle(window, to_string(deltaT).c_str());
     return running;
 }
 
