@@ -10,7 +10,7 @@ Enemy::Enemy() :GameObject() {
 	// Test Bullet
 	Bullet s;
 
-	addBulletToList(s, { 1,1 }, 100, 100);
+	addBulletToList(s, { 1,1 }, 500, 100);
 	addBulletToList(s, { -1,-1 }, 500, 100);
 }
 

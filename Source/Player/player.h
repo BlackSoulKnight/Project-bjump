@@ -16,7 +16,7 @@ public:
     float width, height;
 
     // Spielerzustände
-    enum class PlayerState { ON_GROUND, JUMPING, DOUBLE_JUMPING, DASHING, WALL_SLIDING,WALL_JUMPING, FALLING };
+    enum class PlayerState { ON_GROUND, JUMPING, DOUBLE_JUMPING, DASHING, WALL_SLIDING,WALL_JUMPING, FALLING,KNOCKBACK };
     PlayerState playerState;
 
     // Kollisionsflags
@@ -34,7 +34,8 @@ public:
     bool touchingLeftWall = false;
     bool touchingRightWall = false;
     bool lastTouchedWallWasRight = false;
-
+    bool gotHit = false;
+    float fallDirection = 0;
 
     // Konstanten
     float GRAVITY = 0.7f * SCALE;

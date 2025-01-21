@@ -59,15 +59,18 @@ bool Bullet::hitCollision()
 	//return false;
 
 
-	vector<string> tags = { "Player"};
-	vector<tuple<GameObject*, SDL_Rect>> collisions = World::Instance->getCollisions(this,tags);
-	if (World::Instance->getCollisions(this).size() > 0) {
-		for (int i = 0; i < collisions.size(); i++) {
-			if (get<0>(collisions[i])->tag != "Enemy") {
-				BulletManager::disableBullet(this);
-				return true;
-			}
+	vector<string> tags = {"Player"};
+	vector<GameObject*> collisions = World::Instance->getCollisions(position,tags);
+	if (collisions.size() > 0) {
+		Player* player = (Player*)collisions[0];
+		if (!player->gotHit) {
+			player->gotHit = true;
+			player->fallDirection = player->position.x + player->position.w / 2 -   position.x - position.w / 2;
+			player->fallDirection /= abs(player->fallDirection);
 		}
+		BulletManager::disableBullet(this);
+		return true;
+		
 	}
 	return false;
 }
