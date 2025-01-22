@@ -33,9 +33,11 @@ void InputManager::pump() {
                 actionState["Right"] = pressed;
                 break;
             case SDL_SCANCODE_SPACE:
+            case SDL_SCANCODE_W:
                 actionState["Jump"] = pressed;
                 break;
             case SDL_SCANCODE_LSHIFT:
+            case SDL_SCANCODE_RSHIFT:
                 actionState["Dash"] = pressed;
                 break;
             case SDL_SCANCODE_S:

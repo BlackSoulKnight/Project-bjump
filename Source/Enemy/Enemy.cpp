@@ -11,6 +11,8 @@ Enemy::Enemy() :GameObject() {
 	Bullet s;
 
 	addBulletToList(s, { 1,1 }, 500, 600);
+	addBulletToList(s, { -1,1 }, 500, 600);
+	addBulletToList(s, { 1,-1 }, 500, 600);
 	addBulletToList(s, { -1,-1 }, 500, 600);
 }
 

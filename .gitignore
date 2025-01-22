@@ -40,3 +40,4 @@ vcpkg_installed
 # Compile Folder
 code/x64
 x64
+/Source/imgui.ini
