@@ -308,7 +308,7 @@ void Player::update(int deltaT) {
         else {
             // Während des Dashens die Bewegung kontinuierlich fortsetzen
             float dashSpeedFactor = (float)dashTime / DASH_DURATION; // Reduziert die Geschwindigkeit im Dash
-            vx = DASH_SPEED * dashDirection * dashSpeedFactor;
+            vx = DASH_SPEED * dashDirection * dashSpeedFactor * 0.95;
             vy = 0;  // Keine vertikale Bewegung
         }
 
@@ -317,7 +317,7 @@ void Player::update(int deltaT) {
     case PlayerState::WALL_JUMPING:
     {
 
-        static float wallJumpTimer = 0.20f; // Timer für die halbe Sekunde
+        static float wallJumpTimer = 0.20f; // Timer 
         wallJumpTimer += deltaT / 1000.0f; // Delta-Zeit in Sekunden
 
         if (InputManager::checkInput("Jump") && canDoubleJump && !spaceJustPressed) {
@@ -327,12 +327,12 @@ void Player::update(int deltaT) {
         }
      
 
-        // Während der halben Sekunde Bewegung blockieren
+        // Währendessen Bewegung blockieren
         if (wallJumpTimer <= 0.20f) {
             vx = 0; // Keine horizontale Bewegung erlauben
         }
         else {
-            // Nach 0.5 Sekunden automatisch in FALLING wechseln
+            // Nach x Sekunden automatisch in FALLING wechseln
             playerState = PlayerState::FALLING;
             wallJumpTimer = 0.0f; // Timer zurücksetzen
             break;

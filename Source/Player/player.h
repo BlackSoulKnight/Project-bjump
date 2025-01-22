@@ -43,9 +43,9 @@ public:
     float JUMP_FORCE = -10.0 * SCALE;
     float FALL_SPEED = 10.0 * SCALE;
     float MOVE_SPEED = 900;
-    float MOVE_SLOWER = 450; // Not Higher than Move_Speed
-    float DASH_SPEED = 30.0 * SCALE;
-    float DASH_DURATION = 22.0 * SCALE;
+    float MOVE_SLOWER = 250; 
+    float DASH_SPEED = 12.0 * SCALE;
+    float DASH_DURATION = 25.0 * SCALE;
     float WALL_JUMP_FORCE_Y = -8.0 * SCALE;
     float WALL_JUMP_FORCE_X = 25.0 * SCALE;
     // Hilfsfunktionen

@@ -19,7 +19,7 @@ World::World(int _windowSizeX, int _windowSizeY) {
     World::Instance = this;
     debugWindow = DebugMenu();
     LoadGameAssets();
-    LoadFile(string("../Levels/dev-sandbox.bjump"));
+    LoadFile(string("../Levels/map.bjump"));
     //LoadFile(string("../Levels/map.bjump"));
     camera = { 0,0, WINDOW_WIDTH,WINDOW_HEIGHT };
     //camera.setCameraOffset(40, 40);
