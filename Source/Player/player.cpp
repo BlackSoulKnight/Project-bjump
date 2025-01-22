@@ -198,6 +198,7 @@ void Player::update(int deltaT) {
     // Spieler-Zustände aktualisieren
     switch (playerState) {
     case PlayerState::ON_GROUND:
+        sprite.flipV = false;
         canDoubleJump = true;  // Doppelsprung wieder erlauben
         canDash = true;        // Dash wieder erlauben
         if (!checkGroundCollision(320)) { // früher 0 (test)
@@ -406,6 +407,7 @@ void Player::update(int deltaT) {
         break;
 
     case PlayerState::KNOCKBACK:
+        sprite.flipV = true;
         if (checkWallCollision())
             fallDirection *= -1;
         if (checkGroundCollision(0))

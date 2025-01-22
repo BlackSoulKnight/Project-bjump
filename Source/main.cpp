@@ -48,6 +48,7 @@ int main(int, char**)
 
     }
     // Cleanup
+    exit(0);
     ImGui_ImplSDLRenderer2_Shutdown();
     ImGui_ImplSDL2_Shutdown();
     ImGui::DestroyContext();

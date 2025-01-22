@@ -69,7 +69,7 @@ bool World::run() {
     deltaT = chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now() - start).count();
     cout << deltaT << "\n";
     SDL_SetWindowTitle(window, to_string(deltaT).c_str());
-    return running;
+    return !InputManager::checkInput("QUIT");
 }
 
 vector<tuple<GameObject*,SDL_Rect>> World::getCollisions(GameObject *origin, vector<string> tags) {
