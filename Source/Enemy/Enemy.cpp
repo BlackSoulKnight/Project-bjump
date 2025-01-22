@@ -10,8 +10,8 @@ Enemy::Enemy() :GameObject() {
 	// Test Bullet
 	Bullet s;
 
-	addBulletToList(s, { 1,1 }, 500, 100);
-	addBulletToList(s, { -1,-1 }, 500, 100);
+	addBulletToList(s, { 1,1 }, 500, 600);
+	addBulletToList(s, { -1,-1 }, 500, 600);
 }
 
 void Enemy::update(int deltaT) {

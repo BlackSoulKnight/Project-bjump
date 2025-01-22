@@ -70,7 +70,7 @@ bool Bullet::hitCollision()
 
 void Bullet::moveBullet(int deltaT)
 {
-	position.x += (float)(speed * direction.x)/deltaT;
-	position.y += (float)(speed * direction.y)/deltaT;
+	position.x += (float)(speed * direction.x)/1000*deltaT;
+	position.y += (float)(speed * direction.y) / 1000 *deltaT;
 	activeTime += deltaT;
 }

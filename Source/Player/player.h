@@ -36,20 +36,20 @@ public:
     bool lastTouchedWallWasRight = false;
     bool gotHit = false;
     float fallDirection = 0;
-
+    float wallJumpTimer = 0.20; // Timer für die halbe Sekunde
+    float wallJumpTimerMax = 0.1;
     // Konstanten
     float GRAVITY = 0.7 * SCALE;
     float JUMP_FORCE = -10.0 * SCALE;
     float FALL_SPEED = 10.0 * SCALE;
-    float MOVE_SPEED = 400 * SCALE;
-    float MOVE_SLOWER = 200 * SCALE; // Not Higher than Move_Speed
+    float MOVE_SPEED = 900;
+    float MOVE_SLOWER = 450; // Not Higher than Move_Speed
     float DASH_SPEED = 30.0 * SCALE;
     float DASH_DURATION = 22.0 * SCALE;
     float WALL_JUMP_FORCE_Y = -8.0 * SCALE;
     float WALL_JUMP_FORCE_X = 25.0 * SCALE;
-    
     // Hilfsfunktionen
-    bool checkGroundCollision(int screenHeight);
+    bool checkGroundCollision(int screenHeight = 0);
     bool checkWallCollision();
 
     // Konstruktor
