@@ -309,7 +309,7 @@ void Player::update(int deltaT) {
             // Während des Dashens die Bewegung kontinuierlich fortsetzen
             float dashSpeedFactor = (float)dashTime / DASH_DURATION; // Reduziert die Geschwindigkeit im Dash
             vx = DASH_SPEED * dashDirection * dashSpeedFactor * 0.95;
-            vy = 0;  // Keine vertikale Bewegung
+            vy = 0 ;  // Keine vertikale Bewegung
         }
 
         break;
