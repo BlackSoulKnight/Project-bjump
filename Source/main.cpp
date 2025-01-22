@@ -32,9 +32,11 @@ int main(int, char**)
     Player* player = new Player();
     newWorld->createGameObject(player);
     newWorld->player = player;
+    player->position.y = 2500;
+    player->position.x = 300;
     GameObject* obj = new Enemy();
-    obj->position.x = 150;
-    obj->position.y = 150;
+    obj->position.x = 1600;
+    obj->position.y = 1200;
     obj->name = "Test Object";   
     obj->sprite.spiteSheetLocation = "../resources/Tilemap/monochrome_tilemap_transparent_packed.png";
     obj->sprite.x = 3;
