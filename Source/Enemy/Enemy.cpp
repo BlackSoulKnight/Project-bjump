@@ -37,9 +37,8 @@ void Enemy::addBulletToList(Bullet* bullet, Vector2f _direction, int delay,int s
 	bulletLastShot.push_back(0);
 }
 
-void Enemy::setBasicEnemy(Vector2f shotDirection) {
-	name = "Basic Enemy";  //Namen des Enemy setzen
-	addBulletToList(new Bullet(), shotDirection, 1000, 500);
+void Enemy::setBasicEnemy(Vector2f shotDirection, int speed) {
+	addBulletToList(new Bullet(), shotDirection, 1000, speed);
 	sprite.x = 3;
 	sprite.y = 5;
 }

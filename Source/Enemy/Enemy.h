@@ -32,6 +32,6 @@ public:
 	Enemy();
 
 	//Enemy Types
-	void setBasicEnemy(Vector2f shotDirection);
+	void setBasicEnemy(Vector2f shotDirection,int speed);
 
 };
