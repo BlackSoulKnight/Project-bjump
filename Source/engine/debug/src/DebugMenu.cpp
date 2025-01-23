@@ -96,7 +96,7 @@ void DebugMenu::PlayerMenu(Player* player) {
     ImGui::SliderFloat("Jump Force", &player->JUMP_FORCE,-10,-10000.0);
     ImGui::SliderFloat("Wall Jump Time", &player->wallJumpTimerMax, 0.0, 1.0);
     ImGui::SliderFloat("Wall Jump Force X", &player->WALL_JUMP_FORCE_X, 0.0, 1600.0);
-    ImGui::SliderFloat("Wall Jump Force Y", &player->WALL_JUMP_FORCE_Y, -1600.0,0.0 );
+    ImGui::SliderFloat("Wall Jump Force Y", &player->WALL_JUMP_FORCE_Y, 0,-10000.0 );
     ImGui::SliderFloat("Bounce Factor", &player->BOUNCE_FORCE, 0.0,1.0 );
     ImGui::SliderFloat("KnockBack Force", &player->KNOCKBACK_FORCE, 0.0,900.0 );
 

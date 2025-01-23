@@ -45,10 +45,11 @@ public:
     float FALL_SPEED = 600;
     float MOVE_SPEED = 900;
     float MOVE_SLOWER = 250; 
-    float DASH_SPEED = 12.0 * SCALE;
-    float DASH_DURATION = 30.0 * SCALE;
-    float WALL_JUMP_FORCE_Y = -8.0 * SCALE;
-    float WALL_JUMP_FORCE_X = 16.0 * SCALE;
+    float DASH_SPEED = 1500;
+    float DASH_DURATION = 0.5;
+    float WALL_JUMP_FORCE_Y = -3000;
+    float WALL_JUMP_FORCE_X = 16.0 ;
+    float BOUNCE_BREAK_POINT = 300;
 
     float BOUNCE_FORCE = 0.5; // Always Below 1
     // Hilfsfunktionen
