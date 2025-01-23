@@ -62,9 +62,12 @@ bool Bullet::hitCollision()
 	if (collisions.size() > 0) {
 		Player* player = (Player*)collisions[0];
 		if (!player->gotHit) {
-			player->gotHit = true;
 			player->fallDirection = player->position.x + player->position.w / 2 -   position.x - position.w / 2;
+			if (player->fallDirection == 0) {
+				player->fallDirection = -1;
+			}
 			player->fallDirection /= abs(player->fallDirection);
+			player->gotHit = true;
 		}
 		BulletManager::disableBullet(this);
 		return true;
