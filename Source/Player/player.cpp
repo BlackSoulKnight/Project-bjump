@@ -372,12 +372,12 @@ void Player::update(int deltaT) {
         if (lastTouchedWallWasRight) {
             // Geschwindigkeit nach links mit der Zeit verringern (Verlangsamen)
              
-                vx -= MOVE_SPEED ;  
+                vx -= WALL_JUMP_FORCE_X ;  
             }
             
             else {
                 
-                    vx += MOVE_SPEED ;
+                    vx += WALL_JUMP_FORCE_X;
                 
         }
        
