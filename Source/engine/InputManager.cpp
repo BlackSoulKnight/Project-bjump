@@ -59,6 +59,7 @@ void InputManager::pump() {
                 World::Instance->LoadFile(levelFile, false);
                 World::Instance->LoadFile(levelFile.append("BG"), true);
                 World::Instance->player->setPosition(0, 0);*/
+                break;
             }
             break;
         case SDL_QUIT:
