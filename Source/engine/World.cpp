@@ -406,21 +406,20 @@ Enemy* World::generateEnemy(int tile, SDL_Rect tilePos, int mapWidth, int mapHei
     {
 
         //Basic Enemy
-        Vector2f shotDir = { 0.3,0.5 };
-        enemy->setBasicEnemy(shotDir, 100);
+        enemy->setBasicEnemy({1,0}, 100);
         enemy->name = "Shoot Right";
     }
         break;
     case 2:
-        enemy->setBasicEnemy({ 2,2 }, 200);
+        enemy->setBasicEnemy({ -1,0 }, 200);
         enemy->name = "Shoot Left";
         break;
     case 3:
-        enemy->setBasicEnemy({ 3,3 }, 300);
+        enemy->setBasicEnemy({ 0,-1 }, 300);
         enemy->name = "Shoot Up";
         break;
     case 4:
-        enemy->setBasicEnemy({ -4,-4 }, 400);
+        enemy->setBasicEnemy({ 0,1 }, 400);
         enemy->name = "Shoot Down";
         break;
     case 5:

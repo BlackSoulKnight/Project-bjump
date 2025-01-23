@@ -28,7 +28,7 @@ void Enemy::update(int deltaT) {
 	}
 }
 
-void Enemy::addBulletToList(Bullet* bullet, Vector2f _direction, int delay,int speed)
+void Enemy::addBulletToList(Bullet* bullet, Vector2f _direction, int delay, int speed)
 {
 	bullets.push_back(bullet);
 	bulletDirection.push_back(_direction);
