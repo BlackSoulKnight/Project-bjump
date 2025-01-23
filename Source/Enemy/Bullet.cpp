@@ -78,6 +78,8 @@ bool Bullet::hitCollision()
 
 void Bullet::moveBullet(float deltaT)
 {
+	Player* ply = World::Instance->player;
+	Vector2f homing = direction + Vector2f(1, 1);
 	position.x += (float)(speed * direction.x)*deltaT;
 	position.y += (float)(speed * direction.y) *deltaT;
 	activeTime += deltaT;
@@ -87,7 +89,8 @@ void B_Spiral::moveBullet(float deltaT) {
 	//direction.x = 0.1+sin(activeTime);
 	//direction.y = 1-direction.x;
 	//direction.normalize(direction);
-	direction.rotate(direction, 90*deltaT);
+	direction.rotate(direction, 360*deltaT);
+	speed += 100*deltaT;
 	activeTime += deltaT;
  	position.x += (float)(speed * direction.x) * deltaT;
 	position.y += (float)(speed * direction.y)  * deltaT;

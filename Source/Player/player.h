@@ -37,21 +37,21 @@ public:
     bool gotHit = false;
     float fallDirection = 0;
     float wallJumpTimer = 0.20; // Timer für die halbe Sekunde
-    float wallJumpTimerMax = 0.1;
-    float KNOCKBACK_FORCE = 940;
+    float wallJumpTimerMax = 0.2;
+    float KNOCKBACK_FORCE = 700;
     // Konstanten
-    float GRAVITY = 221;
-    float JUMP_FORCE = -3395;
+    float GRAVITY = 167.091;
+    float JUMP_FORCE = -2770.628;
     float FALL_SPEED = 600;
-    float MOVE_SPEED = 900;
-    float MOVE_SLOWER = 250; 
-    float DASH_SPEED = 3200;
-    float DASH_DURATION = 0.333;
-    float WALL_JUMP_FORCE_Y = -3000;
-    float WALL_JUMP_FORCE_X = 16.0 ;
-    float BOUNCE_BREAK_POINT = 600;
+    float MOVE_SPEED = 700;
+    float MOVE_SLOWER = MOVE_SPEED / 2; 
+    float DASH_SPEED = 3498.901;
+    float DASH_DURATION = 0.25;
+    float WALL_JUMP_FORCE_Y = -769.138;
+    float WALL_JUMP_FORCE_X = 605.157 ;
+    float BOUNCE_BREAK_POINT = 575;
 
-    float BOUNCE_FACTOR = 0.6; // Always Below 1
+    float BOUNCE_FACTOR = 0.3; // Always Below 1
     // Hilfsfunktionen
     bool checkGroundCollision(int screenHeight = 0);
     bool checkWallCollision();
