@@ -12,6 +12,7 @@ public:
 	Vector2f scale;
 	Sprite sprite;
 	string name = "";
+	SDL_Rect hitbox = { 0,0,16 * SCALE,16 * SCALE };
 	bool isActive;
 	int layer;
 	string tag;

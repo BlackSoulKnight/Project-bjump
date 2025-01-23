@@ -28,6 +28,7 @@ Bullet::Bullet() :GameObject() {
 	position.h = 32;
 	position.w = 32;
 	sprite.spiteSheetLocation = "../resources/Tilemap/monochrome_tilemap_transparent_packed.png";
+	hitbox = { 5 * SCALE,5 * SCALE,6 * SCALE,6 * SCALE };
 	//World::Instance->createGameObject(this);
 };
 
@@ -56,19 +57,6 @@ bool Bullet::hitCollision()
 	SDL_Rect targetHitbox = hitbox;
 	targetHitbox.x += position.x;
 	targetHitbox.y += position.y;
-	if (false) {
-		
-		SDL_Rect collisionbox = targetHitbox;
-		Camera camera = World::Instance->camera;
-		SDL_Renderer* renderer = World::Instance->getRenderer();
-		collisionbox.x +=  (camera.x + camera.xOffset);
-		collisionbox.y +=(camera.y + camera.yOffset);
-		SDL_SetRenderDrawColor(renderer, 0, 255, 0, 100);
-		SDL_RenderFillRect(renderer, &collisionbox);
-		SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
-		SDL_RenderDrawRect(renderer, &collisionbox);
-		SDL_RenderPresent(renderer);
-	}
 
 	vector<GameObject*> collisions = World::Instance->getCollisions(targetHitbox, tags);
 	if (collisions.size() > 0) {
