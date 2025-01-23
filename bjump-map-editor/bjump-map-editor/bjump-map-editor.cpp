@@ -118,6 +118,8 @@ int main(int argc, char **argv)
     cout << "Waehle das SpriteSheet aus.\n";
     PWSTR sprite_sheet_path = get_file_path();
     char* converted_sprite_sheet_path = convert_PWSTR_to_char(sprite_sheet_path);
+    if (converted_sprite_sheet_path == "");
+    converted_sprite_sheet_path = new char[100] {"../../resources/Tilemap/monochrome_tilemap_transparent_packed.png"};
     cout << "Datei: " << converted_sprite_sheet_path << endl << endl;
     cout << "Sprite groesse X: ";
     int sizeX = 0;
@@ -561,10 +563,18 @@ void save_created_map()
                     hr = pItem->GetDisplayName(SIGDN_FILESYSPATH, &toSaveTo);
                     pItem->Release();
                 }
+                else
+                    return;
             }
+            else
+                return;
         }
+        else
+            return;
         pFileSave->Release();
     }
+    else
+        return;
     CoUninitialize();
     wprintf(toSaveTo);
     //return result;
@@ -587,7 +597,7 @@ void save_created_map()
     }
     saved_file.close();
     saved_file_bg.close();
-    showMessage((LPWSTR)L"File was saved successfully\n\nFiles:\n\tmap.bjump\n\tmap.bjumpBG", (LPCWSTR)L"Success Dialogue");
+    showMessage((LPWSTR)L"File was saved successfully", (LPCWSTR)L"Success Dialogue");
 }
 
 void init_sprite_controller(char* filePath, int sizeX, int sizeY)
@@ -618,10 +628,15 @@ PWSTR WINAPI get_file_path()
                     hr = pItem->GetDisplayName(SIGDN_FILESYSPATH, &toWriteTo);
                     pItem->Release();
                 }
+                else
+                    return PWSTR("");
             }
+            else
+                return PWSTR("");
         }
         pFileOpen->Release();
     }
+    else return PWSTR("");
     CoUninitialize();
     //return result;
     return toWriteTo;
