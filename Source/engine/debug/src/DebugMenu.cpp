@@ -79,7 +79,7 @@ void DebugMenu::Menu() {
 
 void DebugMenu::PlayerMenu(Player* player) {
     ImGui::Begin("Player Menu", &showPlayerMenu);
-    ImGui::Text("Name: (%s)", player->name);
+    ImGui::Text("Name: (%s)", player->tag);
     ImGui::Text("X: (%d)\tY: (%d)", player->position.x, player->position.y);
     ImGui::Text("Is Active? (%s)", player->isActive ? "Yes" : "No");
     ImGui::Text("Layer: (%d)", player->layer);

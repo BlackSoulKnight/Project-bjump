@@ -18,7 +18,9 @@
 #include "engine/World.h"
 #include "Player/player.h"
 #include "Enemy/Enemy.h"
-
+#pragma warning(push)
+#pragma warning(disable: 4244)
+#pragma warning(disable: 4305)
 
 #if !SDL_VERSION_ATLEAST(2,0,17)
 #error This backend requires SDL 2.0.17+ because of SDL_RenderGeometry() function
