@@ -24,6 +24,8 @@ private:
 
     SDL_Surface* _spriteSurface;
     SDL_Texture* _Texture;
+    SDL_Texture* _background;
+    SDL_Texture* _bulletTexture;
 
     void setSprite(std::vector<SDL_Rect> sprite);
 
@@ -50,7 +52,7 @@ public:
      *
      */
     SpriteController();
-    SpriteController(int logicPixelsX, int logicPixelsY, int spritesPerRow, int spritesPerColumn, SDL_Surface *spriteSurface,SDL_Texture *texture);
+    SpriteController(int logicPixelsX, int logicPixelsY, int spritesPerRow, int spritesPerColumn, SDL_Surface *spriteSurface,SDL_Texture *texture, SDL_Texture* bgTexture, SDL_Texture* bullet);
     SpriteController(std::vector<SDL_Rect> sprite, int logicPixelsX, int logicPixelsY, int spritesPerRow, int spritesPerColumn);
 
     ~SpriteController();
@@ -147,4 +149,6 @@ public:
      */
     SDL_Surface* getSpriteSurface();
     SDL_Texture* getTexture() {return _Texture;};
+    SDL_Texture* getBgTexture() { return _background; };
+    SDL_Texture* getBulletTexture() { return _bulletTexture; };
 };

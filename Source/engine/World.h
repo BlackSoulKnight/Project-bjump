@@ -33,7 +33,7 @@ private:
 	int targetFrameRate;
 	map<int, vector<GameObject*>> scenes;
 	GameObject* generateBlock(int, SDL_Rect, int, int);
-	GameObject* generateDefaultBackground(SDL_Rect, int mapWidth, int mapHeight);
+	GameObject* generateDefaultBackground(int tile, SDL_Rect tilePos, int mapWidth, int mapHeight);
 	void testFunction(GameObject* obj);
 
 public:
@@ -44,7 +44,7 @@ public:
 	static World* Instance;
 	DebugMenu debugWindow;
 	map<string, SpriteController> spriteControllers;
-	void LoadFile(string);
+	void LoadFile(string, bool);
 	vector<vector<int>> load_map(const char* filePath);
 	int test = 0;
 	World(int _windowSizeX, int _windowSizeY);

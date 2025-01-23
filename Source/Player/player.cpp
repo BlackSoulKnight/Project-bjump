@@ -15,8 +15,8 @@ Player::Player()
     height(16) {
     position.x = 50;
     position.y = 200;
-    position.w = width * SCALE;
-    position.h = height * SCALE;
+    position.w = width *SCALE;
+    position.h = height *SCALE;
     name = "Player";
     tag = "Player";
     sprite.spiteSheetLocation = "../resources/Tilemap/monochrome_tilemap_transparent_packed.png";
@@ -289,6 +289,12 @@ void Player::update(int deltaT) {
                 wallStickTime = 0; // Haftzeit zurücksetzen
                 playerState = PlayerState::WALL_SLIDING;
             }
+            else if (InputManager::checkInput("Jump") && canDoubleJump && !spaceJustPressed) {
+                vy = JUMP_FORCE;
+                playerState = PlayerState::DOUBLE_JUMPING;
+                canDoubleJump = false;  // Kein weiterer Doppelsprung möglich
+            }
+        
         }
         else if (InputManager::checkInput("Jump") && canDoubleJump && !spaceJustPressed) {
             vy = JUMP_FORCE;

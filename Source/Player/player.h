@@ -47,7 +47,7 @@ public:
     float DASH_SPEED = 12.0 * SCALE;
     float DASH_DURATION = 30.0 * SCALE;
     float WALL_JUMP_FORCE_Y = -8.0 * SCALE;
-    float WALL_JUMP_FORCE_X = 25.0 * SCALE;
+    float WALL_JUMP_FORCE_X = 16.0 * SCALE;
     // Hilfsfunktionen
     bool checkGroundCollision(int screenHeight = 0);
     bool checkWallCollision();
