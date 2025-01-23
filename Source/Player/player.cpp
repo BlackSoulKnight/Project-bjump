@@ -122,7 +122,9 @@ void Player::moveAndCollide(Vector2 direction) {
         for (int i = 0; i < objs.size(); i++) {
             if (newPos.x < objs[i]->position.x + objs[i]->position.w) {
                 newPos.x = objs[i]->position.x + objs[i]->position.w;
+
             }
+            dashTime = 0;
         }
     }
     else {
@@ -130,6 +132,7 @@ void Player::moveAndCollide(Vector2 direction) {
             if (newPos.x + position.w > objs[i]->position.x) {
                 newPos.x = objs[i]->position.x - position.w;
             }
+            dashTime = 0;
         }
     }
     position.x = newPos.x;
