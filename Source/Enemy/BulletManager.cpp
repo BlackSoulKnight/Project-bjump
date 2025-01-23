@@ -4,28 +4,28 @@
 map<int, vector<Bullet*>> BulletManager::bulletList = map<int, vector<Bullet*>>();
 map<int, vector<Bullet*>> BulletManager::unusedBulletList = map<int, vector<Bullet*>>();
 
-void BulletManager::createBullet(Bullet bullet, Vector2 position, Vector2f direction, int speed) {
+void BulletManager::createBullet(Bullet* bullet, Vector2 position, Vector2f direction, int speed) {
 	Bullet* newBullet;
-	if (unusedBulletList.contains(bullet.Type)) {
-		if (unusedBulletList[bullet.Type].size() > 0) {
-			newBullet = unusedBulletList[bullet.Type][unusedBulletList[bullet.Type].size() - 1];
-			unusedBulletList[bullet.Type].erase(unusedBulletList[bullet.Type].end()-1);
+	if (unusedBulletList.contains(bullet->Type)) {
+		if (unusedBulletList[bullet->Type].size() > 0) {
+			newBullet = unusedBulletList[bullet->Type][unusedBulletList[bullet->Type].size() - 1];
+			unusedBulletList[bullet->Type].erase(unusedBulletList[bullet->Type].end()-1);
 			//ReInit bullet
 			newBullet->initialize(position, direction, speed);
 		}
 		else {
-			newBullet = bullet.createBullet();
+			newBullet = bullet->createBullet();
 			World::Instance->createGameObject(newBullet);
 			newBullet->initialize(position, direction, speed);
 			//create new bullet
 		}
 	}
 	else {
-		bulletList[bullet.Type] = vector<Bullet*>();
-		unusedBulletList[bullet.Type] = vector<Bullet*>();
+		bulletList[bullet->Type] = vector<Bullet*>();
+		unusedBulletList[bullet->Type] = vector<Bullet*>();
 		//create new bullet
 
-		newBullet = bullet.createBullet();
+		newBullet = bullet->createBullet();
 		World::Instance->createGameObject(newBullet);
 		newBullet->initialize(position, direction, speed);
 	}

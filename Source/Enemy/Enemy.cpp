@@ -8,12 +8,12 @@ Enemy::Enemy() :GameObject() {
 	tag = "Enemy";
 
 	// Test Bullet
-	Bullet s;
-
+	Bullet* s = new Bullet();
+	B_Spiral* d = new B_Spiral();
 	addBulletToList(s, { 1,1 }, 500, 600);
 	addBulletToList(s, { -1,1 }, 500, 600);
 	addBulletToList(s, { 1,-1 }, 500, 600);
-	addBulletToList(s, { -1,-1 }, 500, 600);
+	addBulletToList(d, { 0,1 }, 1500, 600);
 }
 
 void Enemy::update(int deltaT) {
@@ -28,7 +28,7 @@ void Enemy::update(int deltaT) {
 	}
 }
 
-void Enemy::addBulletToList(Bullet bullet, Vector2f _direction, int delay,int speed)
+void Enemy::addBulletToList(Bullet* bullet, Vector2f _direction, int delay,int speed)
 {
 	bullets.push_back(bullet);
 	bulletDirection.push_back(_direction);

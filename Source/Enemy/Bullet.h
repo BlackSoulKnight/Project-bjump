@@ -7,15 +7,16 @@ class Bullet:public GameObject
 public:
 	Vector2f direction;
 	int speed;
-	int activeTime = 0;
+	float activeTime = 0;
 	Bullet();
+	SDL_Rect hitbox = { 5 * SCALE,5 * SCALE,6 * SCALE,6 * SCALE };
 	virtual Bullet* createBullet();
 	virtual bool hitCollision();
-	virtual void moveBullet(int deltaT);
+	virtual void moveBullet(float deltaT);
 	void initialize(Vector2 position,Vector2f startDirection,int startSpeed);
 	void update(int deltaT);
 	bool outOfScreen();
-	int Type;
+	int Type = 0;
 	//Projectile trajactory inside ea bullet scrip invidual
 	//Direction
 	//Special movement function
@@ -23,3 +24,10 @@ public:
 	//Sonstiges
 };
 
+class B_Spiral : public Bullet
+{
+public:
+	B_Spiral();
+	void moveBullet(float deltaT);
+	Bullet* createBullet() { return new B_Spiral; };
+};

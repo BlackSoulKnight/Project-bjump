@@ -3,7 +3,7 @@
 
 World* World::Instance = nullptr;
 const int WINDOW_WIDTH = 16 * 40 * SCALE;
-const int WINDOW_HEIGHT = 16 * 40 * SCALE;
+const int WINDOW_HEIGHT = 16 *40 * SCALE;
 World::World(int _windowSizeX, int _windowSizeY) {
     windowSizeX = _windowSizeX;
     windowSizeY = _windowSizeY;
