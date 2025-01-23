@@ -19,7 +19,7 @@ World::World(int _windowSizeX, int _windowSizeY) {
     World::Instance = this;
     debugWindow = DebugMenu();
     LoadGameAssets();
-    string levelFile = string("../Levels/map.bjump");
+    string levelFile = string("../Levels/playarea.bjump");
     LoadFile(levelFile, false);
     LoadFile(levelFile.append("BG"), true);
 
