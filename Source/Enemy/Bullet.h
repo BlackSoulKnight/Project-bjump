@@ -9,7 +9,6 @@ public:
 	int speed;
 	float activeTime = 0;
 	Bullet();
-	SDL_Rect hitbox = { 5 * SCALE,5 * SCALE,6 * SCALE,6 * SCALE };
 	virtual Bullet* createBullet();
 	virtual bool hitCollision();
 	virtual void moveBullet(float deltaT);

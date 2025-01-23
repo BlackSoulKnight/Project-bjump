@@ -40,7 +40,7 @@ public:
     float wallJumpTimerMax = 0.1;
     float KNOCKBACK_FORCE = 20;
     // Konstanten
-    float GRAVITY = 0.7 * SCALE;
+    float GRAVITY = 900 * SCALE;
     float JUMP_FORCE = -10.0 * SCALE;
     float FALL_SPEED = 10.0 * SCALE;
     float MOVE_SPEED = 900;
