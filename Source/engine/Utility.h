@@ -8,7 +8,7 @@
 #include <fstream>
 #include <iterator>
 #include <sstream>
-# define Math_PI           3.14159265358979323846
+#define Math_PI           3.14159265358979323846
 using namespace std;
 
 const int SCALE = 5;
@@ -63,3 +63,4 @@ struct Sprite {
 	bool flipH, flipV;
 };
 
+double normalize(double min, double max, double val);

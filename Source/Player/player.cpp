@@ -323,7 +323,7 @@ void Player::update(int deltaT) {
     case PlayerState::WALL_JUMPING:
     {
 
-        static float wallJumpTimer = 0.20f; // Timer 
+         
         wallJumpTimer += dt; // Delta-Zeit in Sekunden
 
         if (InputManager::checkInput("Jump") && canDoubleJump && !spaceJustPressed) {
@@ -334,8 +334,9 @@ void Player::update(int deltaT) {
      
 
         // Währendessen Bewegung blockieren
-        if (wallJumpTimer <= 0.20f) {
+        if (wallJumpTimer <= wallJumpTimerMax) {
             vx = 0; // Keine horizontale Bewegung erlauben
+            vy = WALL_JUMP_FORCE_Y ;
         }
         else {
             // Nach x Sekunden automatisch in FALLING wechseln
@@ -394,7 +395,7 @@ void Player::update(int deltaT) {
             // Langsames Abklingen der Kräfte
             vx *= decelerationFactor; // Horizontal langsamer
             vy *= decelerationFactor; // Vertikal langsamer
-
+            wallJumpTimer = 0;
             playerState = PlayerState::WALL_JUMPING;  // Wechsel zu JUMPING
             break;
         }
