@@ -52,7 +52,7 @@ bool Player::checkGroundCollision(int screenHeight) {
     linksNebenPlayer.x = position.x;
     linksNebenPlayer.y = position.y+position.h;
     linksNebenPlayer.w = 16*SCALE;
-    linksNebenPlayer.h = 3*SCALE;
+    linksNebenPlayer.h = 3;
     vector<GameObject*> objs = World::Instance->getCollisions(linksNebenPlayer,ignoreTags);
     if (objs.size() > 0) {
         return true;
@@ -186,11 +186,6 @@ void Player::update(int deltaT) {
     }
 
 
-    // Schwerkraft anwenden, wenn nicht im Dash
-    if (playerState != PlayerState::DASHING) {
-        //vy += GRAVITY;
-    }
-
     // Maximale Fallgeschwindigkeit begrenzen
     if (vy > FALL_SPEED && !dashing) {
         vy = FALL_SPEED;
@@ -305,7 +300,7 @@ void Player::update(int deltaT) {
         break;
 
     case PlayerState::DASHING:
-        dashTime -= deltaT;  // Dash-Zeit abziehen
+        dashTime -= dt;  // Dash-Zeit abziehen
         if (dashTime <= 0) {
             // Dash beendet
             dashing = false;
@@ -326,7 +321,7 @@ void Player::update(int deltaT) {
     {
 
         static float wallJumpTimer = 0.20f; // Timer 
-        wallJumpTimer += deltaT / 1000.0f; // Delta-Zeit in Sekunden
+        wallJumpTimer += dt; // Delta-Zeit in Sekunden
 
         if (InputManager::checkInput("Jump") && canDoubleJump && !spaceJustPressed) {
             vy = JUMP_FORCE;
@@ -418,7 +413,7 @@ void Player::update(int deltaT) {
         if (checkWallCollision())
             fallDirection *= -1;
         if (checkGroundCollision(0))
-            if (vy > 20)
+            if (vy > BOUNCE_BREAK_POINT)
                 vy *= -BOUNCE_FORCE ;
             else {
                 playerState = PlayerState::ON_GROUND;
