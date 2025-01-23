@@ -417,7 +417,7 @@ void Player::update(int deltaT) {
             fallDirection *= -1;
         if (checkGroundCollision(0))
             if (vy > BOUNCE_BREAK_POINT)
-                vy *= -BOUNCE_FORCE ;
+                vy *= -BOUNCE_FACTOR ;
             else {
                 playerState = PlayerState::ON_GROUND;
                 gotHit = false;
