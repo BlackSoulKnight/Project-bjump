@@ -439,8 +439,8 @@ void render_graphics() {
     SDL_FRect text_background = {
         (600 * 1.70 - WS.FONT_SIZE) / (WS.zoom) ,
         (10 / WS.zoom),
-        (WS.FONT_SIZE + 16) / (WS.zoom * WS.selected_tile_set_factor),
-        (WS.FONT_SIZE + 16) / (WS.zoom * WS.selected_tile_set_factor) };
+        (WS.FONT_SIZE + 48) / (WS.zoom ),
+        (WS.FONT_SIZE + 48) / (WS.zoom )};
     SDL_SetRenderDrawColor(WS.renderer, 0, 0, 0, 255);
     SDL_RenderFillRectF(WS.renderer, &text_background);
     SDL_SetRenderDrawColor(WS.renderer, 255, 255, 255, 255);
@@ -449,7 +449,7 @@ void render_graphics() {
     SDL_FRect layer_text_pos = {
         (600 * 1.73- WS.FONT_SIZE) / (WS.zoom) ,
         (10 / WS.zoom),
-        (WS.FONT_SIZE) / (WS.zoom * WS.selected_tile_set_factor), WS.FONT_SIZE / (WS.zoom * WS.selected_tile_set_factor) };
+        (WS.FONT_SIZE * 2) / (WS.zoom), WS.FONT_SIZE * 2 / (WS.zoom) };
     switch (WS.current_layer)
     {
     case Layer::BACKGROUND:
@@ -472,11 +472,10 @@ void render_graphics() {
     SDL_FRect enemy_type_text_pos = {
         (600 * 1.73 - WS.FONT_SIZE) / (WS.zoom) ,
         (36 / WS.zoom),
-        (WS.FONT_SIZE) / (WS.zoom * WS.selected_tile_set_factor), WS.FONT_SIZE / (WS.zoom * WS.selected_tile_set_factor) };
-    if( WS.current_layer == Layer::PLACE_ENEMY)
+        (WS.FONT_SIZE * 2) / (WS.zoom), WS.FONT_SIZE * 2 / (WS.zoom) };if( WS.current_layer == Layer::PLACE_ENEMY)
         WS.enemy_msg = TTF_RenderText_Solid(WS.font, ('E' + to_string(-(WS.current_enemy + 1))).c_str(), { 245,245,245 });
     else
-        WS.enemy_msg = TTF_RenderText_Solid(WS.font, ('E' + to_string(-(WS.current_enemy + 1))).c_str(), { 245 / 2,245 / 2,245 / 2 });
+        WS.enemy_msg = TTF_RenderText_Solid(WS.font, ('E' + to_string(-(WS.current_enemy + 1))).c_str(), { 245 / 6,245 / 6,245 / 6 });
     SDL_RenderCopyF(WS.renderer, SDL_CreateTextureFromSurface(WS.renderer, WS.enemy_msg), NULL, &enemy_type_text_pos);
 
     SDL_RenderPresent(WS.renderer);
