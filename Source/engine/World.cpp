@@ -333,8 +333,13 @@ void World::renderEntity(GameObject &entity) {
         (SDL_RendererFlip)(flipDirection));
 
     if (debug) {
-        SDL_Rect collisionbox = { 0,0,16 * SCALE,16 * SCALE };
-        collisionbox.x = entity.position.x + (camera.x + camera.xOffset);
+        SDL_Rect collisionbox;
+        if(entity.tag == "Bullet")
+            collisionbox = entity.hitbox;
+        else
+            collisionbox = { 0,0,16 * SCALE,16 * SCALE };
+
+            collisionbox.x = entity.position.x + (camera.x + camera.xOffset);
         collisionbox.y = entity.position.y + (camera.y + camera.yOffset);
         SDL_SetRenderDrawColor(renderer, 255, 0, 0, 100);
         SDL_RenderFillRect(renderer, &collisionbox);

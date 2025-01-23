@@ -56,7 +56,7 @@ bool Bullet::hitCollision()
 	SDL_Rect targetHitbox = hitbox;
 	targetHitbox.x += position.x;
 	targetHitbox.y += position.y;
-	if (true) {
+	if (false) {
 		
 		SDL_Rect collisionbox = targetHitbox;
 		Camera camera = World::Instance->camera;
