@@ -1,5 +1,5 @@
 #include "InputManager.h"
-
+#include "World.h"
 
 map<string, bool> init() {
     map<string, bool> t;
@@ -54,6 +54,11 @@ void InputManager::pump() {
                 exit(1);
                 actionState["Quit"] = pressed;
                 break;
+            case SDL_SCANCODE_9:
+                /*string levelFile = string("../Levels/bgTest.bjump");
+                World::Instance->LoadFile(levelFile, false);
+                World::Instance->LoadFile(levelFile.append("BG"), true);
+                World::Instance->player->setPosition(0, 0);*/
             }
             break;
         case SDL_QUIT:

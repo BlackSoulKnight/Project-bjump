@@ -19,7 +19,10 @@ World::World(int _windowSizeX, int _windowSizeY) {
     World::Instance = this;
     debugWindow = DebugMenu();
     LoadGameAssets();
-    LoadFile(string("../Levels/map.bjump"));
+    string levelFile = string("../Levels/map.bjump");
+    LoadFile(levelFile, false);
+    LoadFile(levelFile.append("BG"), true);
+
     //LoadFile(string("../Levels/map.bjump"));
     camera = { 0,0, WINDOW_WIDTH,WINDOW_HEIGHT };
     //camera.setCameraOffset(40, 40);
@@ -165,7 +168,7 @@ vector<GameObject*> World::getTraceCollisions(Vector2 &start, Vector2 &end,vecto
 }
 
 
-void World::LoadFile(string fileName) {
+void World::LoadFile(string fileName, bool isBG) {
     string file = fileName;
     if (file.size() == 0)
     {
@@ -199,27 +202,27 @@ void World::LoadFile(string fileName) {
         yIndex++;
         yMapMaxSize++;
     }
-    //Load Default BG
-    for (int i = 0; i < reducedDimensionMap.size(); i++)
-    {
-        if (reducedDimensionMap[i] != '-1')
-            background.push_back(generateDefaultBackground(
+    if (isBG)
+        for (int i = 0; i < reducedDimensionMap.size(); i++)
+        {
+            if (reducedDimensionMap[i] != '-1')
+                background.push_back(generateDefaultBackground(
+                    reducedDimensionMap[i],
+                    reducedDimensionTilePosition[i],
+                    xMapMaxSize,
+                    yMapMaxSize
+                ));
+        }
+    else
+        for (int i = 0; i < reducedDimensionMap.size(); i++) {
+            if (reducedDimensionMap[i] != '-1')
+            createGameObject(generateBlock(
+                reducedDimensionMap[i],
                 reducedDimensionTilePosition[i],
                 xMapMaxSize,
                 yMapMaxSize
             ));
-    }
-
-
-    for (int i = 0; i < reducedDimensionMap.size(); i++) {
-        if (reducedDimensionMap[i] != '-1')
-        createGameObject(generateBlock(
-            reducedDimensionMap[i],
-            reducedDimensionTilePosition[i],
-            xMapMaxSize,
-            yMapMaxSize
-        ));
-    }
+        }
 }
 void World::renderGraphics() {
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
@@ -298,6 +301,27 @@ void World::renderEntity(GameObject &entity) {
     if (((entity.frameCount / 60) % entitySpriteController.getSpritesPerX()) + entity.sprite.x > entitySpriteController.getSpritesPerX())
         rowOverflow++;
     */
+    if (entity.name == "BG")
+        SDL_RenderCopyEx(
+            renderer,
+            entitySpriteController.getBgTexture(),
+            //Berechnung in XY in eigene funktion lagern
+            entitySpriteController.x(entity.sprite.x).y(entity.sprite.y).getSprite(),
+            &actualPosition,
+            0,
+            NULL,
+            (SDL_RendererFlip)(flipDirection));
+    else if (entity.tag == "Bullet" || entity.tag == "Enemy")
+        SDL_RenderCopyEx(
+            renderer,
+            entitySpriteController.getBulletTexture(),
+            //Berechnung in XY in eigene funktion lagern
+            entitySpriteController.x(entity.sprite.x).y(entity.sprite.y).getSprite(),
+            &actualPosition,
+            0,
+            NULL,
+            (SDL_RendererFlip)(flipDirection));
+    else
     SDL_RenderCopyEx(
         renderer,
         entitySpriteController.getTexture(),
@@ -364,7 +388,7 @@ GameObject* World::generateBlock(int tile, SDL_Rect tilePos, int mapWidth, int m
     return block;
 }
 
-GameObject* World::generateDefaultBackground(SDL_Rect bgPos, int mapWidth, int mapHeight) {
+GameObject* World::generateDefaultBackground(int tile, SDL_Rect tilePos, int mapWidth, int mapHeight) {
     GameObject* block = new GameObject();
     Sprite spriteData;
     SpriteController blockSprites = spriteControllers["../resources/Tilemap/monochrome_tilemap_transparent_packed.png"];
@@ -377,8 +401,8 @@ GameObject* World::generateDefaultBackground(SDL_Rect bgPos, int mapWidth, int m
     //  spriteSheetWidth * posY + posX = tile
     //  posX = tile % spriteSheetWidth
     //  posY = (tile - posX) / spriteSheetWidth
-    spriteData.x = 0;
-    spriteData.y = 0;
+    spriteData.x = tile % blockSprites.getSpritesPerX();
+    spriteData.y = (tile - spriteData.x) / blockSprites.getSpritesPerX();
     /**
     *   block.collisions; // vector<gameObject> ?
     *   block.layer;      // int          worldBlocks = 1 maybe change to enum?
@@ -390,9 +414,15 @@ GameObject* World::generateDefaultBackground(SDL_Rect bgPos, int mapWidth, int m
     */
     block->layer = 1;
     block->scale.x = 1, block->scale.y = 1;
-    block->position = bgPos;
-    block->name = "Block";   // ??
+    block->position = tilePos;
+    block->name = "BG";   // ??
+    block->tag = "World";
     block->sprite = spriteData;
+    if (tile == -1) {
+        block->isActive = false;
+    }
+    else
+        block->isActive = true;
 
     return block;
 }

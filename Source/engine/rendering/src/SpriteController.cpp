@@ -2,8 +2,8 @@
 
 SpriteController::SpriteController() : _x(0), _y(0) {}
 
-SpriteController::SpriteController(int logicPixelsX, int logicPixelsY, int spritesPerRow, int spritesPerColumn, SDL_Surface *spriteSurface,SDL_Texture *texture)
-    : _logicPixelsX(logicPixelsX), _logicPixelsY(logicPixelsY), _x(0), _y(0), _spritesPerRow(spritesPerRow), _spritesPerColumn(spritesPerColumn), _spriteSurface(spriteSurface),_Texture(texture) {}
+SpriteController::SpriteController(int logicPixelsX, int logicPixelsY, int spritesPerRow, int spritesPerColumn, SDL_Surface *spriteSurface,SDL_Texture *texture, SDL_Texture* bgTexture, SDL_Texture* bullet)
+    : _logicPixelsX(logicPixelsX), _logicPixelsY(logicPixelsY), _x(0), _y(0), _spritesPerRow(spritesPerRow), _spritesPerColumn(spritesPerColumn), _spriteSurface(spriteSurface),_Texture(texture), _background(bgTexture), _bulletTexture(bullet) {}
 
 SpriteController::SpriteController(std::vector<SDL_Rect> sprite, int logicPixelsX, int logicPixelsY, int spritesPerRow, int spritesPerColumn)
     : _sprite(sprite), _logicPixelsX(logicPixelsX), _logicPixelsY(_logicPixelsY), _x(0), _y(0), _spritesPerRow(spritesPerRow), _spritesPerColumn(spritesPerColumn) {}
@@ -47,6 +47,10 @@ SpriteController  &SpriteController::generateController(const char *fileName, in
 {
     SDL_Surface *spriteSheet = IMG_Load(fileName);
     SDL_Texture *texture = IMG_LoadTexture(renderer, fileName);
+    SDL_Texture* bgTexture = IMG_LoadTexture(renderer, fileName);
+    SDL_Texture* bulletTexture = IMG_LoadTexture(renderer, fileName);
+    SDL_SetTextureColorMod(bgTexture, 127, 127, 127);
+    SDL_SetTextureColorMod(bulletTexture, 255, 127, 127);
     int imageWidth = spriteSheet->w;
     int imageHeight = spriteSheet->h;
 
@@ -82,7 +86,9 @@ SpriteController  &SpriteController::generateController(const char *fileName, in
         spritesPerRow,
         spritesPerColumn,
         spriteSheet,
-        texture
+        texture,
+        bgTexture,
+        bulletTexture
     );
 
     returnController->setSprite(resultSprite);

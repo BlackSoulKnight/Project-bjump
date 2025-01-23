@@ -15,8 +15,8 @@ Player::Player()
     height(16) {
     position.x = 50;
     position.y = 200;
-    position.w = width * SCALE;
-    position.h = height * SCALE;
+    position.w = width *SCALE;
+    position.h = height *SCALE;
     name = "Player";
     tag = "Player";
     sprite.spiteSheetLocation = "../resources/Tilemap/monochrome_tilemap_transparent_packed.png";
