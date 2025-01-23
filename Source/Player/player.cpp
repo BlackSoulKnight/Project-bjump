@@ -52,7 +52,7 @@ bool Player::checkGroundCollision(int screenHeight) {
     linksNebenPlayer.x = position.x;
     linksNebenPlayer.y = position.y+position.h;
     linksNebenPlayer.w = 16*SCALE;
-    linksNebenPlayer.h = 3;
+    linksNebenPlayer.h = 3*SCALE;
     vector<GameObject*> objs = World::Instance->getCollisions(linksNebenPlayer,ignoreTags);
     if (objs.size() > 0) {
         return true;

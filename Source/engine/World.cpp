@@ -82,9 +82,12 @@ vector<tuple<GameObject*,SDL_Rect>> World::getCollisions(GameObject *origin, vec
             for (int n = 0; n < gameObjectsNew[tags[i]].size(); n++) {
                 GameObject* obj = gameObjectsNew[tags[i]][n];
                 SDL_Rect a;
+                SDL_Rect HitBox = obj->hitbox;
+                HitBox.x += obj->position.x;
+                HitBox.y += obj->position.y;
                 if (origin == obj)
                     continue;
-                if (SDL_IntersectRect(&obj->position, &origin->position, &a))
+                if (SDL_IntersectRect(&HitBox, &origin->position, &a))
                     collisions.push_back({ gameObjects[i],a });
             }
         }
@@ -333,14 +336,9 @@ void World::renderEntity(GameObject &entity) {
         (SDL_RendererFlip)(flipDirection));
 
     if (debug) {
-        SDL_Rect collisionbox;
-        if(entity.tag == "Bullet")
-            collisionbox = entity.hitbox;
-        else
-            collisionbox = { 0,0,16 * SCALE,16 * SCALE };
-
-            collisionbox.x = entity.position.x + (camera.x + camera.xOffset);
-        collisionbox.y = entity.position.y + (camera.y + camera.yOffset);
+        SDL_Rect collisionbox = entity.hitbox;
+        collisionbox.x = entity.position.x+entity.hitbox.x + (camera.x + camera.xOffset);
+        collisionbox.y = entity.position.y + entity.hitbox.y + (camera.y + camera.yOffset);
         SDL_SetRenderDrawColor(renderer, 255, 0, 0, 100);
         SDL_RenderFillRect(renderer, &collisionbox);
         SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);

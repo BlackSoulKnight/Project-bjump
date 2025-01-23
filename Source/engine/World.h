@@ -56,7 +56,6 @@ public:
 	//SDL_Rect scaleEntityPosition(GameObject); <- Macht probleme, siehe funktion.
 	bool createGameObject(GameObject* obj);
 	bool destroyGameObject(GameObject* obj);
-	bool destroyGameObject(int pos);
 	SDL_Renderer* getRenderer();
 	vector<tuple<GameObject*,SDL_Rect>> getCollisions(GameObject *origin, vector<string> IgnoreTags = vector<string>());
 	vector<GameObject*> getCollisions(SDL_Rect area, vector<string> IgnoreTags = vector<string>());
