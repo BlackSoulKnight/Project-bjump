@@ -26,6 +26,21 @@ Player::Player()
 }
 
 
+void Player::LoadStats1() {
+    MOVE_SPEED = 700;
+    FALL_SPEED = 220.952;
+    DASH_SPEED = 3498.901;
+    DASH_DURATION = 0.250;
+    GRAVITY = 210.064;
+    JUMP_FORCE = -3142.748;
+    WALL_JUMP_FORCE_X = 16.000;
+    WALL_JUMP_FORCE_Y = -1571.430;
+    BOUNCE_FACTOR = 0.3;
+    KNOCKBACK_FORCE = 700;
+    BOUNCE_BREAK_POINT = 575.0;
+}
+
+
 // Spielerzustand ausgeben
 void Player::printState() const {
     switch (playerState) {

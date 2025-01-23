@@ -75,6 +75,8 @@ public:
         x = newX;
         y = newY;
     }
+
+    void LoadStats1();
 };
 
 
