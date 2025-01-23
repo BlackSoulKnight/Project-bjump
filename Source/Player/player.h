@@ -38,6 +38,7 @@ public:
     float fallDirection = 0;
     float wallJumpTimer = 0.20; // Timer für die halbe Sekunde
     float wallJumpTimerMax = 0.1;
+    float KNOCKBACK_FORCE = 20;
     // Konstanten
     float GRAVITY = 0.7 * SCALE;
     float JUMP_FORCE = -10.0 * SCALE;
@@ -48,6 +49,8 @@ public:
     float DASH_DURATION = 30.0 * SCALE;
     float WALL_JUMP_FORCE_Y = -8.0 * SCALE;
     float WALL_JUMP_FORCE_X = 16.0 * SCALE;
+
+    float BOUNCE_FORCE = 0.5; // Always Below 1
     // Hilfsfunktionen
     bool checkGroundCollision(int screenHeight = 0);
     bool checkWallCollision();

@@ -52,7 +52,7 @@ bool Player::checkGroundCollision(int screenHeight) {
     linksNebenPlayer.x = position.x;
     linksNebenPlayer.y = position.y+position.h;
     linksNebenPlayer.w = 16*SCALE;
-    linksNebenPlayer.h = max((float)1,vy);
+    linksNebenPlayer.h = 3;
     vector<GameObject*> objs = World::Instance->getCollisions(linksNebenPlayer,ignoreTags);
     if (objs.size() > 0) {
         return true;
@@ -144,6 +144,7 @@ void Player::moveAndCollide(Vector2 direction) {
         for (int i = 0; i < objs.size(); i++) {
             if (newPos.y < objs[i]->position.y + objs[i]->position.h) {
                 newPos.y = objs[i]->position.y + objs[i]->position.h;
+                vy = 0;
             }
         }
     }
@@ -171,10 +172,10 @@ void Player::update(int deltaT) {
     float dt = (float)deltaT / 1000;
     // Bewegung nach links und rechts (normale Bewegung)
     if (InputManager::checkInput("Left")) {
-        vx = (moveXSpeed - MOVE_SLOWER * InputManager::checkInput("Slow")) * -1 * dt;  // Linksbewegung
+        vx = (moveXSpeed - MOVE_SLOWER * InputManager::checkInput("Slow")) * -1;  // Linksbewegung
     }
     else if (InputManager::checkInput("Right")) {
-        vx =  (moveXSpeed - MOVE_SLOWER * InputManager::checkInput("Slow")) * dt;  // Rechtsbewegung
+        vx =  (moveXSpeed - MOVE_SLOWER * InputManager::checkInput("Slow"));  // Rechtsbewegung
     }
     else if (!dashing) {
         vx = 0;  // Keine Bewegung, wenn nicht gedasht wird
@@ -348,12 +349,12 @@ void Player::update(int deltaT) {
         if (lastTouchedWallWasRight) {
             // Geschwindigkeit nach links mit der Zeit verringern (Verlangsamen)
              
-                vx -= MOVE_SPEED * dt;  
+                vx -= MOVE_SPEED ;  
             }
             
             else {
                 
-                    vx += MOVE_SPEED * dt;
+                    vx += MOVE_SPEED ;
                 
         }
        
@@ -418,12 +419,12 @@ void Player::update(int deltaT) {
             fallDirection *= -1;
         if (checkGroundCollision(0))
             if (vy > 20)
-                vy *= -0.5;
+                vy *= -BOUNCE_FORCE ;
             else {
                 playerState = PlayerState::ON_GROUND;
                 gotHit = false;
             }
-        vx = 20 * fallDirection;
+        vx = KNOCKBACK_FORCE * fallDirection;
         break;
 
     default:
@@ -437,7 +438,7 @@ void Player::update(int deltaT) {
 
 
     // Bewegung und Kollision berechnen
-    moveAndCollide(Vector2(vx, vy));
+    moveAndCollide(Vector2(vx*dt, vy*dt));
 }
 
 

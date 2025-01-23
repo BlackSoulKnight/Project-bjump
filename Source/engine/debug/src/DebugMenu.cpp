@@ -88,15 +88,17 @@ void DebugMenu::PlayerMenu(Player* player) {
     ImGui::SameLine();
     ImGui::InputInt("MoveMax", &tmp, 1, 10);
 
-    ImGui::SliderFloat("Move Speed", &player->MOVE_SPEED, 0, 900);
-    ImGui::SliderFloat("Fall Speed", &player->FALL_SPEED, 10, 200);
+    ImGui::SliderFloat("Move Speed", &player->MOVE_SPEED, 0, 2000);
+    ImGui::SliderFloat("Fall Speed", &player->FALL_SPEED, 10, 2000);
     ImGui::SliderFloat("Dash Speed", &player->DASH_SPEED, 200, 2000);
-    ImGui::SliderFloat("Dash Duration", &player->DASH_DURATION, 0.5, 10.0);
-    ImGui::SliderFloat("Gravity", &player->GRAVITY, 0.5,10.0);
-    ImGui::SliderFloat("Jump Force", &player->JUMP_FORCE,-100.0, -10.0);
+    ImGui::SliderFloat("Dash Duration", &player->DASH_DURATION, 0.5, 100.0);
+    ImGui::SliderFloat("Gravity", &player->GRAVITY, 0.5,3000.0);
+    ImGui::SliderFloat("Jump Force", &player->JUMP_FORCE,-190000.0, -10.0);
     ImGui::SliderFloat("Wall Jump Time", &player->wallJumpTimerMax, 0.0, 1.0);
-    ImGui::SliderFloat("Wall Jump Force X", &player->WALL_JUMP_FORCE_X, 0.0, 800.0);
-    ImGui::SliderFloat("Wall Jump Force Y", &player->WALL_JUMP_FORCE_Y, 5.0, 100.0 );
+    ImGui::SliderFloat("Wall Jump Force X", &player->WALL_JUMP_FORCE_X, 0.0, 1600.0);
+    ImGui::SliderFloat("Wall Jump Force Y", &player->WALL_JUMP_FORCE_Y, -1600.0,0.0 );
+    ImGui::SliderFloat("Bounce Factor", &player->BOUNCE_FORCE, 0.0,1.0 );
+    ImGui::SliderFloat("KnockBack Force", &player->KNOCKBACK_FORCE, 0.0,900.0 );
 
     ImGui::End();
 }
