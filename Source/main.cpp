@@ -30,7 +30,7 @@
 
 int main(int, char**)
 {
-    World* newWorld = new World(800,600);
+    World* newWorld = new World(640*2,640*2);
     Player* player = new Player();
     newWorld->createGameObject(player);
     newWorld->player = player;
@@ -45,7 +45,7 @@ int main(int, char**)
     obj->sprite.y = 5;
     obj->position.w = 16;
     obj->position.h = 16;
-    player->LoadStats1();
+    //player->LoadStats1();
     //newWorld->createGameObject(obj);
     while (newWorld->run()) {
 

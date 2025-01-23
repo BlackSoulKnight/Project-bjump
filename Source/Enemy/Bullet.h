@@ -6,7 +6,7 @@ class Bullet:public GameObject
 {
 public:
 	Vector2f direction;
-	int speed;
+	double speed;
 	float activeTime = 0;
 	Bullet();
 	virtual Bullet* createBullet();

@@ -7,7 +7,7 @@ const int WINDOW_HEIGHT = 16 *40 * SCALE;
 World::World(int _windowSizeX, int _windowSizeY) {
     windowSizeX = _windowSizeX;
     windowSizeY = _windowSizeY;
-    debug = true;
+    debug = false;
     deltaT = 0;
     targetFrameRate = 60;
     SDL_Init(SDL_INIT_EVERYTHING);
@@ -284,7 +284,6 @@ void World::renderEntity(GameObject &entity) {
         spriteControllers.insert({ entity.sprite.spiteSheetLocation, tmpSpriteController });
     }
     SpriteController entitySpriteController = spriteControllers.at(entity.sprite.spiteSheetLocation);
-
     // Transformieren des Sprites
     int flipDirection = 0;
     if (entity.sprite.flipV)
@@ -324,7 +323,7 @@ void World::renderEntity(GameObject &entity) {
             0,
             NULL,
             (SDL_RendererFlip)(flipDirection));
-    else
+    else if(entity.tag == "Player")
     SDL_RenderCopyEx(
         renderer,
         entitySpriteController.getTexture(),
@@ -334,6 +333,16 @@ void World::renderEntity(GameObject &entity) {
         0,
         NULL,
         (SDL_RendererFlip)(flipDirection));
+    else
+        SDL_RenderCopyEx(
+            renderer,
+            entitySpriteController.getTexture(),
+            //Berechnung in XY in eigene funktion lagern
+            entitySpriteController.x(entity.sprite.x).y(entity.sprite.y).getSprite(),
+            &actualPosition,
+            0,
+            NULL,
+            (SDL_RendererFlip)(flipDirection));
 
     if (debug) {
         SDL_Rect collisionbox = entity.hitbox;

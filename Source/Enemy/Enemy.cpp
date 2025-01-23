@@ -13,7 +13,7 @@ Enemy::Enemy() :GameObject() {
 	addBulletToList(s, { 1,1 }, 500, 600);
 	addBulletToList(s, { -1,1 }, 500, 600);
 	addBulletToList(s, { 1,-1 }, 500, 600);
-	addBulletToList(d, { 0,1 }, 1500, 600);
+	addBulletToList(d, { 0,1 }, 100, 600);
 }
 
 void Enemy::update(int deltaT) {
