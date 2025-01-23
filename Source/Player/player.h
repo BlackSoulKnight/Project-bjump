@@ -40,13 +40,13 @@ public:
     float wallJumpTimerMax = 0.1;
     float KNOCKBACK_FORCE = 20;
     // Konstanten
-    float GRAVITY = 900;
-    float JUMP_FORCE = -6000;
+    float GRAVITY = 221;
+    float JUMP_FORCE = -3395;
     float FALL_SPEED = 600;
     float MOVE_SPEED = 900;
     float MOVE_SLOWER = 250; 
-    float DASH_SPEED = 1500;
-    float DASH_DURATION = 0.5;
+    float DASH_SPEED = 3200;
+    float DASH_DURATION = 0.333;
     float WALL_JUMP_FORCE_Y = -3000;
     float WALL_JUMP_FORCE_X = 16.0 ;
     float BOUNCE_BREAK_POINT = 300;

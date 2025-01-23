@@ -188,7 +188,7 @@ void Player::update(int deltaT) {
 
     // Maximale Fallgeschwindigkeit begrenzen
     if (vy > FALL_SPEED && !dashing) {
-        vy = FALL_SPEED;
+        //vy = FALL_SPEED;
     }
 
     // Spieler-Zustände aktualisieren
