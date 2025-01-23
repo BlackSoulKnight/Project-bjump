@@ -143,6 +143,7 @@
     <ClCompile Include="engine\debug\src\DebugMenu.cpp" />
     <ClCompile Include="engine\GameObject.cpp" />
     <ClCompile Include="engine\rendering\src\SpriteController.cpp" />
+    <ClCompile Include="engine\Utility.cpp" />
     <ClCompile Include="external-lib\imgui\backends\imgui_impl_sdl2.cpp" />
     <ClCompile Include="external-lib\imgui\backends\imgui_impl_sdlrenderer2.cpp" />
     <ClCompile Include="external-lib\imgui\imgui.cpp" />

@@ -216,7 +216,16 @@ void Player::update(int deltaT) {
         canDoubleJump = true;  // Doppelsprung wieder erlauben
         canDash = true;        // Dash wieder erlauben
         if (!checkGroundCollision(320)) { // früher 0 (test)
-            
+            if (InputManager::checkInput("Dash") && canDash && (InputManager::checkInput("Right") || InputManager::checkInput("Left"))) {
+                dashing = true;
+                dashTime = DASH_DURATION;  // Einheitliche Dauer
+                dashDirection = InputManager::checkInput("Left") ? -1 : 1; // Richtung festlegen
+                vx = DASH_SPEED * dashDirection;
+                vy = -GRAVITY;  // Vertikale Bewegung pausieren
+                canDash = false;
+                playerState = PlayerState::DASHING;
+            }
+            else
             playerState = PlayerState::FALLING;  // Vom Boden in "FALLING"
         }
         else {
@@ -338,7 +347,7 @@ void Player::update(int deltaT) {
     case PlayerState::WALL_JUMPING:
     {
 
-        static float wallJumpTimer = 0.20f; // Timer 
+         
         wallJumpTimer += dt; // Delta-Zeit in Sekunden
 
         if (InputManager::checkInput("Jump") && canDoubleJump && !spaceJustPressed) {
@@ -349,8 +358,9 @@ void Player::update(int deltaT) {
      
 
         // Währendessen Bewegung blockieren
-        if (wallJumpTimer <= 0.20f) {
+        if (wallJumpTimer <= wallJumpTimerMax) {
             vx = 0; // Keine horizontale Bewegung erlauben
+            vy = WALL_JUMP_FORCE_Y ;
         }
         else {
             // Nach x Sekunden automatisch in FALLING wechseln
@@ -409,7 +419,7 @@ void Player::update(int deltaT) {
             // Langsames Abklingen der Kräfte
             vx *= decelerationFactor; // Horizontal langsamer
             vy *= decelerationFactor; // Vertikal langsamer
-
+            wallJumpTimer = 0;
             playerState = PlayerState::WALL_JUMPING;  // Wechsel zu JUMPING
             break;
         }
