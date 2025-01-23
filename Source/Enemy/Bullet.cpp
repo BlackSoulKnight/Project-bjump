@@ -6,14 +6,14 @@ void Bullet::initialize(Vector2 position, Vector2f startDirection, int startSpee
 	isActive = true;
 	this->position.x = position.x;
 	this->position.y = position.y;
-	direction = startDirection;
+  	direction = startDirection;
 	speed = startSpeed;
 	activeTime = 0;
 }
 
 void Bullet::update(int deltaT) {
 	hitCollision();
-	moveBullet(deltaT);
+	moveBullet((float)deltaT/1000);
 	if (outOfScreen()) {
 		BulletManager::disableBullet(this);
 	}
@@ -23,10 +23,10 @@ void Bullet::update(int deltaT) {
 Bullet::Bullet() :GameObject() {
 	name = "Bullet";
 	tag = "Bullet";
-	sprite.x = 3;
+	sprite.x = 1;
 	sprite.y = 0;
-	position.h = 16;
-	position.w = 16;
+	position.h = 32;
+	position.w = 32;
 	sprite.spiteSheetLocation = "../resources/Tilemap/monochrome_tilemap_transparent_packed.png";
 	//World::Instance->createGameObject(this);
 };
@@ -53,7 +53,24 @@ bool Bullet::hitCollision()
 
 
 	vector<string> tags = {"Player"};
-	vector<GameObject*> collisions = World::Instance->getCollisions(position,tags);
+	SDL_Rect targetHitbox = hitbox;
+	targetHitbox.x += position.x;
+	targetHitbox.y += position.y;
+	if (true) {
+		
+		SDL_Rect collisionbox = targetHitbox;
+		Camera camera = World::Instance->camera;
+		SDL_Renderer* renderer = World::Instance->getRenderer();
+		collisionbox.x +=  (camera.x + camera.xOffset);
+		collisionbox.y +=(camera.y + camera.yOffset);
+		SDL_SetRenderDrawColor(renderer, 0, 255, 0, 100);
+		SDL_RenderFillRect(renderer, &collisionbox);
+		SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+		SDL_RenderDrawRect(renderer, &collisionbox);
+		SDL_RenderPresent(renderer);
+	}
+
+	vector<GameObject*> collisions = World::Instance->getCollisions(targetHitbox, tags);
 	if (collisions.size() > 0) {
 		Player* player = (Player*)collisions[0];
 		if (!player->gotHit) {
@@ -68,9 +85,23 @@ bool Bullet::hitCollision()
 	return false;
 }
 
-void Bullet::moveBullet(int deltaT)
+void Bullet::moveBullet(float deltaT)
 {
-	position.x += (float)(speed * direction.x)/1000*deltaT;
-	position.y += (float)(speed * direction.y) / 1000 *deltaT;
+	position.x += (float)(speed * direction.x)*deltaT;
+	position.y += (float)(speed * direction.y) *deltaT;
 	activeTime += deltaT;
+}
+
+void B_Spiral::moveBullet(float deltaT) {
+	//direction.x = 0.1+sin(activeTime);
+	//direction.y = 1-direction.x;
+	//direction.normalize(direction);
+	direction.rotate(direction, 90*deltaT);
+	activeTime += deltaT;
+ 	position.x += (float)(speed * direction.x) * deltaT;
+	position.y += (float)(speed * direction.y)  * deltaT;
+}
+
+B_Spiral::B_Spiral() :Bullet() {
+	Type = 1;
 }

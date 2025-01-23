@@ -7,7 +7,7 @@ public:
 	static map<int, vector<Bullet*>> bulletList;
 	static map<int, vector<Bullet*>> unusedBulletList;
 
-	static void createBullet(Bullet type, Vector2 position, Vector2f direction, int speed);
+	static void createBullet(Bullet* type, Vector2 position, Vector2f direction, int speed);
 	static void disableBullet(int Type, int position);
 	static void disableBullet(Bullet* target);
 
