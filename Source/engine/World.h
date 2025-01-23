@@ -13,6 +13,8 @@
 #include "rendering/SpriteController.h"
 #include "rendering/Camera.h"
 #include "debug/DebugMenu.h"
+#include "../Player/player.h"
+#include "../Enemy/Enemy.h"
 
 using namespace std;
 
@@ -33,6 +35,8 @@ private:
 	int targetFrameRate;
 	map<int, vector<GameObject*>> scenes;
 	GameObject* generateBlock(int, SDL_Rect, int, int);
+	Enemy* generateEnemy(int, SDL_Rect, int, int);
+	
 	GameObject* generateDefaultBackground(int tile, SDL_Rect tilePos, int mapWidth, int mapHeight);
 	void testFunction(GameObject* obj);
 

@@ -3,7 +3,7 @@
 
 World* World::Instance = nullptr;
 const int WINDOW_WIDTH = 16 * 40 * SCALE;
-const int WINDOW_HEIGHT = 16 *40 * SCALE;
+const int WINDOW_HEIGHT = 16  *40 * SCALE;
 World::World(int _windowSizeX, int _windowSizeY) {
     windowSizeX = _windowSizeX;
     windowSizeY = _windowSizeY;
@@ -19,18 +19,14 @@ World::World(int _windowSizeX, int _windowSizeY) {
     World::Instance = this;
     debugWindow = DebugMenu();
     LoadGameAssets();
-    string levelFile = string("../Levels/playarea.bjump");
+    string levelFile = string("../Levels/map_with_enemies.bjump");
     LoadFile(levelFile, false);
     LoadFile(levelFile.append("BG"), true);
 
-    //LoadFile(string("../Levels/map.bjump"));
     camera = { 0,0, WINDOW_WIDTH,WINDOW_HEIGHT };
-    //camera.setCameraOffset(40, 40);
+
     debugWindow.DebugInit(window, renderer);
 }
-
-
-
 
 bool World::run() {
     chrono::time_point<chrono::system_clock> start = chrono::system_clock::now();
@@ -39,10 +35,6 @@ bool World::run() {
 
     InputManager::pump();
 
-
-    //Change WorldState
-
-    
     for (auto& kv : gameObjectsNew) {
         for (int i = 0; i < kv.second.size(); i++) {
             if (kv.second[i]->isActive)
@@ -50,20 +42,7 @@ bool World::run() {
         }
     }
     
-    //Collide WorldState
-
-    //Render
-    //SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-    //SDL_RenderClear(renderer);
-    //SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-    //for (int i = 0; i < gameObjects.size(); i++) {
-    //    SDL_RenderFillRect(renderer, &gameObjects[i]->position);
-    //}
-    //SDL_RenderPresent(renderer);
-
     renderGraphics();
-    
-
     
     deltaT = chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now() - start).count();
     int frameRate = 1000 / targetFrameRate;
@@ -195,7 +174,6 @@ void World::LoadFile(string fileName, bool isBG) {
                 xIndex++;
                 continue;
             }
-            //    8,8 Muss angepasst werden wenn wir andere tiles nutzen
             SDL_Rect posOfTile = { xIndex * 16 * SCALE, yIndex * 16 * SCALE, 16 * SCALE, 16 * SCALE };
             reducedDimensionMap.push_back(tile);
             reducedDimensionTilePosition.push_back(posOfTile);
@@ -217,14 +195,21 @@ void World::LoadFile(string fileName, bool isBG) {
                 ));
         }
     else
+
         for (int i = 0; i < reducedDimensionMap.size(); i++) {
             if (reducedDimensionMap[i] != '-1')
-            createGameObject(generateBlock(
-                reducedDimensionMap[i],
-                reducedDimensionTilePosition[i],
-                xMapMaxSize,
-                yMapMaxSize
-            ));
+                if (reducedDimensionMap[i] < 0) 
+                createGameObject( generateEnemy(reducedDimensionMap[i],
+                    reducedDimensionTilePosition[i],
+                    xMapMaxSize,
+                    yMapMaxSize));
+                else
+                createGameObject(generateBlock(
+                    reducedDimensionMap[i],
+                    reducedDimensionTilePosition[i],
+                    xMapMaxSize,
+                    yMapMaxSize
+                ));
         }
 }
 void World::renderGraphics() {
@@ -232,12 +217,9 @@ void World::renderGraphics() {
     SDL_RenderClear(renderer);
     int w = windowSizeX, h = windowSizeY;
     SDL_RenderGetLogicalSize(renderer,&w, &h);
-
-    //camera.xOffset = -(camera.w / 2);
-    //camera.yOffset = -(camera.h / 2);
     
     camera.calculatePositionBasedOnPlayer(*player);
-    //camera.setCameraPosition(1000, 300);
+
     debugWindow.DebugStart();
     // Render Default Background
     for (auto bg : background)
@@ -266,7 +248,6 @@ void World::renderGraphics() {
     if (debugWindow.showExamples)
         debugWindow.ShowExampleAddsToMenu();
 
-
     debugWindow.DebugEnd(renderer);
     SDL_RenderPresent(renderer);
 }
@@ -274,9 +255,6 @@ void World::renderEntity(GameObject &entity) {
 
     if (!entity.isActive)
         return;
-
-    // Scaling nicht an
-    //SDL_Rect entityPosition = scaleEntityPosition(entity);
 
     if (!spriteControllers.contains(entity.sprite.spiteSheetLocation))
     {
@@ -292,33 +270,36 @@ void World::renderEntity(GameObject &entity) {
     if (entity.sprite.flipH)
         flipDirection += SDL_FLIP_HORIZONTAL;
 
-    // Hardcoded 8,8 muss ausgewechselt werden!
     SDL_Rect spriteSheetLocation = { entity.getSprite().x, entity.getSprite().y , 16 ,16 };
     SDL_Rect actualPosition = {
         entity.position.x + (camera.x + camera.xOffset),
         entity.position.y + (camera.y + camera.yOffset),
         16 * SCALE, 16  * SCALE };
 
-    /*
-    int rowOverflow = 0;
-    if (((entity.frameCount / 60) % entitySpriteController.getSpritesPerX()) + entity.sprite.x > entitySpriteController.getSpritesPerX())
-        rowOverflow++;
-    */
     if (entity.name == "BG")
         SDL_RenderCopyEx(
             renderer,
             entitySpriteController.getBgTexture(),
-            //Berechnung in XY in eigene funktion lagern
             entitySpriteController.x(entity.sprite.x).y(entity.sprite.y).getSprite(),
             &actualPosition,
             0,
             NULL,
             (SDL_RendererFlip)(flipDirection));
+    else if (entity.name == "Player" && static_cast<Player&>(entity).gotHit) {
+
+        SDL_RenderCopyEx(
+            renderer,
+            entitySpriteController.getBulletTexture(),
+            entitySpriteController.x(entity.sprite.x).y(entity.sprite.y).getSprite(),
+            &actualPosition,
+            0,
+            NULL,
+            (SDL_RendererFlip)(flipDirection));
+    }
     else if (entity.tag == "Bullet" || entity.tag == "Enemy")
         SDL_RenderCopyEx(
             renderer,
             entitySpriteController.getBulletTexture(),
-            //Berechnung in XY in eigene funktion lagern
             entitySpriteController.x(entity.sprite.x).y(entity.sprite.y).getSprite(),
             &actualPosition,
             0,
@@ -328,7 +309,6 @@ void World::renderEntity(GameObject &entity) {
     SDL_RenderCopyEx(
         renderer,
         entitySpriteController.getTexture(),
-        //Berechnung in XY in eigene funktion lagern
         entitySpriteController.x(entity.sprite.x).y(entity.sprite.y).getSprite(),
         &actualPosition,
         0,
@@ -344,13 +324,6 @@ void World::renderEntity(GameObject &entity) {
         SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
         SDL_RenderDrawRect(renderer, &collisionbox);
     }
-
-    /*
-    if (entity.sprite.animationSize == 0)
-        return;
-    entity.frameCount++;
-    */
-
 }
 
 GameObject* World::generateBlock(int tile, SDL_Rect tilePos, int mapWidth, int mapHeight) {
@@ -359,7 +332,6 @@ GameObject* World::generateBlock(int tile, SDL_Rect tilePos, int mapWidth, int m
     SpriteController blockSprites = spriteControllers["../resources/Tilemap/monochrome_tilemap_transparent_packed.png"];
     spriteData.flipH = false, spriteData.flipV = false;
     spriteData.animationSize = 0;
-    // Adve hardcoded für Blöcke der Welt
     spriteData.spiteSheetLocation = "../resources/Tilemap/monochrome_tilemap_transparent_packed.png";
 
     // Berechnen der XY position durch umkehren der Tile berechnung
@@ -391,21 +363,20 @@ GameObject* World::generateBlock(int tile, SDL_Rect tilePos, int mapWidth, int m
     return block;
 }
 
-GameObject* World::generateDefaultBackground(int tile, SDL_Rect tilePos, int mapWidth, int mapHeight) {
-    GameObject* block = new GameObject();
+Enemy* World::generateEnemy(int tile, SDL_Rect tilePos, int mapWidth, int mapHeight) {
+    Enemy* enemy = new Enemy();
     Sprite spriteData;
     SpriteController blockSprites = spriteControllers["../resources/Tilemap/monochrome_tilemap_transparent_packed.png"];
     spriteData.flipH = false, spriteData.flipV = false;
     spriteData.animationSize = 0;
-    // Adve hardcoded für Blöcke der Welt
     spriteData.spiteSheetLocation = "../resources/Tilemap/monochrome_tilemap_transparent_packed.png";
 
     // Berechnen der XY position durch umkehren der Tile berechnung
     //  spriteSheetWidth * posY + posX = tile
     //  posX = tile % spriteSheetWidth
     //  posY = (tile - posX) / spriteSheetWidth
-    spriteData.x = tile % blockSprites.getSpritesPerX();
-    spriteData.y = (tile - spriteData.x) / blockSprites.getSpritesPerX();
+    //spriteData.x = tile % blockSprites.getSpritesPerX();
+    //spriteData.y = (tile - spriteData.x) / blockSprites.getSpritesPerX();
     /**
     *   block.collisions; // vector<gameObject> ?
     *   block.layer;      // int          worldBlocks = 1 maybe change to enum?
@@ -415,10 +386,63 @@ GameObject* World::generateDefaultBackground(int tile, SDL_Rect tilePos, int map
     *   block.sprite;     // Sprite       animsize = 1; flip false, spritesheet location xyIndex on tilemap;
     *   block.isActive;   // bool         true
     */
+    enemy->layer = 1;
+    enemy->scale.x = 1, enemy->scale.y = 1;
+    enemy->position = tilePos;
+    enemy->sprite = spriteData;
+
+    switch ((-tile) - 1)
+    {
+    case 1:
+        //Basic Enemy
+        enemy->setBasicEnemy({ 1,0 });
+        enemy->name = "Shoot Right";
+        break;
+    case 2:
+        enemy->setBasicEnemy({ -1,0 });
+        enemy->name = "Shoot Left";
+        break;
+    case 3:
+        enemy->setBasicEnemy({ 0,-1 });
+        enemy->name = "Shoot Up";
+        break;
+    case 4:
+        enemy->setBasicEnemy({ 0,1 });
+        enemy->name = "Shoot Down";
+        break;
+    case 5:
+        break;
+    case 6:
+        break;
+    case 7:
+        break;
+    case 8:
+        break;
+    case 9:
+        break;
+    default:
+        break;
+    }
+
+    
+    enemy->tag = "Enemy";
+
+    return enemy;
+}
+
+GameObject* World::generateDefaultBackground(int tile, SDL_Rect tilePos, int mapWidth, int mapHeight) {
+    GameObject* block = new GameObject();
+    Sprite spriteData;
+    SpriteController blockSprites = spriteControllers["../resources/Tilemap/monochrome_tilemap_transparent_packed.png"];
+    spriteData.flipH = false, spriteData.flipV = false;
+    spriteData.animationSize = 0;
+    spriteData.spiteSheetLocation = "../resources/Tilemap/monochrome_tilemap_transparent_packed.png";
+    spriteData.x = tile % blockSprites.getSpritesPerX();
+    spriteData.y = (tile - spriteData.x) / blockSprites.getSpritesPerX();
     block->layer = 1;
     block->scale.x = 1, block->scale.y = 1;
     block->position = tilePos;
-    block->name = "BG";   // ??
+    block->name = "BG";
     block->tag = "World";
     block->sprite = spriteData;
     if (tile == -1) {
@@ -429,18 +453,6 @@ GameObject* World::generateDefaultBackground(int tile, SDL_Rect tilePos, int map
 
     return block;
 }
-
-
-/*
-SDL_Rect scaleEntityPosition(GameObject entity) {
-    return SDL_Rect{
-            entity.sprite.x,
-            entity.sprite.y,
-            entity.sprite.w * entity.scale.x, <- macht probleme sprite hat keine W / H !
-            entity.sprite.h * entity.scale.y
-    };
-}
-*/
 
 vector<vector<int>> World::load_map(const char* filePath)
 {

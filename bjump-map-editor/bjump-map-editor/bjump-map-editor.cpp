@@ -1,10 +1,12 @@
 ﻿#include <iostream>
 #include <stdlib.h>
 #include <windows.h>
+#include <wchar.h>
 #include <vector>
 #include <ShObjIdl.h>
 #include <SDL.h>
 #include <SDL_ttf.h>
+#include <commdlg.h>
 #include <fstream>
 #include <iterator>
 #include <sstream>
@@ -544,13 +546,40 @@ void increment_current_enemy() {
 #pragma region File Functions
 void save_created_map()
 {
-    ofstream saved_file("./map.bjump");
+    PWSTR toSaveTo = nullptr;
+    HRESULT hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
+    if (SUCCEEDED(hr)) {
+        IFileDialog* pFileSave;
+        hr = CoCreateInstance(CLSID_FileSaveDialog, NULL, CLSCTX_ALL, IID_IFileSaveDialog, reinterpret_cast<void**>(&pFileSave));
+        if (SUCCEEDED(hr)) {
+            IShellItem* currfold = NULL;
+            hr = pFileSave->Show(NULL);
+            if (SUCCEEDED(hr)) {
+                IShellItem* pItem;
+                hr = pFileSave->GetResult(&pItem);
+                if (SUCCEEDED(hr)) {
+                    hr = pItem->GetDisplayName(SIGDN_FILESYSPATH, &toSaveTo);
+                    pItem->Release();
+                }
+            }
+        }
+        pFileSave->Release();
+    }
+    CoUninitialize();
+    wprintf(toSaveTo);
+    //return result;
+
+    ofstream saved_file(toSaveTo);
     ostream_iterator<int> o_iterator(saved_file, ",");
     for (auto row : WS.tiles) {
         copy(begin(row), end(row), o_iterator);
         saved_file << '\n';
     }
-    ofstream saved_file_bg("./map.bjumpBG");
+    PWSTR toSaveToBG = toSaveTo;
+    //wcscat_s(toSaveToBG, wcslen(toSaveTo), toSaveTo);
+#pragma warning(suppress : 4996)
+    wcscat(toSaveToBG, L"BG\0\0");
+    ofstream saved_file_bg(toSaveToBG);
     ostream_iterator<int> o_iterator_bg(saved_file_bg, ",");
     for (auto row : WS.background) {
         copy(begin(row), end(row), o_iterator_bg);
