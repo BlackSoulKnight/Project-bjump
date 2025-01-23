@@ -90,8 +90,8 @@ void DebugMenu::PlayerMenu(Player* player) {
 
     ImGui::SliderFloat("Move Speed", &player->MOVE_SPEED, 0, 2000);
     ImGui::SliderFloat("Fall Speed", &player->FALL_SPEED, 10, 2000);
-    ImGui::SliderFloat("Dash Speed", &player->DASH_SPEED, 200, 2000);
-    ImGui::SliderFloat("Dash Duration", &player->DASH_DURATION, 0.5, 100.0);
+    ImGui::SliderFloat("Dash Speed", &player->DASH_SPEED, 200, 5000);
+    ImGui::SliderFloat("Dash Duration", &player->DASH_DURATION, 0, 5.0);
     ImGui::SliderFloat("Gravity", &player->GRAVITY, 0.5,3000.0);
     ImGui::SliderFloat("Jump Force", &player->JUMP_FORCE,-10,-10000.0);
     ImGui::SliderFloat("Wall Jump Time", &player->wallJumpTimerMax, 0.0, 1.0);
