@@ -43,9 +43,7 @@ struct Vector2f {
 		return;
 	}
 	const Vector2f& operator+(const Vector2f& r) {
-		this->x = r.x;
-		this->y = r.y;
-		return *this;
+		return Vector2f( this->x + r.x,this->y = r.y);
 	}
 
 	void rotate(Vector2f& vector, double angle) {

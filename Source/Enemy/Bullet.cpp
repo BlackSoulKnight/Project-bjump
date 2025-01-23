@@ -78,8 +78,6 @@ bool Bullet::hitCollision()
 
 void Bullet::moveBullet(float deltaT)
 {
-	Player* ply = World::Instance->player;
-	Vector2f homing = direction + Vector2f(1, 1);
 	position.x += (float)(speed * direction.x)*deltaT;
 	position.y += (float)(speed * direction.y) *deltaT;
 	activeTime += deltaT;
