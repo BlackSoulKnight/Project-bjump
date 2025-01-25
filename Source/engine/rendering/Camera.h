@@ -13,7 +13,8 @@ public:
 		return { ((player.position.x) / (w)), ((player.position.y) / (h)) };
 	}
 	bool entityOutOfScreen(const GameObject entity) {
-		return !(((entity.position.x / w)) == gridLocation.x || (entity.position.y / h) == gridLocation.y);
+		return !((entity.position.x < gridLocation.x * w + w && entity.position.x+entity.position.w > gridLocation.x * h)
+			&& entity.position.y < gridLocation.y * h + h && entity.position.y + entity.position.h > gridLocation.y * h);
 	}
 	void setCameraOffset(int xOff, int yOff) {
 		xOffset = xOff;
