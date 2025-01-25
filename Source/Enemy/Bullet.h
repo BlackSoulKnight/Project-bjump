@@ -30,3 +30,8 @@ public:
 	void moveBullet(float deltaT);
 	Bullet* createBullet() { return new B_Spiral; };
 };
+
+class B_Random_Normal : public Bullet {
+	B_Random_Normal();
+	Bullet* createBullet();
+};

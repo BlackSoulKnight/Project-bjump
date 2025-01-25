@@ -97,3 +97,11 @@ void B_Spiral::moveBullet(float deltaT) {
 B_Spiral::B_Spiral() :Bullet() {
 	Type = 1;
 }
+
+B_Random_Normal::B_Random_Normal() :Bullet() {
+	Type = 2;
+}
+
+Bullet* B_Random_Normal::createBullet() {
+	return new B_Random_Normal;
+}

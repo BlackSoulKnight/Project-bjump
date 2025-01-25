@@ -26,12 +26,33 @@ public:
 	vector<int> bulletLastShot;
 	int activeTime = 0;
 
-	void update(int deltaT);
+	virtual void update(int deltaT);
 	void addBulletToList(Bullet* bullet,Vector2f _direction,int delay,int speed);
+
 
 	Enemy();
 
 	//Enemy Types
 	void setBasicEnemy(Vector2f shotDirection,int speed);
 
+};
+
+
+
+//Lars Enemies
+
+class L_E1 : public Enemy {
+public:
+	L_E1();
+};
+class L_E2 : public Enemy {
+public:
+	L_E2();
+
+};
+class L_E3 : public Enemy {
+public:
+	L_E3();
+
+	void update(int deltaT);
 };
