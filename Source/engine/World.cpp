@@ -154,7 +154,7 @@ void World::LoadFile(string fileName, bool isBG) {
     string file = fileName;
     if (file.size() == 0)
     {
-        file = "..\\Levels\\test_map.bjump";
+        file = "..\\Levels\\MarvinMap.bjump";
     }
     vector<vector<int>> loadedMap = load_map(file.c_str());
 
