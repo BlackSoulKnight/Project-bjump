@@ -356,7 +356,7 @@ void render_graphics() {
                     SDL_GetRenderDrawColor(WS.renderer, &r, &g, &b, &a);
                     SDL_SetRenderDrawColor(WS.renderer, 255, 127, 255, 255);
                     SDL_RenderDrawRect(WS.renderer, &initial_cam_pos);
-                    SDL_Surface* enemyPosSurf = TTF_RenderText_Solid(WS.font, ('E' + to_string(-(x + 1)).c_str()), { 255, 127, 255 });
+                    SDL_Surface* enemyPosSurf = TTF_RenderText_Solid(WS.font, ('E' + to_string(-(x + 1))).c_str(), { 255, 127, 255 });
                     SDL_Texture* enemyPosBlock = SDL_CreateTextureFromSurface(WS.renderer, enemyPosSurf);
                     SDL_RenderCopy(WS.renderer, enemyPosBlock, NULL, &initial_cam_pos);
                     SDL_SetRenderDrawColor(WS.renderer, r, g, b, a);
