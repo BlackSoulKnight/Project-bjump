@@ -24,8 +24,8 @@ public:
     bool canWallJump = true;         // Gibt an, ob ein Walljump erlaubt ist
     float wallStickTime = 0.0f;      // Zeit, die der Spieler an der Wand bleibt
     const float MAX_WALL_STICK_TIME = 1000.0f;  // Maximalzeit in Millisekunden
-    bool spacePressed;
-    bool spaceJustPressed;
+    bool spacePressed;              // nicht für player.cpp
+    bool spaceJustPressed;          // für player.cpp
     bool canDash;
     bool dashing;
     float dashTime;

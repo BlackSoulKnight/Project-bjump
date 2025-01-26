@@ -59,6 +59,9 @@ int main(int, char**)
         player->position.y = 12640;
         break;
     case 2:
+        levelFile = string("../Levels/MarvinMap.bjump");
+        player->position.x = 160;
+        player->position.y = 12640;
         break;
     case 3:
         levelFile = string("../Levels/EnemyTest.bjump");
