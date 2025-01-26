@@ -405,6 +405,11 @@ void Player::update(int deltaT) {
         if (!touchingLeftWall && !touchingRightWall) {
             playerState = PlayerState::FALLING;
             break;
+        } 
+        
+        if (checkGroundCollision()) {
+            playerState = PlayerState::ON_GROUND;
+            break;
         }
 
         // Wand-Sprung auslösen

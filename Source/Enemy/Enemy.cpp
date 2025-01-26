@@ -22,6 +22,9 @@ Enemy::Enemy() :GameObject() {
 void Enemy::update(int deltaT) {
 	if (World::Instance->camera.entityOutOfScreen(*this)) {
 		activeTime = 0;
+		for (int i = 0; i < bulletLastShot.size(); i++) {
+			bulletLastShot[i] = 0;
+		}
 		return;
 	}
 	activeTime += deltaT;
