@@ -471,7 +471,8 @@ void render_graphics() {
         WS.layer_msg = TTF_RenderText_Solid(WS.font, "FG", { 127,255,127 });
         break;
     }
-    SDL_RenderCopyF(WS.renderer, SDL_CreateTextureFromSurface(WS.renderer, WS.layer_msg), NULL, &layer_text_pos);
+    SDL_Texture* msgL = SDL_CreateTextureFromSurface(WS.renderer, WS.layer_msg);
+    SDL_RenderCopyF(WS.renderer, msgL , NULL, &layer_text_pos);
     //Render Enemy Text
     SDL_FRect enemy_type_text_pos = {
         (600 * 1.73 - WS.FONT_SIZE) / (WS.zoom) ,
@@ -480,8 +481,13 @@ void render_graphics() {
         WS.enemy_msg = TTF_RenderText_Solid(WS.font, ('E' + to_string(-(WS.current_enemy + 1))).c_str(), { 245,245,245 });
     else
         WS.enemy_msg = TTF_RenderText_Solid(WS.font, ('E' + to_string(-(WS.current_enemy + 1))).c_str(), { 245 / 6,245 / 6,245 / 6 });
-    SDL_RenderCopyF(WS.renderer, SDL_CreateTextureFromSurface(WS.renderer, WS.enemy_msg), NULL, &enemy_type_text_pos);
+    SDL_Texture *msgT = SDL_CreateTextureFromSurface(WS.renderer, WS.enemy_msg);
+    SDL_RenderCopyF(WS.renderer, msgT, NULL, &enemy_type_text_pos);
     SDL_RenderPresent(WS.renderer);
+    SDL_FreeSurface(WS.enemy_msg);
+    SDL_DestroyTexture(msgT);
+    SDL_FreeSurface(WS.layer_msg);
+    SDL_DestroyTexture(msgL);
 }
 
 #pragma endregion
