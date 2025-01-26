@@ -348,6 +348,7 @@ void render_graphics() {
     origin = initial_cam_pos.x;
 
     Uint8 r = 0, g = 0, b = 0, a = 0;
+
     for (auto y : WS.tiles) {
         for (auto x : y) {
             if (x != -1) {
@@ -355,8 +356,12 @@ void render_graphics() {
                     SDL_GetRenderDrawColor(WS.renderer, &r, &g, &b, &a);
                     SDL_SetRenderDrawColor(WS.renderer, 255, 127, 255, 255);
                     SDL_RenderDrawRect(WS.renderer, &initial_cam_pos);
-                    SDL_RenderCopy(WS.renderer, SDL_CreateTextureFromSurface(WS.renderer, TTF_RenderText_Solid(WS.font, ('E' + to_string(-(x + 1))).c_str(), { 255,127,255 })), NULL, &initial_cam_pos);
+                    SDL_Surface* enemyPosSurf = TTF_RenderText_Solid(WS.font, ('E' + to_string(-(x + 1)).c_str()), { 255, 127, 255 });
+                    SDL_Texture* enemyPosBlock = SDL_CreateTextureFromSurface(WS.renderer, enemyPosSurf);
+                    SDL_RenderCopy(WS.renderer, enemyPosBlock, NULL, &initial_cam_pos);
                     SDL_SetRenderDrawColor(WS.renderer, r, g, b, a);
+                    SDL_FreeSurface(enemyPosSurf);
+                    SDL_DestroyTexture(enemyPosBlock);
                 }
                 else
                 render_texture_auto(WS.renderer, WS.sprite_controller.getSprite(x), &initial_cam_pos, Layer::FOREGROUND);
@@ -488,6 +493,7 @@ void render_graphics() {
     SDL_DestroyTexture(msgT);
     SDL_FreeSurface(WS.layer_msg);
     SDL_DestroyTexture(msgL);
+
 }
 
 #pragma endregion
@@ -541,7 +547,7 @@ void mouse_button_1(SDL_Event e) {
 }
 
 void increment_current_enemy() {
-    if (WS.current_enemy == -10) {
+    if (WS.current_enemy == -15) {
 
         WS.current_enemy = -2;
         return;
