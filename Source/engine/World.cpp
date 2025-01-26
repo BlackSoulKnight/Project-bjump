@@ -60,6 +60,8 @@ vector<tuple<GameObject*,SDL_Rect>> World::getCollisions(GameObject *origin, vec
         if (gameObjectsNew.contains(tags[i])) {
             for (int n = 0; n < gameObjectsNew[tags[i]].size(); n++) {
                 GameObject* obj = gameObjectsNew[tags[i]][n];
+                if (!obj->isActive)
+                    continue;
                 SDL_Rect a;
                 SDL_Rect HitBox = obj->hitbox;
                 HitBox.x += obj->position.x;
@@ -80,6 +82,8 @@ vector<GameObject*> World::getCollisions(SDL_Rect area, vector<string> tags) {
         if (gameObjectsNew.contains(tags[i])) {
             for (int n = 0; n < gameObjectsNew[tags[i]].size(); n++) {
                 GameObject* obj = gameObjectsNew[tags[i]][n];
+                if (!obj->isActive)
+                    continue;
                 if (SDL_HasIntersection(&obj->position, &area))
                     result.push_back(obj);
             }

@@ -8,8 +8,8 @@ void BulletManager::createBullet(Bullet* bullet, Vector2 position, Vector2f dire
 	Bullet* newBullet;
 	if (unusedBulletList.contains(bullet->Type)) {
 		if (unusedBulletList[bullet->Type].size() > 0) {
-			newBullet = unusedBulletList[bullet->Type][unusedBulletList[bullet->Type].size() - 1];
-			unusedBulletList[bullet->Type].erase(unusedBulletList[bullet->Type].end()-1);
+			newBullet = unusedBulletList[bullet->Type][0];
+			unusedBulletList[bullet->Type].erase(unusedBulletList[bullet->Type].begin());
 			//ReInit bullet
 			newBullet->initialize(position, direction, speed);
 		}
@@ -36,7 +36,6 @@ void BulletManager::disableBullet(int Type, int position) {
 		unusedBulletList[Type] = vector<Bullet*>();
 	}
 	if (bulletList[Type].size() > position && bulletList[Type][position]->isActive) {
-		bulletList[Type][position]->position.y = -999;
 		bulletList[Type][position]->isActive = false;
 		unusedBulletList[Type].push_back(bulletList[Type][position]);
 	}
@@ -47,8 +46,11 @@ void BulletManager::disableBullet(Bullet* target) {
 	if (!unusedBulletList.contains(Type)) {
 		unusedBulletList[Type] = vector<Bullet*>();
 	}
-	target->position.y = -999;
 	target->isActive = false;
+	for (int i = 0; i < unusedBulletList[Type].size(); i++) {
+		if (target == unusedBulletList[Type][i])
+			return;
+	}
 	unusedBulletList[Type].push_back(target);
 
 }
