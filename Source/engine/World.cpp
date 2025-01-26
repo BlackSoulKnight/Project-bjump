@@ -4,6 +4,8 @@
 World* World::Instance = nullptr;
 const int WINDOW_WIDTH = 16 * 40 * SCALE;
 const int WINDOW_HEIGHT = 16  *40 * SCALE;
+
+
 World::World(int _windowSizeX, int _windowSizeY) {
     windowSizeX = _windowSizeX;
     windowSizeY = _windowSizeY;
@@ -19,9 +21,7 @@ World::World(int _windowSizeX, int _windowSizeY) {
     World::Instance = this;
     debugWindow = DebugMenu();
     LoadGameAssets();
-    string levelFile = string("../Levels/MarvinMap.bjump");
-    LoadFile(levelFile, false);
-    LoadFile(levelFile.append("BG"), true);
+    
 
     camera = { 0,0, WINDOW_WIDTH,WINDOW_HEIGHT };
 
@@ -406,16 +406,16 @@ Enemy* World::generateEnemy(int tile, SDL_Rect tilePos, int mapWidth, int mapHei
     {
 
         //Basic Enemy
-        enemy->setBasicEnemy({1,0}, 100);
+        enemy->setBasicEnemy({1,0}, 400);
         enemy->name = "Shoot Right";
     }
         break;
     case 2:
-        enemy->setBasicEnemy({ -1,0 }, 200);
+        enemy->setBasicEnemy({ -1,0 }, 400);
         enemy->name = "Shoot Left";
         break;
     case 3:
-        enemy->setBasicEnemy({ 0,-1 }, 300);
+        enemy->setBasicEnemy({ 0,-1 }, 400);
         enemy->name = "Shoot Up";
         break;
     case 4:

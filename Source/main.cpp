@@ -47,6 +47,28 @@ int main(int, char**)
     obj->position.h = 16;
     //player->LoadStats1();
    // newWorld->createGameObject(obj);
+
+    //Load Level
+
+    string levelFile;
+    switch (1)
+    {
+    case 1:
+        levelFile = string("../Levels/Oliver_Map.bjump");
+        player->position.x = 160;
+        player->position.y = 12640;
+        break;
+    case 2:
+        break;
+    case 3:
+        break;
+    default:
+        break;
+    }
+    newWorld->LoadFile(levelFile, false);
+    newWorld->LoadFile(levelFile.append("BG"), true);
+
+
     while (newWorld->run()) {
 
     }

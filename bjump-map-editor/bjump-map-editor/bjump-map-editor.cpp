@@ -481,7 +481,6 @@ void render_graphics() {
     else
         WS.enemy_msg = TTF_RenderText_Solid(WS.font, ('E' + to_string(-(WS.current_enemy + 1))).c_str(), { 245 / 6,245 / 6,245 / 6 });
     SDL_RenderCopyF(WS.renderer, SDL_CreateTextureFromSurface(WS.renderer, WS.enemy_msg), NULL, &enemy_type_text_pos);
-
     SDL_RenderPresent(WS.renderer);
 }
 
