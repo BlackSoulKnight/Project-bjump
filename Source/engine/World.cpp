@@ -19,7 +19,7 @@ World::World(int _windowSizeX, int _windowSizeY) {
     World::Instance = this;
     debugWindow = DebugMenu();
     LoadGameAssets();
-    string levelFile = string("../Levels/map_with_enemies.bjump");
+    string levelFile = string("../Levels/MarvinMap.bjump");
     LoadFile(levelFile, false);
     LoadFile(levelFile.append("BG"), true);
 

@@ -74,6 +74,20 @@ bool Player::checkGroundCollision(int screenHeight) {
     }
     return false;
 }
+// Kollisionsprüfung (Decke)
+bool Player::checkCeilCollision() {
+    vector<string> ignoreTags = { "World"};
+    SDL_Rect linksNebenPlayer;
+    linksNebenPlayer.x = position.x;
+    linksNebenPlayer.h = 2;
+    linksNebenPlayer.y = position.y- linksNebenPlayer.h;
+    linksNebenPlayer.w = 16*SCALE;
+    vector<GameObject*> objs = World::Instance->getCollisions(linksNebenPlayer,ignoreTags);
+    if (objs.size() > 0) {
+        return true;
+    }
+    return false;
+}
 
 // Kollisionsprüfung (Wände)
 bool Player::checkWallCollision() {
@@ -350,15 +364,10 @@ void Player::update(int deltaT) {
          
         wallJumpTimer += dt; // Delta-Zeit in Sekunden
 
-        if (InputManager::checkInput("Jump") && canDoubleJump && !spaceJustPressed) {
-            vy = JUMP_FORCE;
-            playerState = PlayerState::DOUBLE_JUMPING;
-            canDoubleJump = false;  // Kein weiterer Doppelsprung möglich
-        }
-     
+   
 
         // Währendessen Bewegung blockieren
-        if (wallJumpTimer <= wallJumpTimerMax) {
+        if (wallJumpTimer <= wallJumpTimerMax && !checkCeilCollision()) {
             vx = 0; // Keine horizontale Bewegung erlauben
             vy = WALL_JUMP_FORCE_Y ;
         }
@@ -372,7 +381,7 @@ void Player::update(int deltaT) {
         if (lastTouchedWallWasRight) {
             // Geschwindigkeit nach links mit der Zeit verringern (Verlangsamen)
              
-                vx -= WALL_JUMP_FORCE_X ;  
+                 vx -= WALL_JUMP_FORCE_X ;  
             }
             
             else {
@@ -386,8 +395,6 @@ void Player::update(int deltaT) {
         vy += GRAVITY * deltaT / 1000.0f;
 
         // Spielerbewegung aktualisieren
-        position.x += vx * deltaT / 1000.0f;
-        position.y += vy * deltaT / 1000.0f;
         break;
     }
 
