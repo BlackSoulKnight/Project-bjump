@@ -24,10 +24,11 @@ public:
 	vector<int> bulletSpeed;
 	vector<int> bulletDelay; // In milliseconds
 	vector<int> bulletLastShot;
+	vector<int> bulletBegin;
 	int activeTime = 0;
 
 	virtual void update(int deltaT);
-	void addBulletToList(Bullet* bullet,Vector2f _direction,int delay,int speed);
+	void addBulletToList(Bullet* bullet, Vector2f _direction, int delay, int speed, int begin = 0);
 
 
 	Enemy();
@@ -55,4 +56,18 @@ public:
 	L_E3();
 
 	void update(int deltaT);
+};
+
+class E5 : public Enemy {
+public:
+	E5();
+};
+
+class E7 : public Enemy {
+public:
+	E7();
+};
+class E9 : public Enemy {
+public:
+	E9();
 };

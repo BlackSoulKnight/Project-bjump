@@ -28,14 +28,17 @@ struct Vector2f {
 		x = 0;
 		y = 0;
 	}
-	void normalize(Vector2f& vector) {
-		float length = sqrt(pow(vector.x, 2) + pow(vector.y, 2));
+	void normalize() {
+		float length = sqrt(pow(this->x, 2) + pow(this->y, 2));
 		if (length == 0) {
 			length = 1;
 		}
-		vector.x /= length;
-		vector.y /= length;
+		this->x /= length;
+		this->y /= length;
 		
+	}
+	double len() {
+		return sqrt(pow(this->x, 2) + pow(this->y, 2));
 	}
 	void operator+=(const Vector2f &r) {
 		this->x += r.x;
@@ -46,15 +49,24 @@ struct Vector2f {
 		return Vector2f( this->x + r.x,this->y = r.y);
 	}
 
-	void rotate(Vector2f& vector, double angle) {
+	void rotateDegrees(double angle) {
 		angle *= Math_PI / 180;
 		double cs = cos(angle);
 		double sn = sin(angle);
-		double x = vector.x * cs - vector.y * sn;
-		double y = vector.x * sn + vector.y * cs;
-		vector.x = x;
-		vector.y = y;
+		double x = this->x * cs - this->y * sn;
+		double y = this->x * sn + this->y * cs;
+		this->x = x;
+		this->y = y;
 	}
+	void rotate(double angle) {
+		double cs = cos(angle);
+		double sn = sin(angle);
+		double x = this->x * cs - this->y * sn;
+		double y = this->x * sn + this->y * cs;
+		this->x = x;
+		this->y = y;
+	}
+
 };
 
 struct Vector2

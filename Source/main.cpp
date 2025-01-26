@@ -51,7 +51,7 @@ int main(int, char**)
     //Load Level
 
     string levelFile;
-    switch (1)
+    switch (3)
     {
     case 1:
         levelFile = string("../Levels/Oliver_Map.bjump");

@@ -30,7 +30,7 @@ void Enemy::update(int deltaT) {
 	activeTime += deltaT;
 	if (activeTime > begin) {
 		for (int i = 0; i < bullets.size(); i++) {
-			if (bulletDelay[i] + bulletLastShot[i] + begin < activeTime) {
+			if (bulletDelay[i] * (activeTime / begin -1 > 1 || bulletLastShot[i] >0) + bulletLastShot[i] + bulletBegin[i] < activeTime) {
 				bulletLastShot[i] = activeTime;
 				BulletManager::createBullet(bullets[i], { position.x,position.y }, bulletDirection[i], bulletSpeed[i]);
 			}
@@ -38,12 +38,13 @@ void Enemy::update(int deltaT) {
 	}
 }
 
-void Enemy::addBulletToList(Bullet* bullet, Vector2f _direction, int delay, int speed)
+void Enemy::addBulletToList(Bullet* bullet, Vector2f _direction, int delay, int speed,int begin)
 {
 	bullets.push_back(bullet);
 	bulletDirection.push_back(_direction);
 	bulletDelay.push_back(delay);
 	bulletSpeed.push_back(speed);
+	bulletBegin.push_back(begin);
 	bulletLastShot.push_back(0);
 }
 
@@ -64,6 +65,24 @@ L_E2::L_E2() :Enemy() {
 L_E3::L_E3() :Enemy() {
 	begin = 1000;
 	addBulletToList(new Bullet(), { -1,0 }, 300, 600);
+}
+E5::E5() :Enemy() {
+	begin = 1000;
+	addBulletToList(new B_Spiral(), { -1,0 }, 4500, 500);
+	addBulletToList(new B_Spiral(), { 1,0 }, 4500, 500);
+	addBulletToList(new B_Spiral(), { 0,1 }, 4500, 500);
+	addBulletToList(new B_Spiral(), { 0,-1 }, 4500, 500);
+}
+
+E7::E7() :Enemy() {
+	begin = 1000;
+	addBulletToList(new B_HSinus(), { 1,0 }, 500, 500);
+
+}
+E9::E9() :Enemy() {
+	begin = 1000;
+	addBulletToList(new B_Homing(), { 0,-1 }, 750, 600);
+
 }
 
 void L_E3::update(int deltaT)

@@ -30,6 +30,21 @@ public:
 	void moveBullet(float deltaT);
 	Bullet* createBullet() { return new B_Spiral; };
 };
+class B_HSinus : public Bullet
+{
+public:
+	B_HSinus();
+	void moveBullet(float deltaT);
+	Bullet* createBullet() { return new B_HSinus; };
+};
+class B_Homing : public Bullet
+{
+public:
+	float homingFactor = 1;
+	B_Homing();
+	void moveBullet(float deltaT);
+	Bullet* createBullet() { return new B_Homing; };
+};
 
 class B_Random_Normal : public Bullet {
 	B_Random_Normal();

@@ -7,6 +7,7 @@ void Bullet::initialize(Vector2 position, Vector2f startDirection, int startSpee
 	this->position.x = position.x;
 	this->position.y = position.y;
   	direction = startDirection;
+	direction.normalize();
 	speed = startSpeed;
 	activeTime = 0;
 }
@@ -86,16 +87,49 @@ void Bullet::moveBullet(float deltaT)
 void B_Spiral::moveBullet(float deltaT) {
 	//direction.x = 0.1+sin(activeTime);
 	//direction.y = 1-direction.x;
-	//direction.normalize(direction);
-	direction.rotate(direction, 360*deltaT);
-	speed += 100*deltaT;
+	direction.normalize();
+	direction.rotateDegrees(-180*deltaT);
+	speed += 300*deltaT;
 	activeTime += deltaT;
- 	position.x += (float)(speed * direction.x) * deltaT;
-	position.y += (float)(speed * direction.y)  * deltaT;
+ 	position.x += round((float)(speed * direction.x) * deltaT);
+	position.y += round((float)(speed * direction.y)  * deltaT);
+}
+void B_HSinus::moveBullet(float deltaT) {
+	//direction.x = 0.1+sin(activeTime);
+	//direction.y = 1-direction.x;
+	direction.y = sin(activeTime*2.5+M_PI/2);
+
+	activeTime += deltaT;
+ 	position.x += round((float)(speed * direction.x) * deltaT);
+	position.y += round((float)(speed * direction.y)  * deltaT);
+}
+void B_Homing::moveBullet(float deltaT) {
+	//direction.x = 0.1+sin(activeTime);
+	//direction.y = 1-direction.x;
+	Player* ply = World::Instance->player;
+	Vector2f target{ (float)(ply->position.x - position.x),(float)(ply->position.y - position.y) };
+	
+	target.normalize();
+	direction.normalize();
+
+	direction.x += (target.x - direction.x)*0.8*deltaT;
+	direction.y += (target.y - direction.y)*0.8*deltaT;
+
+	
+	activeTime += deltaT;
+ 	position.x += round((float)(speed * direction.x) * deltaT);
+	position.y += round((float)(speed * direction.y)  * deltaT);
 }
 
 B_Spiral::B_Spiral() :Bullet() {
 	Type = 1;
+}
+
+B_HSinus::B_HSinus() :Bullet() {
+	Type = 3;
+}
+B_Homing::B_Homing() :Bullet() {
+	Type = 4;
 }
 
 B_Random_Normal::B_Random_Normal() :Bullet() {
@@ -103,5 +137,5 @@ B_Random_Normal::B_Random_Normal() :Bullet() {
 }
 
 Bullet* B_Random_Normal::createBullet() {
-	return new B_Random_Normal;
+	return new B_Random_Normal();
 }

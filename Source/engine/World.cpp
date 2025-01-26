@@ -399,11 +399,10 @@ Enemy* World::generateEnemy(int tile, SDL_Rect tilePos, int mapWidth, int mapHei
     *   block.sprite;     // Sprite       animsize = 1; flip false, spritesheet location xyIndex on tilemap;
     *   block.isActive;   // bool         true
     */
-    enemy->layer = 1;
-    enemy->scale.x = 1, enemy->scale.y = 1;
-    enemy->position = tilePos;
-    enemy->sprite = spriteData;
 
+    enemy->sprite = spriteData;
+    enemy->sprite.x = 3;
+    enemy->sprite.y = 5;
     switch ((-tile) - 1)
     {
     case 1:
@@ -427,20 +426,28 @@ Enemy* World::generateEnemy(int tile, SDL_Rect tilePos, int mapWidth, int mapHei
         enemy->name = "Shoot Down";
         break;
     case 5:
+        free(enemy);
+        enemy = new E5();
         break;
     case 6:
         break;
     case 7:
+        free(enemy);
+        enemy = new E7();
         break;
     case 8:
         break;
     case 9:
+        free(enemy);
+        enemy = new E9();
         break;
     default:
         break;
     }
 
-    
+    enemy->layer = 1;
+    enemy->scale.x = 1, enemy->scale.y = 1;
+    enemy->position = tilePos;
     enemy->tag = "Enemy";
 
     return enemy;
