@@ -235,7 +235,7 @@ void Player::update(int deltaT) {
                 dashTime = DASH_DURATION;  // Einheitliche Dauer
                 dashDirection = InputManager::checkInput("Left") ? -1 : 1; // Richtung festlegen
                 vx = DASH_SPEED * dashDirection;
-                vy = -GRAVITY;  // Vertikale Bewegung pausieren
+                vy = -GRAVITY*dt;  // Vertikale Bewegung pausieren
                 canDash = false;
                 playerState = PlayerState::DASHING;
             }
@@ -468,7 +468,7 @@ void Player::update(int deltaT) {
     }
     // Schwerkraft anwenden, wenn nicht im Dash
     if (!dashing) {
-        vy += GRAVITY;
+        vy += GRAVITY * dt;
     }
 
 
