@@ -51,7 +51,7 @@ int main(int, char**)
     //Load Level
 
     string levelFile;
-    switch (2)
+    switch (3)
     {
     case 1:
         levelFile = string("../Levels/Oliver_Map.bjump");
@@ -64,6 +64,7 @@ int main(int, char**)
         player->position.y = 12640;
         break;
     case 3:
+        levelFile = string("../Levels/EnemyTest.bjump");
         break;
     default:
         break;
