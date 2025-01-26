@@ -48,7 +48,7 @@ public:
     float DASH_SPEED = 3498.901;
     float DASH_DURATION = 0.25;
     float WALL_JUMP_FORCE_Y = -769.138*2;
-    float WALL_JUMP_FORCE_X = 605.157 *2;
+    float WALL_JUMP_FORCE_X = 1366.19;
     float BOUNCE_BREAK_POINT = 575;
 
     float BOUNCE_FACTOR = 0.3; // Always Below 1
