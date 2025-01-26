@@ -468,7 +468,7 @@ void Player::update(int deltaT) {
     }
     // Schwerkraft anwenden, wenn nicht im Dash
     if (!dashing) {
-        vy += GRAVITY;
+        vy += GRAVITY * dt;
     }
 
 
