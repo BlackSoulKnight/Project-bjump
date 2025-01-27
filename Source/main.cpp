@@ -65,6 +65,8 @@ int main(int, char**)
         break;
     case 3:
         levelFile = string("../Levels/EnemyTest.bjump");
+        player->position.x = 80;
+        player->position.y = 31840;
         break;
     default:
         break;

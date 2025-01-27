@@ -62,12 +62,24 @@ class E5 : public Enemy {
 public:
 	E5();
 };
+class E6 : public Enemy {
+public:
+	E6();
+};
 
 class E7 : public Enemy {
 public:
 	E7();
 };
+class E8 : public Enemy {
+public:
+	E8();
+};
 class E9 : public Enemy {
 public:
 	E9();
+};
+class E10 : public Enemy {
+public:
+	E10();
 };

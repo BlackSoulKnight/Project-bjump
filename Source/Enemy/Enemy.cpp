@@ -73,15 +73,32 @@ E5::E5() :Enemy() {
 	addBulletToList(new B_Spiral(), { 0,1 }, 4500, 500);
 	addBulletToList(new B_Spiral(), { 0,-1 }, 4500, 500);
 }
+E6::E6() :Enemy() {
+	begin = 1000;
+	addBulletToList(new B_Spiral(), { -1,0 }, 4500, -2000);
+	addBulletToList(new B_Spiral(), { 1,0 }, 4500, -2000);
+	addBulletToList(new B_Spiral(), { 0,1 }, 4500, -2000);
+	addBulletToList(new B_Spiral(), { 0,-1 }, 4500, -2000);
+}
 
 E7::E7() :Enemy() {
 	begin = 1000;
 	addBulletToList(new B_HSinus(), { 1,0 }, 500, 500);
 
 }
-E9::E9() :Enemy() {
+E8::E8() :Enemy() {
 	begin = 1000;
+	addBulletToList(new B_HSinus(), { -1,0 }, 500, 500);
+
+}
+E9::E9() :Enemy() {
+	begin = 200;
 	addBulletToList(new B_Homing(), { 0,-1 }, 750, 600);
+
+}
+E10::E10() :Enemy() {
+	begin = 1000;
+	addBulletToList(new B_Firework(), { 0,-1}, 3000, 600);
 
 }
 

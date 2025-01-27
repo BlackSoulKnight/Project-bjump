@@ -12,7 +12,7 @@ public:
 	virtual Bullet* createBullet();
 	virtual bool hitCollision();
 	virtual void moveBullet(float deltaT);
-	void initialize(Vector2 position,Vector2f startDirection,int startSpeed);
+	virtual void initialize(Vector2 position,Vector2f startDirection,int startSpeed);
 	void update(int deltaT);
 	bool outOfScreen();
 	int Type = 0;
@@ -49,4 +49,32 @@ public:
 class B_Random_Normal : public Bullet {
 	B_Random_Normal();
 	Bullet* createBullet();
+};
+
+class B_Firework : public Bullet {
+public:
+	Bullet* bullet;
+
+	B_Firework();
+	Bullet* createBullet() { return new B_Firework(); };
+	void moveBullet(float deltaT);
+
+};
+class B_Trace : public Bullet {
+public:
+	Bullet* bullet;
+	float lastTrace;
+	float tracerIntervall = 0.3;
+	B_Trace();
+	Bullet* createBullet() { return new B_Trace(); };
+	void moveBullet(float deltaT);
+	void initialize(Vector2 position, Vector2f startDirection, int startSpeed);
+
+};
+class B_Flare : public Bullet {
+public:
+	B_Flare();
+	Bullet* createBullet() { return new B_Flare(); };
+	void moveBullet(float deltaT);
+
 };

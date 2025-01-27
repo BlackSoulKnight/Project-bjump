@@ -121,6 +121,52 @@ void B_Homing::moveBullet(float deltaT) {
 	position.y += round((float)(speed * direction.y)  * deltaT);
 }
 
+void B_Firework::moveBullet(float deltaT) {
+
+	activeTime += deltaT;
+	if (activeTime > 1) {
+		BulletManager::createBullet(bullet, { position.x,position.y }, { 0,-1 }, 300);
+		BulletManager::createBullet(bullet, { position.x,position.y }, { 1,0.5 }, 300);
+		BulletManager::createBullet(bullet, { position.x,position.y }, { 1,-0.5 }, 300);
+		BulletManager::createBullet(bullet, { position.x,position.y }, { -1,-0.5 }, 300);
+		BulletManager::createBullet(bullet, { position.x,position.y }, { -1,0.5 }, 300);
+		BulletManager::disableBullet(this);
+	}
+	position.x += round((float)(speed * direction.x) * deltaT);
+	position.y += round((float)(speed * direction.y) * deltaT);
+}
+
+void B_Trace::moveBullet(float deltaT) {
+	if (activeTime > lastTrace+tracerIntervall) {
+		BulletManager::createBullet(bullet, { position.x,position.y }, { 0,0 }, 0);
+		lastTrace = activeTime;
+	}
+	if (activeTime > 3) {
+		BulletManager::disableBullet(this);
+
+	}
+	Player* ply = World::Instance->player;
+	Vector2f target{ (float)(ply->position.x - position.x),(float)(ply->position.y - position.y) };
+
+
+	activeTime += deltaT;
+	position.x += round((float)(speed * direction.x) * deltaT);
+	position.y += round((float)(speed * direction.y) * deltaT);
+	}
+
+void B_Flare::moveBullet(float deltaT) {
+
+	activeTime += deltaT;
+	if (activeTime > 1)
+		BulletManager::disableBullet(this);
+}
+
+void B_Trace::initialize(Vector2 position, Vector2f startDirection, int startSpeed)
+{
+	Bullet::initialize(position,startDirection,startSpeed);
+	lastTrace = 0;
+}
+
 B_Spiral::B_Spiral() :Bullet() {
 	Type = 1;
 }
@@ -130,6 +176,19 @@ B_HSinus::B_HSinus() :Bullet() {
 }
 B_Homing::B_Homing() :Bullet() {
 	Type = 4;
+}
+
+B_Trace::B_Trace() :Bullet() {
+	Type = 6;
+	lastTrace = 0;
+	bullet = new B_Flare();
+}
+B_Flare::B_Flare() :Bullet() {
+	Type = 7;
+}
+B_Firework::B_Firework() :Bullet() {
+	Type = 5;
+	bullet = new B_Trace();
 }
 
 B_Random_Normal::B_Random_Normal() :Bullet() {

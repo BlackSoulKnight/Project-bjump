@@ -430,17 +430,24 @@ Enemy* World::generateEnemy(int tile, SDL_Rect tilePos, int mapWidth, int mapHei
         enemy = new E5();
         break;
     case 6:
+        free(enemy);
+        enemy = new E6();
         break;
     case 7:
         free(enemy);
         enemy = new E7();
         break;
     case 8:
+        free(enemy);
+        enemy = new E8();
         break;
     case 9:
         free(enemy);
         enemy = new E9();
         break;
+    case 10:
+        free(enemy);
+        enemy = new E10();
     default:
         break;
     }
