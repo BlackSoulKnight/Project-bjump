@@ -28,13 +28,16 @@ void InputManager::pump() {
             pressed = !(event.type & 1);
             switch (event.key.keysym.scancode) {
             case SDL_SCANCODE_A:
+            case SDL_SCANCODE_LEFT:
                 actionState["Left"] = pressed;
                 break;
             case SDL_SCANCODE_D:
+            case SDL_SCANCODE_RIGHT:
                 actionState["Right"] = pressed;
                 break;
             case SDL_SCANCODE_SPACE:
             case SDL_SCANCODE_W:
+            case SDL_SCANCODE_UP:
                 actionState["Jump"] = pressed;
                 break;
             case SDL_SCANCODE_LSHIFT:
