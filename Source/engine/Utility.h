@@ -72,7 +72,12 @@ struct Vector2f {
 struct Vector2
 {
 	int x, y;
-
+	bool operator!=(const Vector2& r) {
+		return x != r.x || y != r.y;
+	}
+	bool operator==(const Vector2& r) {
+		return x == r.x && y == r.y;
+	}
 };
 
 

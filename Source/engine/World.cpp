@@ -35,13 +35,17 @@ bool World::run() {
 
     InputManager::pump();
 
+
+
+
     for (auto& kv : gameObjectsNew) {
         for (int i = 0; i < kv.second.size(); i++) {
             if (kv.second[i]->isActive)
                 kv.second[i]->update(deltaT);
         }
     }
-    
+
+
     renderGraphics();
     
     deltaT = chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now() - start).count();
@@ -171,6 +175,8 @@ void World::LoadFile(string fileName, bool isBG) {
     int xMapMaxSize = 0, yMapMaxSize = 0;
     for(auto row : loadedMap)
     {
+        
+
         for (auto tile : row) {
             if (xIndex >= xMapMaxSize)
                 xMapMaxSize = xIndex;
@@ -188,45 +194,47 @@ void World::LoadFile(string fileName, bool isBG) {
         yMapMaxSize++;
     }
 
-    mapSizeX = xMapMaxSize;
-    mapSizeY = yMapMaxSize;
-    WorldObject = new vector<GameObject*>*[mapSizeX];
-    WorldObjectBG = new vector<GameObject*>*[mapSizeX];
+    mapSizeX = xMapMaxSize /40;
+    mapSizeY = yMapMaxSize /40;
 
-    for (int i = 0; i < mapSizeX; i++) {
-        WorldObject[i] = new vector<GameObject*>[mapSizeY];
-        WorldObjectBG[i] = new vector<GameObject*>[mapSizeY];
-    }
-
-    if (isBG)
+    if (isBG) {
+        for (int i = 0; i < mapSizeY; i++) {
+            WorldObjectBG[i] = vector<GameObject*>();
+        }
         for (int i = 0; i < reducedDimensionMap.size(); i++)
         {
+
             SDL_Rect pos = reducedDimensionTilePosition[i];
             if (reducedDimensionMap[i] != '-1')
-                WorldObjectBG[pos.x][pos.y].push_back(generateDefaultBackground(
+                WorldObjectBG[pos.y / 40 / SCALE / 16].push_back(generateDefaultBackground(
                     reducedDimensionMap[i],
                     reducedDimensionTilePosition[i],
                     xMapMaxSize,
                     yMapMaxSize
                 ));
         }
-    else
+    }
+    else {
+        for (int i = 0; i < mapSizeY; i++) {
+            WorldObject[i] = vector<GameObject*>();
+        }
         for (int i = 0; i < reducedDimensionMap.size(); i++) {
             SDL_Rect pos = reducedDimensionTilePosition[i];
             if (reducedDimensionMap[i] != '-1')
-                if (reducedDimensionMap[i] < 0) 
-                createGameObject( generateEnemy(reducedDimensionMap[i],
-                    reducedDimensionTilePosition[i],
-                    xMapMaxSize,
-                    yMapMaxSize));
+                if (reducedDimensionMap[i] < 0)
+                    createGameObject(generateEnemy(reducedDimensionMap[i],
+                        reducedDimensionTilePosition[i],
+                        xMapMaxSize,
+                        yMapMaxSize));
                 else
-                createGameObject(generateBlock(
-                    reducedDimensionMap[i],
-                    reducedDimensionTilePosition[i],
-                    xMapMaxSize,
-                    yMapMaxSize
-                ));
+                    WorldObject[pos.y / 40 / SCALE / 16].push_back(generateBlock(
+                        reducedDimensionMap[i],
+                        reducedDimensionTilePosition[i],
+                        xMapMaxSize,
+                        yMapMaxSize
+                    ));
         }
+    }
 }
 void World::renderGraphics() {
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
@@ -236,14 +244,24 @@ void World::renderGraphics() {
     
     camera.calculatePositionBasedOnPlayer(*player);
 
+
+    if (screenCurrent != camera.gridLocation) {
+        gameObjectsNew["World"] = WorldObject[camera.gridLocation.y];
+        gameObjectsNew["WorldBG"] = WorldObjectBG[camera.gridLocation.y];
+        background = WorldObjectBG[camera.gridLocation.y];
+        screenCurrent = camera.gridLocation;
+    }
+
     debugWindow.DebugStart();
     // Render Default Background
     for (auto bg : background)
         renderEntity(*bg);
 
     // Render World elements
-    for (auto block : gameObjects) {
-        renderEntity(*block);
+    for (auto list : gameObjectsNew) {
+        for (auto block : list.second) {
+            renderEntity(*block);
+        }
     }
 
     debugWindow.Menu();
