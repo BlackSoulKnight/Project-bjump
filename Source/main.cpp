@@ -50,30 +50,8 @@ int main(int, char**)
 
     //Load Level
 
-    string levelFile;
-    switch (1)
-    {
-    case 1:
-        levelFile = string("../Levels/Oliver_Map.bjump");
-        player->position.x = 160;
-        player->position.y = 12640;
-        break;
-    case 2:
-        levelFile = string("../Levels/MarvinMap.bjump");
-        player->position.x = 160;
-        player->position.y = 12640;
-        break;
-    case 3:
-        levelFile = string("../Levels/EnemyTest.bjump");
-        player->position.x = 80;
-        player->position.y = 31840;
-        break;
-    default:
-        break;
-    }
-    newWorld->LoadFile(levelFile, false);
-    newWorld->LoadFile(levelFile.append("BG"), true);
 
+    newWorld->loadmap(4);
 
     while (newWorld->run()) {
 
@@ -85,6 +63,7 @@ int main(int, char**)
     ImGui::DestroyContext();
     return 0;
 }
+
 
 /*
 int main(int, char**) {

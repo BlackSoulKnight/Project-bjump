@@ -22,6 +22,7 @@ public:
 	virtual void update(int deltaT);
 	SDL_Rect getPosition() { return position; };
 	Sprite getSprite() { return sprite; };
+	Sprite* getSpriteP() { return &sprite; };
 	vector<GameObject*> traceLine(Vector2 start, Vector2 end, bool includeSelf = false);
 	vector<tuple<GameObject*, SDL_Rect>> getCollision();
 	bool getInputState(string Action);
