@@ -537,6 +537,7 @@ void mouse_button_1(SDL_Event e) {
     if (xPos < WS.sprite_controller.getSpritesPerX() && xPos >= 0 && yPos < WS.sprite_controller.getSpritesPerY() && yPos >= 0) {
         WS.selected_tile_x = xPos;
         WS.selected_tile_y = yPos;
+        WS.delete_mode = false;
     }
     else {
         if (WS.current_layer == Layer::SHOW_ALL) 
