@@ -250,11 +250,11 @@ void read_events() {
                 //set_tile_to_zero(e);
                 break;
             case SDL_SCANCODE_UP:
-                WS.selected_tile_set_factor -= 0.25;
+                WS.selected_tile_set_factor += 0.25;
                 //WS.camera = { WS.camera.x / WS.zoom, WS.camera.y / WS.zoom ,WS.camera.w ,WS.camera.h };
                 break;
             case SDL_SCANCODE_DOWN:
-                WS.selected_tile_set_factor += 0.25;
+                WS.selected_tile_set_factor -= 0.25;
                 //WS.camera = { WS.camera.x * WS.zoom, WS.camera.y * WS.zoom ,WS.camera.w ,WS.camera.h };
                 break;
             case SDL_SCANCODE_X:
@@ -398,6 +398,8 @@ void render_graphics() {
         {
             if (y % (WS.sprite_controller.getSpriteSizeY() * 40) == 0)
                 SDL_SetRenderDrawColor(WS.renderer, 100, 255, 255, 127);
+            else if (y % (WS.sprite_controller.getSpriteSizeY() * 20) == 0)
+                SDL_SetRenderDrawColor(WS.renderer, 255, 255, 127, 64);
             else 
                 SDL_SetRenderDrawColor(WS.renderer, 255, 255, 255, 30);
             SDL_RenderDrawLine(WS.renderer, 0 + WS.camera.x, y + WS.camera.y, (WS.tiles[0].size() * WS.sprite_controller.getSpriteSizeX()) + WS.camera.x, y + WS.camera.y);
@@ -406,6 +408,8 @@ void render_graphics() {
         {
             if (x % (WS.sprite_controller.getSpriteSizeX() * 40) == 0)
                 SDL_SetRenderDrawColor(WS.renderer, 100, 255, 255, 127);
+            else if (x % (WS.sprite_controller.getSpriteSizeX() * 20 ) == 0)
+                SDL_SetRenderDrawColor(WS.renderer, 255, 255, 127 , 64);
             else
                 SDL_SetRenderDrawColor(WS.renderer, 255, 255, 255, 30);
             SDL_RenderDrawLine(WS.renderer, x + WS.camera.x, 0 + WS.camera.y, x + WS.camera.x, (WS.tiles.size() * WS.sprite_controller.getSpriteSizeY()) + WS.camera.y);
