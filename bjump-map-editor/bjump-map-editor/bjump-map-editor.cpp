@@ -451,11 +451,22 @@ void render_graphics() {
     SDL_RenderDrawRectF(WS.renderer, &gameBorder);
     SDL_SetRenderDrawColor(WS.renderer, 0, 0, 0, 255);
 
-    SDL_FRect selectable_tiles = { 0.0,
+    SDL_FRect selectable_tiles = {0.0,
                                 0.0,
                                 WS.sprite_controller.getSpriteSizeX() / (WS.zoom * WS.selected_tile_set_factor),
                                 WS.sprite_controller.getSpriteSizeY() / (WS.zoom * WS.selected_tile_set_factor) };
 
+    SDL_FRect selectable_tiles_bg = {
+        0.0, 0.0,
+        WS.sprite_controller.getSpriteSizeX() * WS.sprite_controller.getSpritesPerX() / (WS.zoom * WS.selected_tile_set_factor),
+        WS.sprite_controller.getSpriteSizeX() * WS.sprite_controller.getSpritesPerX() / (WS.zoom * WS.selected_tile_set_factor)
+    };
+    SDL_RenderFillRectF(WS.renderer, &selectable_tiles_bg);
+    
+    SDL_GetRenderDrawColor(WS.renderer, &r, &g, &b, &a);
+    SDL_SetRenderDrawColor(WS.renderer, 255, 255, 255, 255);
+    SDL_RenderDrawRectF(WS.renderer, &selectable_tiles_bg);
+    SDL_SetRenderDrawColor(WS.renderer, r, g,b, a);
 
     // Render selectable tileset
     for (int y = 0; y < WS.sprite_controller.getSpritesPerY(); y++)
