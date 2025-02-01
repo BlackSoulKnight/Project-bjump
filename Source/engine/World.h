@@ -29,9 +29,9 @@ private:
 	int windowSizeX, windowSizeY;
 	int deltaT;
 	vector<GameObject*> background;
-	vector<GameObject*>** WorldObjectBG;
+	map<int,vector<GameObject*>> WorldObjectBG;
 	vector<GameObject*> gameObjects;
-	vector<GameObject*>** WorldObject;
+	map<int,vector<GameObject*>> WorldObject;
 	unordered_map<string, vector<GameObject*>> gameObjectsNew;
 	vector<GameObject*> Enemies;
 	int targetFrameRate;
@@ -43,6 +43,7 @@ private:
 
 public:
 	Camera camera;
+	Vector2 screenCurrent = {0,0};
 	DebugMenu debugConsole;
 	Player* player;
 	void LoadGameAssets();
