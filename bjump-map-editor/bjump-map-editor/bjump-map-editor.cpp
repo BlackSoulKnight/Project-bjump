@@ -363,8 +363,16 @@ void render_graphics() {
                     SDL_FreeSurface(enemyPosSurf);
                     SDL_DestroyTexture(enemyPosBlock);
                 }
+                else if (x == 0) {
+                    render_texture_auto(WS.renderer, WS.sprite_controller.getSprite(x), &initial_cam_pos, Layer::FOREGROUND);
+                    SDL_GetRenderDrawColor(WS.renderer, &r, &g, &b, &a);
+                    SDL_SetRenderDrawColor(WS.renderer, 255, 127, 127, 32);
+                    SDL_RenderFillRect(WS.renderer, &initial_cam_pos);
+                    SDL_RenderDrawRect(WS.renderer, &initial_cam_pos);
+                    SDL_SetRenderDrawColor(WS.renderer, r, g, b, a);
+                }
                 else
-                render_texture_auto(WS.renderer, WS.sprite_controller.getSprite(x), &initial_cam_pos, Layer::FOREGROUND);
+                    render_texture_auto(WS.renderer, WS.sprite_controller.getSprite(x), &initial_cam_pos, Layer::FOREGROUND);
             }
             initial_cam_pos.x += WS.sprite_controller.getSpriteSizeX();
         }
