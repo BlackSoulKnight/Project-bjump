@@ -62,7 +62,6 @@ struct WorldState
 
     LPCWSTR editor_controlls =
         L"F1:\t\tZeige Tastaturbelegung\n\n"
-        L"Hide controlls:\tSet WorldState.show_controlls=false\n\n"
         L"L_Click:\t\tTiles Platzieren\n"
         L"R_Click:\t\tKamera bewegen\n"
         L"S:\t\tSpeichern\n"
@@ -73,9 +72,9 @@ struct WorldState
         L"\t\t┣ 2: Hintergrund\n"
         L"\t\t┣ 3: Alle Ebenen\n"
         L"\t\t┗ 4: Enemy Placement\n\n"
-        L"TAB:\t\tToggle Enemy Type\n\n"
-        L"MRad +/-:\tTileset kleiner/größer machen\n"
-        L"UP/DOWN:\tZoom +/-\n";
+        L"LArr/RArr:\t\tSwitch Enemy Type\n\n"
+        L"MRad +/-:\tZoom +/-\n"
+        L"UP/DOWN:\tTileset kleiner/größer machen\n";
     LPCWSTR editor_controlls_title = L"Editor Controlls";
 } WS;
 
@@ -88,6 +87,7 @@ void render_graphics();
 #pragma region Event Function Declaration
 void mouse_button_1(SDL_Event);
 void increment_current_enemy();
+void decrement_current_enemy();
 #pragma endregion
 
 #pragma region File Function Declaration
@@ -272,8 +272,11 @@ void read_events() {
             case SDL_SCANCODE_4:
                 WS.current_layer = 3; // Enemy
                 break;
-            case SDL_SCANCODE_TAB:
+            case SDL_SCANCODE_RIGHT:
                 increment_current_enemy();
+                break;
+            case SDL_SCANCODE_LEFT:
+                decrement_current_enemy();
                 break;
             case SDL_SCANCODE_M:
                 WS.camera = { 0,0, WS.camera.w, WS.camera.h };
@@ -571,14 +574,22 @@ void mouse_button_1(SDL_Event e) {
         layer->at(yPos).at(xPos) = WS.selected_tile_x + (WS.selected_tile_y * WS.sprite_controller.getSpritesPerX());
     }
 }
-
+#define MAX_ENEMY -10000
 void increment_current_enemy() {
-    if (WS.current_enemy == -15) {
+    if (WS.current_enemy == MAX_ENEMY) {
 
         WS.current_enemy = -2;
         return;
     }
     WS.current_enemy--;
+}
+void decrement_current_enemy() {
+    if (WS.current_enemy == -2) {
+
+        WS.current_enemy = MAX_ENEMY;
+        return;
+    }
+    WS.current_enemy++;
 }
 #pragma endregion
 
