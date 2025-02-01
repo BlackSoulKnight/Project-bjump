@@ -268,10 +268,10 @@ void read_events() {
                 WS.current_layer = 1; // Background
                 break;
             case SDL_SCANCODE_3:
-                WS.current_layer = 2; // Background
+                WS.current_layer = 2; // All
                 break;
             case SDL_SCANCODE_4:
-                WS.current_layer = 3; // Background
+                WS.current_layer = 3; // Enemy
                 break;
             case SDL_SCANCODE_TAB:
                 increment_current_enemy();
@@ -380,10 +380,18 @@ void render_graphics() {
         // Render Grid
         for (int y = 0; y <= WS.tiles.size() * WS.sprite_controller.getSpriteSizeY(); y += WS.sprite_controller.getSpriteSizeY())
         {
+            if (y % (WS.sprite_controller.getSpriteSizeY() * 40) == 0)
+                SDL_SetRenderDrawColor(WS.renderer, 100, 255, 255, 127);
+            else 
+                SDL_SetRenderDrawColor(WS.renderer, 255, 255, 255, 30);
             SDL_RenderDrawLine(WS.renderer, 0 + WS.camera.x, y + WS.camera.y, (WS.tiles[0].size() * WS.sprite_controller.getSpriteSizeX()) + WS.camera.x, y + WS.camera.y);
         }
         for (int x = 0; x <= WS.tiles[0].size() * WS.sprite_controller.getSpriteSizeX(); x += WS.sprite_controller.getSpriteSizeX())
         {
+            if (x % (WS.sprite_controller.getSpriteSizeX() * 40) == 0)
+                SDL_SetRenderDrawColor(WS.renderer, 100, 255, 255, 127);
+            else
+                SDL_SetRenderDrawColor(WS.renderer, 255, 255, 255, 30);
             SDL_RenderDrawLine(WS.renderer, x + WS.camera.x, 0 + WS.camera.y, x + WS.camera.x, (WS.tiles.size() * WS.sprite_controller.getSpriteSizeY()) + WS.camera.y);
         }
         SDL_SetRenderDrawBlendMode(WS.renderer,original_blend_mode);
