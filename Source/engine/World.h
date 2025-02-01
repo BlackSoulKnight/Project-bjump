@@ -43,7 +43,7 @@ private:
 
 public:
 	Camera camera;
-	Vector2 screenCurrent = {0,0};
+	Vector2 screenCurrent = {-1,-1};
 	DebugMenu debugConsole;
 	Player* player;
 	void LoadGameAssets();

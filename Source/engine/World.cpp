@@ -248,21 +248,20 @@ void World::renderGraphics() {
     if (screenCurrent != camera.gridLocation) {
         gameObjectsNew["World"] = WorldObject[camera.gridLocation.y];
         gameObjectsNew["WorldBG"] = WorldObjectBG[camera.gridLocation.y];
-        background = WorldObjectBG[camera.gridLocation.y];
         screenCurrent = camera.gridLocation;
     }
 
-    debugWindow.DebugStart();
-    // Render Default Background
-    for (auto bg : background)
-        renderEntity(*bg);
 
     // Render World elements
-    for (auto list : gameObjectsNew) {
-        for (auto block : list.second) {
+
+    const string priority[] = { "WorldBG","World","Enemy","Player","Bullet" };
+    for (auto list : priority) {
+        for (auto block : gameObjectsNew[list]) {
             renderEntity(*block);
         }
     }
+    /*
+    debugWindow.DebugStart();
 
     debugWindow.Menu();
 
@@ -281,8 +280,9 @@ void World::renderGraphics() {
         debugWindow.CameraMenu(&camera);
     if (debugWindow.showExamples)
         debugWindow.ShowExampleAddsToMenu();
-
+        
     debugWindow.DebugEnd(renderer);
+    */
     SDL_RenderPresent(renderer);
 }
 void World::renderEntity(GameObject &entity) {
@@ -503,7 +503,7 @@ GameObject* World::generateDefaultBackground(int tile, SDL_Rect tilePos, int map
     block->scale.x = 1, block->scale.y = 1;
     block->position = tilePos;
     block->name = "BG";
-    block->tag = "World";
+    block->tag = "WorldBG";
     block->sprite = spriteData;
     if (tile == -1) {
         block->isActive = false;
