@@ -187,11 +187,23 @@ void World::LoadFile(string fileName, bool isBG) {
         yIndex++;
         yMapMaxSize++;
     }
+
+    mapSizeX = xMapMaxSize;
+    mapSizeY = yMapMaxSize;
+    WorldObject = new vector<GameObject*>*[mapSizeX];
+    WorldObjectBG = new vector<GameObject*>*[mapSizeX];
+
+    for (int i = 0; i < mapSizeX; i++) {
+        WorldObject[i] = new vector<GameObject*>[mapSizeY];
+        WorldObjectBG[i] = new vector<GameObject*>[mapSizeY];
+    }
+
     if (isBG)
         for (int i = 0; i < reducedDimensionMap.size(); i++)
         {
+            SDL_Rect pos = reducedDimensionTilePosition[i];
             if (reducedDimensionMap[i] != '-1')
-                background.push_back(generateDefaultBackground(
+                WorldObjectBG[pos.x][pos.y].push_back(generateDefaultBackground(
                     reducedDimensionMap[i],
                     reducedDimensionTilePosition[i],
                     xMapMaxSize,
@@ -199,8 +211,8 @@ void World::LoadFile(string fileName, bool isBG) {
                 ));
         }
     else
-
         for (int i = 0; i < reducedDimensionMap.size(); i++) {
+            SDL_Rect pos = reducedDimensionTilePosition[i];
             if (reducedDimensionMap[i] != '-1')
                 if (reducedDimensionMap[i] < 0) 
                 createGameObject( generateEnemy(reducedDimensionMap[i],

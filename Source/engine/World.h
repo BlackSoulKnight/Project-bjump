@@ -29,11 +29,12 @@ private:
 	int windowSizeX, windowSizeY;
 	int deltaT;
 	vector<GameObject*> background;
+	vector<GameObject*>** WorldObjectBG;
 	vector<GameObject*> gameObjects;
-	map<string, vector<GameObject*>> gameObjectsNew;
+	vector<GameObject*>** WorldObject;
+	unordered_map<string, vector<GameObject*>> gameObjectsNew;
 	vector<GameObject*> Enemies;
 	int targetFrameRate;
-	map<int, vector<GameObject*>> scenes;
 	GameObject* generateBlock(int, SDL_Rect, int, int);
 	Enemy* generateEnemy(int, SDL_Rect, int, int);
 	
@@ -52,7 +53,7 @@ public:
 	vector<vector<int>> load_map(const char* filePath);
 	int test = 0;
 	World(int _windowSizeX, int _windowSizeY);
-
+	int mapSizeX, mapSizeY;
 	bool run();
 	void renderGraphics();
 	void renderEntity(GameObject&);
