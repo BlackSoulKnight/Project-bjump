@@ -192,7 +192,7 @@ void init_editor(char* sprite_sheet_path) {
     TTF_Init();
     SDL_Init(IMG_INIT_PNG);
     SDL_ShowCursor(true);
-    WS.window = SDL_CreateWindow("Map Editor", 0, 20, 1280, 720, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
+    WS.window = SDL_CreateWindow("Map Editor", 0, 20, 1280, 720, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
     WS.renderer = SDL_CreateRenderer(WS.window, -1, SDL_RENDERER_PRESENTVSYNC);
     WS.font = TTF_OpenFont("fonts/monogram-extended.ttf", WS.FONT_SIZE);
     SDL_SetRenderDrawBlendMode(WS.renderer, SDL_BLENDMODE_BLEND);
