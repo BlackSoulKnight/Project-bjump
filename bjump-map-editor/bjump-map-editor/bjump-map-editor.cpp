@@ -118,8 +118,8 @@ int main(int argc, char **argv)
     cout << "Waehle das SpriteSheet aus.\n";
     PWSTR sprite_sheet_path = get_file_path();
     char* converted_sprite_sheet_path = convert_PWSTR_to_char(sprite_sheet_path);
-    if (converted_sprite_sheet_path == "");
-    converted_sprite_sheet_path = new char[100] {"../../resources/Tilemap/monochrome_tilemap_transparent_packed.png"};
+    if (strlen(converted_sprite_sheet_path) == 0)
+        converted_sprite_sheet_path = new char[100] {"../../resources/Tilemap/monochrome_tilemap_transparent_packed.png"};
     cout << "Datei: " << converted_sprite_sheet_path << endl << endl;
     cout << "Sprite groesse X: ";
     int sizeX = 0;
@@ -250,12 +250,11 @@ void read_events() {
                 //set_tile_to_zero(e);
                 break;
             case SDL_SCANCODE_UP:
-                WS.zoom += 0.25;
+                WS.selected_tile_set_factor -= 0.25;
                 //WS.camera = { WS.camera.x / WS.zoom, WS.camera.y / WS.zoom ,WS.camera.w ,WS.camera.h };
                 break;
             case SDL_SCANCODE_DOWN:
-                if (WS.zoom > 0.25)
-                    WS.zoom -= 0.25;
+                WS.selected_tile_set_factor += 0.25;
                 //WS.camera = { WS.camera.x * WS.zoom, WS.camera.y * WS.zoom ,WS.camera.w ,WS.camera.h };
                 break;
             case SDL_SCANCODE_X:
@@ -268,13 +267,16 @@ void read_events() {
                 WS.current_layer = 1; // Background
                 break;
             case SDL_SCANCODE_3:
-                WS.current_layer = 2; // Background
+                WS.current_layer = 2; // All
                 break;
             case SDL_SCANCODE_4:
-                WS.current_layer = 3; // Background
+                WS.current_layer = 3; // Enemy
                 break;
             case SDL_SCANCODE_TAB:
                 increment_current_enemy();
+                break;
+            case SDL_SCANCODE_M:
+                WS.camera = { 0,0, WS.camera.w, WS.camera.h };
                 break;
             default:
                 break;
@@ -302,13 +304,16 @@ void read_events() {
                 break;
             }
             break;
-        case SDL_MOUSEWHEEL:
-            WS.selected_tile_set_factor += e.wheel.y * 0.25;
+        case SDL_MOUSEWHEEL:   
+            if (WS.zoom + (e.wheel.y * 0.05) < 0.55)
+                return;
+            WS.zoom += (e.wheel.y * 0.05);
+            //cout << WS.zoom;
             break;
         case SDL_MOUSEMOTION:
             out_of_spritesheet(e);
             if (WS.drag) {
-                cout << e.motion.xrel << " " << e.motion.yrel << endl;
+                //cout << e.motion.xrel << " " << e.motion.yrel << endl;
                 WS.camera.x += e.motion.xrel;
                 WS.camera.y += e.motion.yrel;
             }
@@ -363,8 +368,16 @@ void render_graphics() {
                     SDL_FreeSurface(enemyPosSurf);
                     SDL_DestroyTexture(enemyPosBlock);
                 }
+                else if (x == 0) {
+                    render_texture_auto(WS.renderer, WS.sprite_controller.getSprite(x), &initial_cam_pos, Layer::FOREGROUND);
+                    SDL_GetRenderDrawColor(WS.renderer, &r, &g, &b, &a);
+                    SDL_SetRenderDrawColor(WS.renderer, 255, 127, 127, 32);
+                    SDL_RenderFillRect(WS.renderer, &initial_cam_pos);
+                    SDL_RenderDrawRect(WS.renderer, &initial_cam_pos);
+                    SDL_SetRenderDrawColor(WS.renderer, r, g, b, a);
+                }
                 else
-                render_texture_auto(WS.renderer, WS.sprite_controller.getSprite(x), &initial_cam_pos, Layer::FOREGROUND);
+                    render_texture_auto(WS.renderer, WS.sprite_controller.getSprite(x), &initial_cam_pos, Layer::FOREGROUND);
             }
             initial_cam_pos.x += WS.sprite_controller.getSpriteSizeX();
         }
@@ -380,17 +393,30 @@ void render_graphics() {
         // Render Grid
         for (int y = 0; y <= WS.tiles.size() * WS.sprite_controller.getSpriteSizeY(); y += WS.sprite_controller.getSpriteSizeY())
         {
+            if (y % (WS.sprite_controller.getSpriteSizeY() * 40) == 0)
+                SDL_SetRenderDrawColor(WS.renderer, 100, 255, 255, 127);
+            else 
+                SDL_SetRenderDrawColor(WS.renderer, 255, 255, 255, 30);
             SDL_RenderDrawLine(WS.renderer, 0 + WS.camera.x, y + WS.camera.y, (WS.tiles[0].size() * WS.sprite_controller.getSpriteSizeX()) + WS.camera.x, y + WS.camera.y);
         }
         for (int x = 0; x <= WS.tiles[0].size() * WS.sprite_controller.getSpriteSizeX(); x += WS.sprite_controller.getSpriteSizeX())
         {
+            if (x % (WS.sprite_controller.getSpriteSizeX() * 40) == 0)
+                SDL_SetRenderDrawColor(WS.renderer, 100, 255, 255, 127);
+            else
+                SDL_SetRenderDrawColor(WS.renderer, 255, 255, 255, 30);
             SDL_RenderDrawLine(WS.renderer, x + WS.camera.x, 0 + WS.camera.y, x + WS.camera.x, (WS.tiles.size() * WS.sprite_controller.getSpriteSizeY()) + WS.camera.y);
         }
         SDL_SetRenderDrawBlendMode(WS.renderer,original_blend_mode);
     }
     SDL_Rect to_place_position = WS.mouse_position_to_highlight;
+    if (to_place_position.x < 0)
+        to_place_position.x -= WS.sprite_controller.getSpriteSizeX();
+    if (to_place_position.y < 0)
+        to_place_position.y -= WS.sprite_controller.getSpriteSizeY();
     to_place_position.x += WS.camera.x;
     to_place_position.y += WS.camera.y;
+
     // Render highlight on Map
     if (!WS.hide_hover_position)
     if (WS.delete_mode)
@@ -504,7 +530,7 @@ void mouse_button_1(SDL_Event e) {
     SDL_MouseButtonEvent mbe = e.button;
     int xPos = mbe.x / (WS.sprite_controller.getSpriteSizeX() / (WS.zoom * WS.selected_tile_set_factor));
     int yPos = mbe.y / (WS.sprite_controller.getSpriteSizeY() / (WS.zoom * WS.selected_tile_set_factor));
-    cout << "LMB x:" << xPos << " y: " << yPos << endl;
+    //cout << "LMB x:" << xPos << " y: " << yPos << endl;
     if (xPos < WS.sprite_controller.getSpritesPerX() && xPos >= 0 && yPos < WS.sprite_controller.getSpritesPerY() && yPos >= 0) {
         WS.selected_tile_x = xPos;
         WS.selected_tile_y = yPos;
@@ -515,7 +541,7 @@ void mouse_button_1(SDL_Event e) {
         //Kamera offset mit einbeziehen beim platzieren
         xPos = (mbe.x - WS.camera.x) / WS.sprite_controller.getSpriteSizeX();
         yPos = (mbe.y - WS.camera.y) / WS.sprite_controller.getSpriteSizeY();
-        cout << "INFO: outside of selectMap" << endl;
+        //cout << "INFO: outside of selectMap" << endl;
         
         if ((xPos < 0 || WS.tiles[0].size() <= xPos) || (yPos < 0 || WS.tiles.size() <= yPos))
             return;
@@ -707,7 +733,7 @@ void out_of_spritesheet(SDL_Event e) {
     SDL_MouseButtonEvent mbe = e.button;
     int xPos = mbe.x / (WS.sprite_controller.getSpriteSizeX() / (WS.zoom * WS.selected_tile_set_factor));
     int yPos = mbe.y / (WS.sprite_controller.getSpriteSizeY() / (WS.zoom * WS.selected_tile_set_factor));
-    cout << "LMB x:" << xPos << " y: " << yPos << endl;
+    //cout << "LMB x:" << xPos << " y: " << yPos << endl;
     if (xPos < WS.sprite_controller.getSpritesPerX() && xPos >= 0 && yPos < WS.sprite_controller.getSpritesPerY() && yPos >= 0)
         WS.hide_hover_position = true;
     else
