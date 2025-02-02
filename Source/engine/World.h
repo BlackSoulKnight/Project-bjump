@@ -32,7 +32,7 @@ private:
 	map<int,vector<GameObject*>> WorldObjectBG;
 	vector<GameObject*> gameObjects;
 	map<int,vector<GameObject*>> WorldObject;
-	unordered_map<string, vector<GameObject*>> gameObjectsNew;
+	map<string, vector<GameObject*>> gameObjectsNew;
 	vector<GameObject*> Enemies;
 	int targetFrameRate;
 	GameObject* generateBlock(int, SDL_Rect, int, int);
@@ -58,7 +58,7 @@ public:
 	bool run();
 	void renderGraphics();
 	void renderEntity(GameObject&);
-
+	void loadmap(int num, bool ignorePlayer = false);
 	//SDL_Rect scaleEntityPosition(GameObject); <- Macht probleme, siehe funktion.
 	bool createGameObject(GameObject* obj);
 	bool destroyGameObject(GameObject* obj);

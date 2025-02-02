@@ -53,7 +53,10 @@ void InputManager::pump() {
             case SDL_SCANCODE_F1:
                 // Hier debugConsole wert flippen true/false
                 break;
-            case SDL_SCANCODE_F:
+            case SDL_SCANCODE_F5:
+                World::Instance->loadmap(4,true);
+                break;
+            case SDL_SCANCODE_L:
                 exit(1);
                 actionState["Quit"] = pressed;
                 break;
@@ -65,6 +68,7 @@ void InputManager::pump() {
                 break;
             }
             break;
+            
         case SDL_QUIT:
             exit(1);
             break;

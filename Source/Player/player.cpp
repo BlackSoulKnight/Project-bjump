@@ -254,7 +254,7 @@ void Player::update(int deltaT) {
         break;
 
     case PlayerState::JUMPING:
-
+        dashing = false;
         if (checkGroundCollision(320)) {
             vy = 0;
             playerState = PlayerState::ON_GROUND;  // Zurück auf den Boden
@@ -281,7 +281,7 @@ void Player::update(int deltaT) {
 
     case PlayerState::DOUBLE_JUMPING:
         spaceJustPressed = true;
-
+        dashing = false;
         if (checkGroundCollision(320)) {
             vy = 0;
             playerState = PlayerState::ON_GROUND;  // Zurück auf den Boden

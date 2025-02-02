@@ -303,7 +303,9 @@ void World::renderEntity(GameObject &entity) {
     if (entity.sprite.flipH)
         flipDirection += SDL_FLIP_HORIZONTAL;
 
-    SDL_Rect spriteSheetLocation = { entity.getSprite().x, entity.getSprite().y , 16 ,16 };
+    Sprite *rect = entity.getSpriteP();
+    SDL_Rect spriteSheetLocation = { rect->x, rect->y , 16 ,16 };
+
     SDL_Rect actualPosition = {
         entity.position.x + (camera.x + camera.xOffset),
         entity.position.y + (camera.y + camera.yOffset),
@@ -545,4 +547,48 @@ void World::LoadGameAssets() {
 
         spriteControllers.insert({ string(MAP_SPRITE_SHEET), tmpSpriteController });
     }
+}
+
+
+void World::loadmap(int num, bool ignorePlayer) {
+    string levelFile;
+    switch (num)
+    {
+    case 1:
+        levelFile = string("../Levels/Oliver_Map.bjump");
+        if (!ignorePlayer) {
+            player->position.x = 160;
+            player->position.y = 12640;
+        }
+        break;
+    case 2:
+        levelFile = string("../Levels/MarvinMap.bjump");
+        if (!ignorePlayer) {
+            player->position.x = 160;
+            player->position.y = 12640;
+        }
+        break;
+    case 3:
+        levelFile = string("../Levels/EnemyTest.bjump");
+        if (!ignorePlayer) {
+            player->position.x = 80;
+            player->position.y = 31840;
+        }
+        break;
+    case 4:
+        levelFile = string("../Levels/Level");
+        if (!ignorePlayer) {
+            player->position.x = 80;
+            player->position.y = 31840;
+        }
+        break;
+    default:
+        break;
+    }
+
+    LoadFile(levelFile, false);
+    LoadFile(levelFile.append("BG"), true);
+    gameObjectsNew["World"] = WorldObject[camera.gridLocation.y];
+    gameObjectsNew["WorldBG"] = WorldObjectBG[camera.gridLocation.y];
+
 }
