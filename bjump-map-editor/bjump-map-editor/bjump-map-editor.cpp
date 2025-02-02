@@ -39,6 +39,7 @@ struct WorldState
 
     int WINDOW_SIZE_W = 400;
     int WINDOW_SIZE_H = 300;
+
     SDL_Window* window;
     SDL_Renderer* renderer;
     SDL_Texture* texture;
@@ -54,6 +55,10 @@ struct WorldState
     bool hide_hover_position = false;
     int current_layer = 0;
     int current_enemy = -2;
+
+    bool h_lock = false, v_lock = false;
+    int line_x_pos = 0, line_y_pos = 0;
+
     std::vector<std::vector<int>> tiles;
     std::vector<std::vector<int>> background;
 
@@ -72,7 +77,10 @@ struct WorldState
         L"\t\t┣ 2: Hintergrund\n"
         L"\t\t┣ 3: Alle Ebenen\n"
         L"\t\t┗ 4: Enemy Placement\n\n"
-        L"LArr/RArr:\t\tSwitch Enemy Type\n\n"
+        L"LArr/RArr:\tSwitch Enemy Type\n\n"
+        L"M:\t\tKamera zurücksetzen\n"
+        L"H:\t\tLock Horizontal\n"
+        L"V:\t\tLock Vertical\n"
         L"MRad +/-:\tZoom +/-\n"
         L"UP/DOWN:\tTileset kleiner/größer machen\n";
     LPCWSTR editor_controlls_title = L"Editor Controlls";
@@ -106,6 +114,7 @@ char* convert_PWSTR_to_char(PWSTR);
 #pragma region Helper Functions
 void render_texture_auto(SDL_Renderer*, SDL_Rect*, SDL_Rect*, Layer);
 void out_of_spritesheet(SDL_Event e);
+void place_at_pos(vector<vector<int>>* layer, int x, int y);
 #pragma endregion
 
 
@@ -246,8 +255,17 @@ void read_events() {
             case SDL_SCANCODE_G:
                 WS.grid = !WS.grid;
                 break;
+            case SDL_SCANCODE_V:
+                WS.v_lock = false;
+                WS.h_lock = !WS.h_lock;
+                break;
+            case SDL_SCANCODE_H:
+                WS.v_lock = !WS.v_lock;
+                WS.h_lock = false;
+                break;
             case SDL_SCANCODE_SPACE:
-                //set_tile_to_zero(e);
+                WS.v_lock = false;
+                WS.h_lock = false;
                 break;
             case SDL_SCANCODE_UP:
                 WS.selected_tile_set_factor += 0.25;
@@ -327,6 +345,11 @@ void read_events() {
             int yPos = (e.motion.y - WS.camera.y) / WS.sprite_controller.getSpriteSizeY();
             WS.mouse_position_to_highlight.x = xPos * WS.sprite_controller.getSpriteSizeX();
             WS.mouse_position_to_highlight.y = yPos * WS.sprite_controller.getSpriteSizeY();
+            if (!WS.h_lock)
+                WS.line_x_pos = (e.motion.x - WS.camera.x) / WS.sprite_controller.getSpriteSizeX();
+            if (!WS.v_lock)
+                WS.line_y_pos = (e.motion.y - WS.camera.y) / WS.sprite_controller.getSpriteSizeY();
+
             break;
 
         }
@@ -425,6 +448,12 @@ void render_graphics() {
     to_place_position.y += WS.camera.y;
 
     // Render highlight on Map
+    if (WS.h_lock) {
+        to_place_position.x = WS.line_x_pos * WS.sprite_controller.getSpriteSizeX() + WS.camera.x;
+    }
+    else if (WS.v_lock) {
+        to_place_position.y = WS.line_y_pos * WS.sprite_controller.getSpriteSizeY() + WS.camera.y;
+    }
     if (!WS.hide_hover_position)
     if (WS.delete_mode)
         SDL_SetRenderDrawColor(WS.renderer, 255, 127, 127, 255);
@@ -555,6 +584,7 @@ void mouse_button_1(SDL_Event e) {
         WS.delete_mode = false;
     }
     else {
+
         if (WS.current_layer == Layer::SHOW_ALL) 
             return; //Kein ausgewählter layer
         //Kamera offset mit einbeziehen beim platzieren
@@ -576,19 +606,32 @@ void mouse_button_1(SDL_Event e) {
             break;
         }
 
-        if (WS.delete_mode) {
-            layer->at(yPos).at(xPos) = -1;
-            return;
+
+        if (WS.h_lock) {
+            place_at_pos(layer, WS.line_x_pos, yPos);
+        }
+        else if (WS.v_lock) {
+            place_at_pos(layer, xPos, WS.line_y_pos);
+        }
+        else{
+            place_at_pos(layer, xPos, yPos);
         }
 
-        if (layer->at(yPos).at(xPos) == WS.selected_tile_x + (WS.selected_tile_y * WS.sprite_controller.getSpritesPerX()))
-            return;
-        if (WS.current_layer == Layer::PLACE_ENEMY) {
-            layer->at(yPos).at(xPos) = WS.current_enemy;
-            return;
-        }
-        layer->at(yPos).at(xPos) = WS.selected_tile_x + (WS.selected_tile_y * WS.sprite_controller.getSpritesPerX());
     }
+}
+
+void place_at_pos(vector<vector<int>>* layer, int x,int y) {
+    if (WS.delete_mode) {
+        layer->at(y).at(x) = -1;
+        return;
+    }
+    if (layer->at(y).at(x) == WS.selected_tile_x + (WS.selected_tile_y * WS.sprite_controller.getSpritesPerX()))
+        return;
+    if (WS.current_layer == Layer::PLACE_ENEMY) {
+        layer->at(y).at(x) = WS.current_enemy;
+        return;
+    }
+    layer->at(y).at(x) = WS.selected_tile_x + (WS.selected_tile_y * WS.sprite_controller.getSpritesPerX());
 }
 #define MAX_ENEMY -10000
 void increment_current_enemy() {
