@@ -49,7 +49,7 @@ SpriteController  &SpriteController::generateController(const char *fileName, in
     SDL_Texture *texture = IMG_LoadTexture(renderer, fileName);
     SDL_Texture* bgTexture = IMG_LoadTexture(renderer, fileName);
     SDL_Texture* bulletTexture = IMG_LoadTexture(renderer, fileName);
-    SDL_SetTextureColorMod(bgTexture, 127, 127, 127);
+    SDL_SetTextureColorMod(bgTexture, 51, 51, 51);
     SDL_SetTextureColorMod(bulletTexture, 255, 127, 127);
     int imageWidth = spriteSheet->w;
     int imageHeight = spriteSheet->h;
