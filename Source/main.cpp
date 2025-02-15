@@ -50,8 +50,8 @@ int main(int, char**)
 
     //Load Level
 
+    newWorld->loadmap(1); // 1,2 fertige Level. 3,4 Test/Unfertige Level
 
-    newWorld->loadmap(4);
 
     while (newWorld->run()) {
 
