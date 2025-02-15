@@ -4,11 +4,11 @@ Das Spiel der Gruppe Project BJump
 
 Erstellt von 
 
-(owos02)[https://github.com/owos02]
+(owos02)[https://github.com/owos02/]
 
-(majue001)[https://github.com/majue001]
+(majue001)[https://github.com/majue001/]
 
-(BlackSoulKnight)[https://github.com/BlackSoulKnight]
+(BlackSoulKnight)[https://github.com/BlackSoulKnight/]
 
 ## Kurzinfo
 
@@ -95,6 +95,6 @@ Rechts Oben: Ebenen makierung & Ausgewähler Gegnertyp
 
 Tileset
 
-	- License: (Creative Commons CC0)[https://creativecommons.org/publicdomain/zero/1.0/]
-	- Source: (Kenney.nl)[https://kenney.nl/assets/1-bit-platformer-pack]
-	- Size: 16x16
+- License: (Creative Commons CC0)[https://creativecommons.org/publicdomain/zero/1.0/]
+- Source: (Kenney.nl)[https://kenney.nl/assets/1-bit-platformer-pack/]
+- Size: 16x16
