@@ -2,13 +2,13 @@
 
 Das Spiel der Gruppe Project BJump 
 
-Erstellt von 
+Erstellt von: 
 
-[BlackSoulKnight](https://github.com/BlackSoulKnight/)
++ [BlackSoulKnight](https://github.com/BlackSoulKnight/)
 
-[majue001](https://github.com/majue001/)
++ [majue001](https://github.com/majue001/)
 
-[owos02](https://github.com/owos02/)
++ [owos02](https://github.com/owos02/)
 
 ## Kurzinfo
 
@@ -29,9 +29,9 @@ Bullet Hell, Jump King, Celeste mashup.
 
 Zurzeit gibt es 2 fertige Level.
 
-Standardmäßig ist das schwerere Level ausgewählt.
+StandardmÃ¤ÃŸig ist das schwerere Level ausgewÃ¤hlt.
 
-Um dies zu ändern muss im Game-Code, der Main funktion `53: newWorld->loadmap(1);` auf 1 oder 2 gesetzt werden.
+Um dies zu Ã¤ndern muss im Game-Code, der Main funktion `53: newWorld->loadmap(1);` auf 1 oder 2 gesetzt werden.
 
 # Level Editor
 
@@ -39,9 +39,9 @@ Der Level Editor kann gestartet werden indem die Projektmappe `bjump-map-editor/
 
 ## Level Editor Requirements:
 
-Der Level Editor kann nur von Windows aus gestartet werden, da die Windows API direkt benutzt wird zum öffnen und speichern von Maps.
+Der Level Editor kann nur von Windows aus gestartet werden, da die Windows API direkt benutzt wird zum Ã¶ffnen und speichern von Maps.
 
-Verwendung von WINE oder ähnlicher Software zur Ausführung auf anderen Platformen wurde nicht auf funktionalität überprüft.
+Verwendung von WINE oder Ã¤hnlicher Software zur AusfÃ¼hrung auf anderen Platformen wurde nicht auf funktionalitÃ¤t Ã¼berprÃ¼ft.
 
 ## Steuerung des Level Editors
 
@@ -70,7 +70,7 @@ Ebene wechseln
 
 <kbd>&#8592;</kbd> <kbd>&#8594;</kbd> Wechsel Gegner Typ
 
-<kbd>M</kbd> Kamera auf Ursprung zurücksetzen
+<kbd>M</kbd> Kamera auf Ursprung zurÃ¼cksetzen
 
 <kbd>H</kbd> Horizontal Lock
 
@@ -78,13 +78,13 @@ Ebene wechseln
 
 <kbd>Maus Rad</kbd> Zoom
 
-<kbd>&#8593;</kbd> <kbd>&#8595;</kbd> Tileset kleiner/größer
+<kbd>&#8593;</kbd> <kbd>&#8595;</kbd> Tileset kleiner/grÃ¶ÃŸer
 
 ## UI des Level Editor
 
 Links Oben: Tileset
 
-Rechts Oben: Ebenen makierung & Ausgewähler Gegnertyp
+Rechts Oben: Ebenen makierung & AusgewÃ¤hler Gegnertyp
 
 	- FG: Vordergrund
 	- BG: Hintergrund
