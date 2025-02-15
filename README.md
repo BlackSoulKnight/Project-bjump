@@ -1,6 +1,14 @@
 # Project-bjump
 
-Das Spiel der Gruppe Project BJump
+Das Spiel der Gruppe Project BJump 
+
+Erstellt von 
+
+(owos02)[https://github.com/owos02]
+
+(majue001)[https://github.com/majue001]
+
+(BlackSoulKnight)[https://github.com/BlackSoulKnight]
 
 ## Kurzinfo
 
@@ -32,11 +40,13 @@ Der Level Editor kann gestartet werden indem die Projektmappe `bjump-map-editor/
 ## Level Editor Requirements:
 
 Der Level Editor kann nur von Windows aus gestartet werden, da die Windows API direkt benutzt wird zum öffnen und speichern von Maps.
+
 Verwendung von WINE oder ähnlicher Software zur Ausführung auf anderen Platformen wurde nicht auf funktionalität überprüft.
 
 ## Steuerung des Level Editors
 
 Die Steuerung wird als Windows Message beim Start des Level Editor gezeigt.
+
 Aus Komplettheit hier nochmal die Steuerung:
 
 <kbd>F1</kbd> Tastenbelegung zeigen
@@ -73,7 +83,9 @@ Ebene wechseln
 ## UI des Level Editor
 
 Links Oben: Tileset
+
 Rechts Oben: Ebenen makierung & Ausgewähler Gegnertyp
+
 	- FG: Vordergrund
 	- BG: Hintergrund
 	- ALL: Zeige ohne Alpha
